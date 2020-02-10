@@ -1,0 +1,183 @@
+package analisisSintactico;
+
+import SimbolosNoTerminales.*;
+import Procesador.GlobalVariables;
+import Procesador.Tipo;
+
+terminal    String			TCLASS, TVAR, TRETURN, TVOID, TIF, TELSE, LLAVEIZQ, LLAVEDER;
+terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER;
+terminal	String			COMPARADOR, OPLOGICO, VBOOLEANO, OPSUMA, OPPROD;
+terminal	String			VSTRING;
+terminal	String			VNUMERO;
+terminal	String			VID;
+
+non terminal	SimboloCondicional	condicional;
+non terminal	SimboloCondElse		condelse;
+non terminal	SimboloExpresion	expresion;
+non terminal	SimboloPrograma		programa;
+non terminal	SimboloClase		clase;
+non terminal	SimboloCuerpo		cuerpo;
+non terminal	SimboloElemento		elemento;
+non terminal	SimboloAsignacion	asignacion;
+non terminal  	SimboloFactor		factor;
+non terminal	SimboloOperacion	Operacion;
+non terminal	SimboloOperacion	Operacion1;
+non terminal	SimboloOperacion	Operacion2;
+non terminal	SimboloOperacion	Operacion3;
+non terminal  	SimboloFuncionInvk	funcionInvk;
+non terminal	SimboloFuncionDecl	funcionDecl;
+non terminal	SimboloArgs			args;
+non terminal	SimboloArgs			nextArg;
+non terminal	SimboloContenido	contenido;
+non terminal	SimboloParams		params;
+non terminal	SimboloParams		nextParam;
+
+start with programa;
+
+programa ::=  												{: GlobalVariables.entraBloque();
+															:}
+			clase:c
+															{: GlobalVariables.saleBloque();
+																RESULT = new SimboloPrograma(c);
+															:}
+			;
+			
+clase	::=	TCLASS:t VID:i 									{: GlobalVariables.asignaClaseID(i);
+															:}
+			LLAVEIZQ 										{: GlobalVariables.entraBloque();
+															:}
+			cuerpo:c										{: GlobalVariables.saleBloque();
+																
+															:}
+			LLAVEDER										{: RESULT = new SimboloClase(t,i,c);
+															:}
+			;
+			
+cuerpo ::= cuerpo:c elemento:e 								{: RESULT = new SimboloCuerpo(c,e); :}
+			|												{: RESULT = null; :}
+			;
+			
+elemento ::= asignacion:a 									{: RESULT = new SimboloElemento(a); :}
+			| funcionDecl:f									{: RESULT = new SimboloElemento(f); :}
+			| clase:c										{: RESULT = new SimboloElemento(c); :}
+			;
+			
+asignacion ::= TVAR:t VID:i									{: GlobalVariables.asignaID(i,t);
+															:}
+				IGUAL Operacion:o PUNTOCOMA 				{: RESULT = new SimboloAsignacion(t,i,o);
+															:}
+			| TVAR:t VID:i PUNTOCOMA 						{: GlobalVariables.asignaID(i,t);
+																RESULT = new SimboloAsignacion(t,i);
+															:}
+			| VID:i 											{: GlobalVariables.compruebaID(i);
+															:}
+				IGUAL Operacion:o PUNTOCOMA 				{:	RESULT = new SimboloAsignacion(i,o);
+															:}
+			;
+
+funcionDecl ::= TVAR:t VID:i 								{: GlobalVariables.asignaFuncionID(i,t);
+															:}
+				PARENIZQ									{: GlobalVariables.entraBloqueFuncion();
+																GlobalVariables.asignaEntornoFuncionID(i);
+															:}
+				args:a										{: GlobalVariables.asignaFuncionArgs(i,a);
+															:}
+				PARENDER LLAVEIZQ							{: :}
+				contenido:c									{: GlobalVariables.saleBloqueFuncion();
+															:}
+				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,t);
+															:}
+				|
+				TVOID:t VID:i 								{: GlobalVariables.asignaFuncionID(i,Tipo.Void);
+															:}
+				PARENIZQ									{: GlobalVariables.entraBloqueFuncion();
+																GlobalVariables.asignaEntornoFuncionID(i);
+															:}
+				args:a										{: GlobalVariables.asignaFuncionArgs(i,a);
+															:}
+				PARENDER LLAVEIZQ							{: :}
+				contenido:c									{: GlobalVariables.saleBloqueFuncion();
+															:}
+				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,t);
+															:}
+			;
+		
+funcionInvk ::= VID:i										{: GlobalVariables.compruebaFuncionID(i);
+															:}
+				PARENIZQ params:p 							{: :}
+				PARENDER									{: RESULT = new SimboloFuncionInvk(i,p);
+															:}
+		;
+			
+args ::= TVAR:t VID:i 									{: GlobalVariables.asignaID(i,t);
+															:}
+			nextArg:n										{: RESULT = new SimboloArgs(t,i,n);
+															:}
+		| 													{: RESULT = null;
+															:}
+		;
+
+nextArg ::= COMA TVAR:t VID:i 							{: GlobalVariables.asignaID(i,t);
+															:}
+				nextArg:n									{: RESULT = new SimboloArgs(t,i,n);
+															:}
+		|													{: RESULT = null;
+															:}
+		;
+		
+contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e); :}
+			| contenido:c condicional:d						{: RESULT = new SimboloContenido(c,d); :}
+			| contenido:c TRETURN:r Operacion:o PUNTOCOMA	{: RESULT = new SimboloContenido(c,r,o); :}
+			| 												{: RESULT = null; :}
+			;
+
+condicional ::= TIF PARENIZQ Operacion:o 					{: :}
+				PARENDER LLAVEIZQ							{: :}
+				contenido:c 								{: :}
+				LLAVEDER									{: :}
+				condelse:e									{: RESULT = new SimboloCondicional(o,c,e); :}
+			;
+			
+condelse ::= TELSE LLAVEIZQ 								{: :}
+				contenido:e 								{: :}
+				LLAVEDER									{: RESULT = new SimboloCondElse(e); :}
+			|												{: :}
+			;
+			
+expresion ::= asignacion:a 									{: RESULT = new SimboloExpresion(a); :}
+			| funcionInvk:f PUNTOCOMA						{: RESULT = new SimboloExpresion(f); :}
+			;
+		
+Operacion ::= Operacion1:o									{: RESULT = new SimboloOperacion(o); :}
+		| Operacion:o OPSUMA:s factor:f						{: RESULT = new SimboloOperacion(o,s,f); :}
+		;
+	
+Operacion1 ::= Operacion2:o									{: RESULT = new SimboloOperacion(o); :}
+		| Operacion1:o OPPROD:p factor:f					{: RESULT = new SimboloOperacion(o,p,f); :}
+		;
+		
+Operacion2 ::= Operacion3:o									{: RESULT = new SimboloOperacion(o); :}
+		| Operacion2:o COMPARADOR:c factor:f 				{: RESULT = new SimboloOperacion(o,c,f); :}
+		;
+		
+Operacion3 ::= factor:f 									{: RESULT = new SimboloOperacion(f); :}
+		| Operacion3:o OPLOGICO:l factor:f					{: RESULT = new SimboloOperacion(o,l,f); :}
+		;
+	
+factor ::= VID:i 											{: GlobalVariables.compruebaID(i);
+																RESULT = new SimboloFactor(i, Tipo.Identificador);
+															:}
+		| VNUMERO:n 										{: RESULT = new SimboloFactor(n, Tipo.Integer); :}
+		| VBOOLEANO:b										{: RESULT = new SimboloFactor(b, Tipo.Boolean); :}
+		| VSTRING:s											{: RESULT = new SimboloFactor(s, Tipo.String); :}
+		| funcionInvk:f										{: RESULT = new SimboloFactor(f); :}
+		| PARENIZQ Operacion:o PARENDER 					{: RESULT = new SimboloFactor(o); :}
+		;
+		
+params ::= Operacion:o nextParam:n							{: RESULT = new SimboloParams(o,n); :}
+		| 													{: RESULT = null; :}
+		;
+
+nextParam ::= COMA Operacion:o nextParam:n 					{: RESULT = new SimboloParams(o,n); :}
+			| 												{: RESULT = null; :}
+			;

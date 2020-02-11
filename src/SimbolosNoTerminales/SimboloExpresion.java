@@ -17,7 +17,11 @@ public class SimboloExpresion implements TipoSubyacente{
 
 	@Override
 	public Tipo getTipoSubyacente() {
-		return Tipo.Void;
+		if(this.a != null)
+			return this.a.getTipoSubyacente();
+		if(this.f != null)
+			return this.f.getTipoSubyacente();
+		return null;
 	}
 	
 }

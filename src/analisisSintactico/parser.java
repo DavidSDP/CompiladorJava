@@ -8,6 +8,7 @@ package analisisSintactico;
 import SimbolosNoTerminales.*;
 import Procesador.GlobalVariables;
 import Procesador.Tipo;
+import Checkers.TypeCheck;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -982,7 +983,7 @@ class CUP$parser$actions {
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- 
+ TypeCheck.checkBoolean(o); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$20",40, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -994,7 +995,7 @@ class CUP$parser$actions {
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
- 
+ GlobalVariables.entraBloque(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$21",41, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1024,7 +1025,7 @@ class CUP$parser$actions {
 		int cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		SimboloContenido c = (SimboloContenido)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
- 
+ GlobalVariables.saleBloque(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$23",43, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1053,7 +1054,7 @@ class CUP$parser$actions {
           case 47: // NT$24 ::= 
             {
               SimboloCondElse RESULT =null;
- 
+ GlobalVariables.entraBloque(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$24",44, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1065,7 +1066,7 @@ class CUP$parser$actions {
 		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloContenido e = (SimboloContenido)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- 
+ GlobalVariables.saleBloque(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$25",45, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1088,7 +1089,7 @@ class CUP$parser$actions {
           case 50: // condelse ::= 
             {
               SimboloCondElse RESULT =null;
-		 
+		 RESULT = null; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("condelse",1, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1142,7 +1143,7 @@ class CUP$parser$actions {
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloFactor f = (SimboloFactor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new SimboloOperacion(o,s,f); 
+		 RESULT = new SimboloOperacion(o,"+",f); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion",9, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1172,7 +1173,7 @@ class CUP$parser$actions {
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloFactor f = (SimboloFactor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new SimboloOperacion(o,p,f); 
+		 RESULT = new SimboloOperacion(o,"*",f); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion1",10, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1202,7 +1203,7 @@ class CUP$parser$actions {
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloFactor f = (SimboloFactor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new SimboloOperacion(o,c,f); 
+		 RESULT = new SimboloOperacion(o,"==",f); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion2",11, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1232,7 +1233,7 @@ class CUP$parser$actions {
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloFactor f = (SimboloFactor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new SimboloOperacion(o,l,f); 
+		 RESULT = new SimboloOperacion(o,"&&",f); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion3",12, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

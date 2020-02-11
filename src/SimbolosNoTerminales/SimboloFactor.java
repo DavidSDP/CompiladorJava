@@ -1,5 +1,7 @@
 package SimbolosNoTerminales;
 
+import Procesador.GlobalVariables;
+import Procesador.Identificador;
 import Procesador.Tipo;
 
 public class SimboloFactor implements TipoSubyacente{
@@ -39,20 +41,23 @@ public class SimboloFactor implements TipoSubyacente{
 
 	@Override
 	public Tipo getTipoSubyacente() {
-		throw new Error("NYI");
-//		if(id != null) {
-//			return GlobalVariables.getTipoIdentificadorEnEntornoActual(id);
-//		}else if(string != null) {
-//			return Tipo.String;
-//		}else if(numero != null) {
-//			return Tipo.Integer;
-//		}else if(booleano != null) {
-//			return Tipo.Boolean;
-//		}else if() {
-//			
-//		}else if() {
-//			
-//		}
+		if(id != null) {
+			Identificador identificador = GlobalVariables.entornoActual().fullGet(id);
+			if(identificador != null) {
+				return identificador.getTipo();
+			}
+		}else if(string != null) {
+			return Tipo.String;
+		}else if(numero != null) {
+			return Tipo.Integer;
+		}else if(booleano != null) {
+			return Tipo.Boolean;
+		}else if(funcionInvk != null) {
+			return funcionInvk.getTipoSubyacente();
+		}else if(operacion != null) {
+			return operacion.getTipoSubyacente();
+		}
+		return null;
 	}
 	
 }

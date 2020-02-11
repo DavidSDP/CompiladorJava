@@ -42,8 +42,7 @@ public class SimboloCondicional implements TipoSubyacente, Nodo{
 
 	@Override
 	public Tipo getTipoSubyacente() {
-		// TODO Auto-generated method stub
-		return null;
+		return Tipo.Void;
 	}
 	
 }

@@ -3,6 +3,7 @@ package analisisSintactico;
 import SimbolosNoTerminales.*;
 import Procesador.GlobalVariables;
 import Procesador.Tipo;
+import Checkers.TypeCheck;
 
 terminal    String			TCLASS, TVAR, TRETURN, TVOID, TIF, TELSE, LLAVEIZQ, LLAVEDER;
 terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER;
@@ -109,7 +110,7 @@ funcionInvk ::= VID:i										{: GlobalVariables.compruebaFuncionID(i);
 															:}
 		;
 			
-args ::= TVAR:t VID:i 									{: GlobalVariables.asignaID(i,t);
+args ::= TVAR:t VID:i 										{: GlobalVariables.asignaID(i,t);
 															:}
 			nextArg:n										{: RESULT = new SimboloArgs(t,i,n);
 															:}
@@ -117,7 +118,7 @@ args ::= TVAR:t VID:i 									{: GlobalVariables.asignaID(i,t);
 															:}
 		;
 
-nextArg ::= COMA TVAR:t VID:i 							{: GlobalVariables.asignaID(i,t);
+nextArg ::= COMA TVAR:t VID:i 								{: GlobalVariables.asignaID(i,t);
 															:}
 				nextArg:n									{: RESULT = new SimboloArgs(t,i,n);
 															:}
@@ -131,17 +132,17 @@ contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e)
 			| 												{: RESULT = null; :}
 			;
 
-condicional ::= TIF PARENIZQ Operacion:o 					{: :}
-				PARENDER LLAVEIZQ							{: :}
+condicional ::= TIF PARENIZQ Operacion:o 					{: TypeCheck.checkBoolean(o); :}
+				PARENDER LLAVEIZQ							{: GlobalVariables.entraBloque(); :}
 				contenido:c 								{: :}
-				LLAVEDER									{: :}
+				LLAVEDER									{: GlobalVariables.saleBloque(); :}
 				condelse:e									{: RESULT = new SimboloCondicional(o,c,e); :}
 			;
 			
-condelse ::= TELSE LLAVEIZQ 								{: :}
-				contenido:e 								{: :}
+condelse ::= TELSE LLAVEIZQ 								{: GlobalVariables.entraBloque(); :}
+				contenido:e 								{: GlobalVariables.saleBloque(); :}
 				LLAVEDER									{: RESULT = new SimboloCondElse(e); :}
-			|												{: :}
+			|												{: RESULT = null; :}
 			;
 			
 expresion ::= asignacion:a 									{: RESULT = new SimboloExpresion(a); :}
@@ -149,19 +150,19 @@ expresion ::= asignacion:a 									{: RESULT = new SimboloExpresion(a); :}
 			;
 		
 Operacion ::= Operacion1:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion:o OPSUMA:s factor:f						{: RESULT = new SimboloOperacion(o,s,f); :}
+		| Operacion:o OPSUMA:s factor:f						{: RESULT = new SimboloOperacion(o,"+",f); :}
 		;
 	
 Operacion1 ::= Operacion2:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion1:o OPPROD:p factor:f					{: RESULT = new SimboloOperacion(o,p,f); :}
+		| Operacion1:o OPPROD:p factor:f					{: RESULT = new SimboloOperacion(o,"*",f); :}
 		;
 		
 Operacion2 ::= Operacion3:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion2:o COMPARADOR:c factor:f 				{: RESULT = new SimboloOperacion(o,c,f); :}
+		| Operacion2:o COMPARADOR:c factor:f 				{: RESULT = new SimboloOperacion(o,"==",f); :}
 		;
 		
 Operacion3 ::= factor:f 									{: RESULT = new SimboloOperacion(f); :}
-		| Operacion3:o OPLOGICO:l factor:f					{: RESULT = new SimboloOperacion(o,l,f); :}
+		| Operacion3:o OPLOGICO:l factor:f					{: RESULT = new SimboloOperacion(o,"&&",f); :}
 		;
 	
 factor ::= VID:i 											{: GlobalVariables.compruebaID(i);

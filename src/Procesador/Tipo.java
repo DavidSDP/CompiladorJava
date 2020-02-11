@@ -2,7 +2,7 @@ package Procesador;
 
 public enum Tipo {
 	
-	Integer, String, Boolean, Class, Void, Identificador;
+	Integer, String, Boolean, Class, Void, Identificador, Comparable;
 	
 	public static Tipo getTipo(String s) {
 		switch(s) {

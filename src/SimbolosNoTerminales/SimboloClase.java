@@ -16,7 +16,7 @@ public class SimboloClase implements TipoSubyacente{
 
 	@Override
 	public Tipo getTipoSubyacente() {
-		return Tipo.Void;
+		return Tipo.Class;
 	}
 	
 }

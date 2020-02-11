@@ -6,6 +6,8 @@ class MyClass {
 	int funcioncilla ( int c, String s ) {
 		c = stringToInteger(my_function(s));
 		boolean algo = true;
+		if(1+1){
+		}
 		return 34/432+1;
 	}
 	void main () {

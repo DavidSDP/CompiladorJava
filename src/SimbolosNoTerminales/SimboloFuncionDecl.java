@@ -1,6 +1,8 @@
 package SimbolosNoTerminales;
 
-public class SimboloFuncionDecl {
+import Procesador.Tipo;
+
+public class SimboloFuncionDecl implements TipoSubyacente{
 	
 	private String id;
 	private String tipo;
@@ -8,6 +10,11 @@ public class SimboloFuncionDecl {
 	public SimboloFuncionDecl(String i, String t) {
 		this.id = i;
 		this.tipo = t;
+	}
+
+	@Override
+	public Tipo getTipoSubyacente() {
+		return Tipo.Void;
 	}
 	
 }

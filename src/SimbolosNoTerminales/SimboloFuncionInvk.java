@@ -1,8 +1,9 @@
 package SimbolosNoTerminales;
 
+import Checkers.Tipo;
 import Procesador.GlobalVariables;
 import Procesador.Identificador;
-import Procesador.Tipo;
+import Procesador.TipoSubyacente;
 
 public class SimboloFuncionInvk implements TipoSubyacente{
 	

@@ -1,6 +1,9 @@
 package SimbolosNoTerminales;
 
-public class SimboloParams{
+import Checkers.Tipo;
+import Procesador.TipoSubyacente;
+
+public class SimboloParams implements TipoSubyacente{
 	
 	private SimboloOperacion operacion;
 	private SimboloParams nextParam;
@@ -24,5 +27,10 @@ public class SimboloParams{
 
 	public void setNextParam(SimboloParams nextParam) {
 		this.nextParam = nextParam;
+	}
+
+	@Override
+	public Tipo getTipoSubyacente() {
+		return Tipo.Void;
 	}
 }

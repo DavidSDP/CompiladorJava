@@ -1,5 +1,7 @@
 package Procesador;
 
+import Checkers.Tipo;
+
 public class Identificador {
 	
 	private String id;

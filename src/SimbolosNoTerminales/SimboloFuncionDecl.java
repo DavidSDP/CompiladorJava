@@ -1,13 +1,14 @@
 package SimbolosNoTerminales;
 
-import Procesador.Tipo;
+import Checkers.Tipo;
+import Procesador.TipoSubyacente;
 
 public class SimboloFuncionDecl implements TipoSubyacente{
 	
 	private String id;
-	private String tipo;
+	private Tipo tipo;
 	
-	public SimboloFuncionDecl(String i, String t) {
+	public SimboloFuncionDecl(String i, Tipo t) {
 		this.id = i;
 		this.tipo = t;
 	}

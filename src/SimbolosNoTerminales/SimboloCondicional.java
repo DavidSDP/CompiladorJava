@@ -2,7 +2,8 @@ package SimbolosNoTerminales;
 
 import java.util.List;
 
-import Procesador.Tipo;
+import Checkers.Tipo;
+import Procesador.TipoSubyacente;
 
 public class SimboloCondicional implements TipoSubyacente, Nodo{
 	
@@ -20,12 +21,6 @@ public class SimboloCondicional implements TipoSubyacente, Nodo{
 		this.operacion = operacion;
 		this.contenido = contenido;
 		this.contenidoElse = contenidoElse;
-	}
-
-	@Override
-	public Nodo getParent() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

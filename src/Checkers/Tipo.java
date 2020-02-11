@@ -1,4 +1,4 @@
-package Procesador;
+package Checkers;
 
 public enum Tipo {
 	

@@ -5,10 +5,11 @@
 
 package analisisSintactico;
 
-import SimbolosNoTerminales.*;
-import Procesador.GlobalVariables;
-import Procesador.Tipo;
+import Checkers.Tipo;
+import Checkers.TipoOperador;
 import Checkers.TypeCheck;
+import Procesador.GlobalVariables;
+import SimbolosNoTerminales.*;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -493,7 +494,8 @@ class CUP$parser$actions {
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 RESULT = new SimboloAsignacion(t,i,o);
+		 TypeCheck.typesMatch(Tipo.getTipo(t), o.getTipoSubyacente());
+																RESULT = new SimboloAsignacion(t,i,o);
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("asignacion",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -541,7 +543,8 @@ class CUP$parser$actions {
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-			RESULT = new SimboloAsignacion(i,o);
+		 TypeCheck.typesMatch(GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());
+																RESULT = new SimboloAsignacion(i,o);
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("asignacion",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -657,7 +660,7 @@ class CUP$parser$actions {
 		int cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		SimboloContenido c = (SimboloContenido)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		 RESULT = new SimboloFuncionDecl(i,t);
+		 RESULT = new SimboloFuncionDecl(i,Tipo.getTipo(t));
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("funcionDecl",14, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-12)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -773,7 +776,7 @@ class CUP$parser$actions {
 		int cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		SimboloContenido c = (SimboloContenido)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		 RESULT = new SimboloFuncionDecl(i,t);
+		 RESULT = new SimboloFuncionDecl(i,Tipo.Void);
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("funcionDecl",14, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-12)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -995,7 +998,7 @@ class CUP$parser$actions {
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
- GlobalVariables.entraBloque(); 
+ 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$21",41, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1025,7 +1028,7 @@ class CUP$parser$actions {
 		int cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		SimboloContenido c = (SimboloContenido)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
- GlobalVariables.saleBloque(); 
+ 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$23",43, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1143,7 +1146,10 @@ class CUP$parser$actions {
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloFactor f = (SimboloFactor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new SimboloOperacion(o,"+",f); 
+		 TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
+																TypeCheck.typesMatch(f.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
+																TypeCheck.typesMatch(o.getTipoSubyacente(), f.getTipoSubyacente());
+																RESULT = new SimboloOperacion(o,TipoOperador.getTipoOperador(s),f); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion",9, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1173,7 +1179,10 @@ class CUP$parser$actions {
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloFactor f = (SimboloFactor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new SimboloOperacion(o,"*",f); 
+		 TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
+																TypeCheck.typesMatch(f.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
+																TypeCheck.typesMatch(o.getTipoSubyacente(), f.getTipoSubyacente());
+																RESULT = new SimboloOperacion(o,TipoOperador.getTipoOperador(p),f); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion1",10, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1203,7 +1212,10 @@ class CUP$parser$actions {
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloFactor f = (SimboloFactor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new SimboloOperacion(o,"==",f); 
+		 TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
+																TypeCheck.typesMatch(f.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
+																TypeCheck.typesMatch(o.getTipoSubyacente(), f.getTipoSubyacente());
+																RESULT = new SimboloOperacion(o,TipoOperador.getTipoOperador(c),f); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion2",11, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1233,7 +1245,10 @@ class CUP$parser$actions {
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloFactor f = (SimboloFactor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new SimboloOperacion(o,"&&",f); 
+		 TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
+																TypeCheck.typesMatch(f.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
+																TypeCheck.typesMatch(o.getTipoSubyacente(), f.getTipoSubyacente());
+																RESULT = new SimboloOperacion(o,TipoOperador.getTipoOperador(l),f); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion3",12, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

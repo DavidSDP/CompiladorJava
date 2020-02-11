@@ -1,6 +1,7 @@
 package SimbolosNoTerminales;
 
-import Procesador.Tipo;
+import Checkers.Tipo;
+import Procesador.TipoSubyacente;
 
 public class SimboloCuerpo implements TipoSubyacente{
 	

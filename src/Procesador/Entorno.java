@@ -5,10 +5,15 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import Checkers.Tipo;
+
 public class Entorno {
 	
 	private Integer nivel;
 	private Boolean esFuncion;
+	
+	// EXTRAPOLAR FUNCION-ENTORNO (HERENCIA)
+	// CORREGIR SOBRECARGA DE CLASES -> IDENTIFICADOR concat ARGS...
 	
 	private Hashtable<String, Identificador> tablaIDs;
 	private Hashtable<String, Identificador> tablaFunciones;

@@ -1,20 +1,22 @@
 class MyClass {
-	void stringToInteger(){}
 	void my_function(){
 		String aOSDAOD = "";
+	}
+	int stringToInteger(){
+		my_function();
 	}
 	int funcioncilla ( int c, String s ) {
 		c = stringToInteger(my_function(s));
 		boolean algo = true;
-		if(1+1){
+		if((1+1)>2){
 		}
 		return 34/432+1;
 	}
 	void main () {
 		int aaa = 2;
-		int b = "asasas";
+		String b = "asasas";
 		return "vytivg";
-		String hfausfh = funcioncilla(aaa, "holo", (4+5)>33);
+		int hfausfh = funcioncilla(aaa, "holo", (4+5)>33);
 	}
 	int main;
 }

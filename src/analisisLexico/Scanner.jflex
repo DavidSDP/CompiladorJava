@@ -28,6 +28,7 @@ import analisisSintactico.sym;
     }
     
     public ComplexSymbol symbol(int type){
+    	// INYECCION FICHERO
 		return (ComplexSymbol) symbolFactory.newSymbol(sym.terminalNames[type], type,
 						new Location(yyline+1, yycolumn+1, yychar),
 						new Location(yyline+1, yycolumn + yylength(), yychar + yylength())
@@ -35,6 +36,7 @@ import analisisSintactico.sym;
     }
     
     public ComplexSymbol symbol(int type, String lexem){
+    	// INYECCION FICHERO
 		return (ComplexSymbol) symbolFactory.newSymbol(sym.terminalNames[type], type,
 						new Location(yyline+1, yycolumn+1, yychar),
 						new Location(yyline+1, yycolumn + yylength(), yychar + yylength()),

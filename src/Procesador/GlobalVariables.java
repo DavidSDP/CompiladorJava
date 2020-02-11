@@ -3,6 +3,7 @@ package Procesador;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
+import Checkers.Tipo;
 import SimbolosNoTerminales.SimboloArgs;
 
 public class GlobalVariables{

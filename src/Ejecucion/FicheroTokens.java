@@ -1,5 +1,6 @@
 package Ejecucion;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -13,9 +14,11 @@ public class FicheroTokens {
 	
 	private static void abreFichero() {
 		try {
-			fileWriter = new FileWriter(GlobalVariables.FICHERO_TOKENS);
+			System.out.println(new File(".").getAbsolutePath());
+			File newFile = new File(GlobalVariables.FICHERO_TOKENS);
+			fileWriter = new FileWriter(newFile);
 		} catch (IOException e) {
-			new Error("Se ha producido un error al abrir el fichero de Tokens");
+			throw new Error("Se ha producido un error al abrir el fichero de Tokens");
 		}
 		escribeLinea("// TOKENS GENERADOS //");
 	}
@@ -35,17 +38,16 @@ public class FicheroTokens {
 			fileWriter.write(linea);
 			fileWriter.write(System.lineSeparator());
 		} catch (IOException e) {
-			new Error("Se ha producido un error al introducir la línea "+linea+" en el fichero de Tokens");
 		}
 	}
 	
 	public static void almacenaToken(Symbol symbol) {
 		if(symbol != null) {
 			if(symbol.sym == sym.EOF) {
-				System.out.println("(" + sym.terminalNames[symbol.sym] + ", " + symbol.value + ")");
+				escribeLinea("(" + sym.terminalNames[symbol.sym] + ", " + symbol.value + ")");
 				cierraFichero();
 			} else {
-				System.out.println("(" + sym.terminalNames[symbol.sym] + ", " + symbol.value + ")");
+				escribeLinea("(" + sym.terminalNames[symbol.sym] + ", " + symbol.value + ")");
 			}
 		}else {
 			cierraFichero();

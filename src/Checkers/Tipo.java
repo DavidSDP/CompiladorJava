@@ -2,7 +2,7 @@ package Checkers;
 
 public enum Tipo {
 	
-	Integer, String, Boolean, Class, Void, Identificador, Comparable;
+	Integer, String, Boolean, Class, Void, Identificador, Token, Comparable;
 	
 	public static Tipo getTipo(String s) {
 		switch(s) {

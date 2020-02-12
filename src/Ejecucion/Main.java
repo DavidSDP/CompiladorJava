@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import analisisLexico.Scanner;
 import analisisSintactico.parser;
+import analisisSintactico.arbol.ArbolSintactico;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.Symbol;
 
@@ -21,9 +22,7 @@ public class Main {
 			
 			Symbol topSymbol = parser.parse();
 			
-			System.out.println(topSymbol);
-			
-			System.out.println(parser.production_table());
+			ArbolSintactico.generar(topSymbol);
 			
 		} catch (FileNotFoundException e) {
 			System.err.println("El fitxer d'entrada '"+args[0]+"' no existeix");

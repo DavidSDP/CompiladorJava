@@ -1,16 +1,22 @@
 package SimbolosNoTerminales;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Checkers.Tipo;
 import Checkers.TipoOperador;
 import Procesador.TipoSubyacente;
+import analisisSintactico.arbol.INodo;
+import analisisSintactico.arbol.Nodo;
+import analisisSintactico.arbol.SimboloTerminal;
 
-public class SimboloOperacion implements TipoSubyacente, Nodo{
+public class SimboloOperacion extends Nodo implements TipoSubyacente{
 
 	private SimboloOperacion operacion;
 	private TipoOperador operador;
+	private String operadorString;
 	private SimboloFactor factor;
+	private SimboloOperacion operacionDerecha;
 	
 	private Boolean esOperacion = false;
 	private Boolean esFactor = false;
@@ -26,18 +32,35 @@ public class SimboloOperacion implements TipoSubyacente, Nodo{
 		this.esFactor = true;
 	}
 	
-	public SimboloOperacion(SimboloOperacion o, TipoOperador operador, SimboloFactor f) {
+	public SimboloOperacion(SimboloOperacion o, String operadorString, SimboloOperacion operacionDerecha) {
 		this.operacion = o;
-		this.operador = operador;
-		this.factor = f;
+		this.operador = TipoOperador.getTipoOperador(operadorString);
+		this.operadorString = operadorString;
+		this.operacionDerecha = operacionDerecha;
 		this.esModoCompleto = true;
 	}
-	
-//		Tipo tipoOperador = TypeCheck.getTipoOperador(operador);
-//		TypeCheck.typesMatch(operacion.getTipoSubyacente(), factor.getTipoSubyacente());
-//		TypeCheck.typesMatch(operacion.getTipoSubyacente(), tipoOperador);
-//		TypeCheck.typesMatch(factor.getTipoSubyacente(), tipoOperador);
-//		return tipoOperador;
+
+	@Override
+	public List<INodo> getChildren() {
+		List<INodo> hijos = new ArrayList<>();
+		if(this.esOperacion) {
+			hijos.add(operacion);
+			return hijos;
+		}
+		if(this.esFactor) {
+			hijos.add(factor);
+			return hijos;
+		}
+		hijos.add(operacion);
+		hijos.add(new SimboloTerminal(operadorString, Tipo.Token));
+		hijos.add(operacionDerecha);
+		return hijos;
+	}
+
+	@Override
+	public String getName() {
+		return "SimboloOperacion";
+	}
 
 	@Override
 	public Tipo getTipoSubyacente() {
@@ -86,18 +109,6 @@ public class SimboloOperacion implements TipoSubyacente, Nodo{
 
 	public void setOperador(TipoOperador operador) {
 		this.operador = operador;
-	}
-
-	@Override
-	public List<Nodo> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 }

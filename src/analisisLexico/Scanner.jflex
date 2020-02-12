@@ -3,6 +3,7 @@ import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import analisisSintactico.sym;
+import Ejecucion.FicheroTokens;
 
 
 %%
@@ -28,20 +29,22 @@ import analisisSintactico.sym;
     }
     
     public ComplexSymbol symbol(int type){
-    	// INYECCION FICHERO
-		return (ComplexSymbol) symbolFactory.newSymbol(sym.terminalNames[type], type,
+    	ComplexSymbol symbol = (ComplexSymbol) symbolFactory.newSymbol(sym.terminalNames[type], type,
 						new Location(yyline+1, yycolumn+1, yychar),
 						new Location(yyline+1, yycolumn + yylength(), yychar + yylength())
 		);
+    	FicheroTokens.almacenaToken(symbol);
+		return symbol;
     }
     
     public ComplexSymbol symbol(int type, String lexem){
-    	// INYECCION FICHERO
-		return (ComplexSymbol) symbolFactory.newSymbol(sym.terminalNames[type], type,
+    	ComplexSymbol symbol = (ComplexSymbol) symbolFactory.newSymbol(sym.terminalNames[type], type,
 						new Location(yyline+1, yycolumn+1, yychar),
 						new Location(yyline+1, yycolumn + yylength(), yychar + yylength()),
 						lexem
 		);
+    	FicheroTokens.almacenaToken(symbol);
+		return symbol;
     }
 %}
 

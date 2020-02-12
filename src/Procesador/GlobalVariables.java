@@ -8,9 +8,14 @@ import SimbolosNoTerminales.SimboloArgs;
 
 public class GlobalVariables{
 		
-		public static final String FICHERO_TOKENS = "./output/FicheroTokens.txt";
+		public static final String FICHERO_TOKENS = "..\\output\\FicheroTokens.txt";
+		public static final String FICHERO_ARBOL = "..\\output\\ArbolSintactico.dot";
+		
 		public static Boolean DEBUG_MODE = true;
-		static Integer CONTADOR = 1;
+		
+
+		private static Integer _idnodoIncremental = 0;
+		private static Integer CONTADOR = 1;
 		private static Stack<Entorno> pilaEntornos = new Stack<>();
 		
 		public static Entorno entornoActual() {
@@ -32,30 +37,30 @@ public class GlobalVariables{
 		}
 		
 		public static void asignaFuncionID(String idFuncion, String tipo) {
-			Entorno top = entornoActual();
+			EntornoClase top = (EntornoClase) entornoActual();
 			top.putFuncion(Tipo.getTipo(tipo), idFuncion);
 		}
 		
 		public static void asignaFuncionID(String idFuncion, Tipo tipo) {
-			Entorno top = entornoActual();
+			EntornoClase top = (EntornoClase) entornoActual();
 			top.putFuncion(tipo, idFuncion);
 		}
 		
 		// Llamar una vez dentro del entorno de la función
 		public static void asignaEntornoFuncionID(String idFuncion) {
-			Entorno top = entornoActual();
-			top.getEntornoAnterior().getTablaFuncionEntorno().put(idFuncion, top);
+			EntornoFuncion top = (EntornoFuncion) entornoActual();
+			((EntornoClase)top.getEntornoAnterior()).putFuncionEntorno(idFuncion, top);
 		}
 		
 		public static void asignaFuncionArgs(String idFuncion, SimboloArgs args) {
-			Entorno top = entornoActual();
+			EntornoFuncion top = (EntornoFuncion) entornoActual();
 			for(SimboloArgs a = args; a != null; a = a.getNextArg()) {
 				top.putFuncionArgs(idFuncion, a.getId());
 			}
 		}
 		
 		public static void asignaClaseID(String id) {
-			Entorno top = entornoActual();
+			EntornoClase top = (EntornoClase) entornoActual();
 			top.putClase(id);
 		}
 		
@@ -74,31 +79,31 @@ public class GlobalVariables{
 		}
 		
 		public static void compruebaClaseID(String id) {
-			Entorno top = entornoActual();
+			EntornoClase top = (EntornoClase) entornoActual();
 			Identificador i = top.fullGetClase(id);
 			if(i == null)
 				throw new Error("El id "+id+" no es un símbolo de clase declarado en el entorno");
 		}
 		
-		public static void entraBloque() {
-			Entorno e = new Entorno(entornoActual(), false);
+		public static void entraBloqueClase(Identificador identificadorClase) {
+			EntornoClase e = new EntornoClase(entornoActual(), identificadorClase);
 			pilaEntornos.push(e);
 		}
 		
-		public static void saleBloque() {
-			Entorno popped = pilaEntornos.pop();
+		public static void saleBloqueClase() {
+			EntornoClase popped = (EntornoClase) pilaEntornos.pop();
 			if(DEBUG_MODE) {
 				popped.printEntorno();
 			}
 		}
 		
-		public static void entraBloqueFuncion() {
-			Entorno e = new Entorno(entornoActual(), true);
+		public static void entraBloqueFuncion(Identificador identificadorFuncion) {
+			EntornoFuncion e = new EntornoFuncion((EntornoClase)entornoActual(), identificadorFuncion);
 			pilaEntornos.push(e);
 		}
 		
 		public static void saleBloqueFuncion() {
-			Entorno popped = pilaEntornos.pop();
+			EntornoFuncion popped = (EntornoFuncion) pilaEntornos.pop();
 			if(DEBUG_MODE) {
 				popped.printEntorno();
 			}
@@ -106,6 +111,10 @@ public class GlobalVariables{
 		
 		public static Integer getIdentificador() {
 			return CONTADOR++;
+		}
+		
+		public static Integer getNodoIdentificadorUnico() {
+			return _idnodoIncremental++;
 		}
 		
 	}

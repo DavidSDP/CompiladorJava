@@ -1,11 +1,16 @@
 package SimbolosNoTerminales;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Checkers.Tipo;
 import Procesador.TipoSubyacente;
+import analisisSintactico.sym;
+import analisisSintactico.arbol.INodo;
+import analisisSintactico.arbol.Nodo;
+import analisisSintactico.arbol.SimboloTerminal;
 
-public class SimboloCondicional implements TipoSubyacente, Nodo{
+public class SimboloCondicional extends Nodo implements TipoSubyacente{
 	
 	private SimboloOperacion operacion;
 	private SimboloContenido contenido;
@@ -24,15 +29,24 @@ public class SimboloCondicional implements TipoSubyacente, Nodo{
 	}
 
 	@Override
-	public List<Nodo> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<INodo> getChildren() {
+		List<INodo> hijos = new ArrayList<>();
+		hijos.add(new SimboloTerminal(sym.terminalNames[sym.TIF], Tipo.Token));
+		hijos.add(new SimboloTerminal(sym.terminalNames[sym.PARENIZQ], Tipo.Token));
+		hijos.add(operacion);
+		hijos.add(new SimboloTerminal(sym.terminalNames[sym.PARENDER], Tipo.Token));
+		hijos.add(new SimboloTerminal(sym.terminalNames[sym.LLAVEIZQ], Tipo.Token));
+		if(contenido != null)
+			hijos.add(contenido);
+		hijos.add(new SimboloTerminal(sym.terminalNames[sym.LLAVEDER], Tipo.Token));
+		if(contenidoElse != null)
+			hijos.add(contenidoElse);
+		return hijos;
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "SimboloCondicional";
 	}
 
 	@Override

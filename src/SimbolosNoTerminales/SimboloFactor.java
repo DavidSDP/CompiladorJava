@@ -1,11 +1,18 @@
 package SimbolosNoTerminales;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import Checkers.Tipo;
 import Procesador.GlobalVariables;
 import Procesador.Identificador;
 import Procesador.TipoSubyacente;
+import analisisSintactico.sym;
+import analisisSintactico.arbol.INodo;
+import analisisSintactico.arbol.Nodo;
+import analisisSintactico.arbol.SimboloTerminal;
 
-public class SimboloFactor implements TipoSubyacente{
+public class SimboloFactor extends Nodo implements TipoSubyacente{
 	
 	private String id;
 	private String string;
@@ -38,6 +45,45 @@ public class SimboloFactor implements TipoSubyacente{
 	}
 	public SimboloFactor(SimboloOperacion operacion) {
 		this.operacion = operacion;
+	}
+	
+	@Override
+	public List<INodo> getChildren() {
+		List<INodo> hijos = new ArrayList<>();
+		if(id != null) {
+			hijos.add(new SimboloTerminal(id, Tipo.Identificador));
+			return hijos;
+		}
+		if(numero != null) {
+			hijos.add(new SimboloTerminal(numero, Tipo.Integer));
+			return hijos;
+		}
+		if(booleano != null) {
+			hijos.add(new SimboloTerminal(booleano, Tipo.Boolean));
+			return hijos;
+		}
+		if(string != null) {
+			String newString = new String(string);
+			newString = newString.replace("\"", "'");
+			hijos.add(new SimboloTerminal(newString, Tipo.String));
+			return hijos;
+		}
+		if(funcionInvk != null) {
+			hijos.add(funcionInvk);
+			return hijos;
+		}
+		if(operacion != null) {
+			hijos.add(new SimboloTerminal(sym.terminalNames[sym.PARENIZQ], Tipo.Token));
+			hijos.add(operacion);
+			hijos.add(new SimboloTerminal(sym.terminalNames[sym.PARENDER], Tipo.Token));
+			return hijos;
+		}
+		return hijos;
+	}
+	
+	@Override
+	public String getName() {
+		return "SimboloFactor";
 	}
 
 	@Override

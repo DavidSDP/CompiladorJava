@@ -1,9 +1,14 @@
 package SimbolosNoTerminales;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import Checkers.Tipo;
 import Procesador.TipoSubyacente;
+import analisisSintactico.arbol.INodo;
+import analisisSintactico.arbol.Nodo;
 
-public class SimboloCuerpo implements TipoSubyacente{
+public class SimboloCuerpo extends Nodo implements TipoSubyacente {
 	
 	private SimboloCuerpo cuerpo;
 	private SimboloElemento elemento;
@@ -16,6 +21,21 @@ public class SimboloCuerpo implements TipoSubyacente{
 	@Override
 	public Tipo getTipoSubyacente() {
 		return Tipo.Void;
+	}
+
+	@Override
+	public List<INodo> getChildren() {
+		List<INodo> hijos = new ArrayList<>();
+		if(cuerpo != null)
+			hijos.add(cuerpo);
+		if(elemento != null)
+			hijos.add(elemento);
+		return hijos;
+	}
+
+	@Override
+	public String getName() {
+		return "SimboloCuerpo";
 	}
 	
 }

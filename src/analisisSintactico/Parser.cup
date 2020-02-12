@@ -5,6 +5,7 @@ import Checkers.TipoOperador;
 import Checkers.TypeCheck;
 import Procesador.GlobalVariables;
 import SimbolosNoTerminales.*;
+import Procesador.Identificador;
 
 terminal    String			TCLASS, TVAR, TRETURN, TVOID, TIF, TELSE, LLAVEIZQ, LLAVEDER;
 terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER;
@@ -34,24 +35,27 @@ non terminal	SimboloContenido	contenido;
 non terminal	SimboloParams		params;
 non terminal	SimboloParams		nextParam;
 
+precedence left OPSUMA, OPPROD;
+precedence left OPLOGICO, COMPARADOR;
+
 start with programa;
 
-programa ::=  												{: GlobalVariables.entraBloque();
+programa ::=  												{: GlobalVariables.entraBloqueClase(null);
 															:}
 			clase:c
-															{: GlobalVariables.saleBloque();
+															{: GlobalVariables.saleBloqueClase();
 																RESULT = new SimboloPrograma(c);
 															:}
 			;
 			
 clase	::=	TCLASS:t VID:i 									{: GlobalVariables.asignaClaseID(i);
 															:}
-			LLAVEIZQ 										{: GlobalVariables.entraBloque();
+			LLAVEIZQ 										{: GlobalVariables.entraBloqueClase(new Identificador(i, Tipo.Class));
 															:}
-			cuerpo:c										{: GlobalVariables.saleBloque();
+			cuerpo:c										{: GlobalVariables.saleBloqueClase();
 																
 															:}
-			LLAVEDER										{: RESULT = new SimboloClase(t,i,c);
+			LLAVEDER										{: RESULT = new SimboloClase(i,c);
 															:}
 			;
 			
@@ -81,7 +85,7 @@ asignacion ::= TVAR:t VID:i									{: GlobalVariables.asignaID(i,t);
 
 funcionDecl ::= TVAR:t VID:i 								{: GlobalVariables.asignaFuncionID(i,t);
 															:}
-				PARENIZQ									{: GlobalVariables.entraBloqueFuncion();
+				PARENIZQ									{: GlobalVariables.entraBloqueFuncion(new Identificador(i, Tipo.getTipo(t)));
 																GlobalVariables.asignaEntornoFuncionID(i);
 															:}
 				args:a										{: GlobalVariables.asignaFuncionArgs(i,a);
@@ -89,12 +93,12 @@ funcionDecl ::= TVAR:t VID:i 								{: GlobalVariables.asignaFuncionID(i,t);
 				PARENDER LLAVEIZQ							{: :}
 				contenido:c									{: GlobalVariables.saleBloqueFuncion();
 															:}
-				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,Tipo.getTipo(t));
+				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,Tipo.getTipo(t),a,c);
 															:}
 				|
 				TVOID:t VID:i 								{: GlobalVariables.asignaFuncionID(i,Tipo.Void);
 															:}
-				PARENIZQ									{: GlobalVariables.entraBloqueFuncion();
+				PARENIZQ									{: GlobalVariables.entraBloqueFuncion(new Identificador(i, Tipo.Void));
 																GlobalVariables.asignaEntornoFuncionID(i);
 															:}
 				args:a										{: GlobalVariables.asignaFuncionArgs(i,a);
@@ -102,20 +106,20 @@ funcionDecl ::= TVAR:t VID:i 								{: GlobalVariables.asignaFuncionID(i,t);
 				PARENDER LLAVEIZQ							{: :}
 				contenido:c									{: GlobalVariables.saleBloqueFuncion();
 															:}
-				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,Tipo.Void);
+				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,Tipo.Void,a,c);
 															:}
 			;
 		
 funcionInvk ::= VID:i										{: GlobalVariables.compruebaFuncionID(i);
 															:}
-				PARENIZQ params:p 							{: :}
+				PARENIZQ params:p 							{: TypeCheck.parameterMatch(i,p); :}
 				PARENDER									{: RESULT = new SimboloFuncionInvk(i,p);
 															:}
 		;
 		
 args ::= TVAR:t VID:i 										{: GlobalVariables.asignaID(i,t);
 															:}
-			nextArg:n										{: RESULT = new SimboloArgs(t,i,n);
+			nextArg:n										{: RESULT = new SimboloArgs(t,i,n,true);
 															:}
 		| 													{: RESULT = null;
 															:}
@@ -123,7 +127,7 @@ args ::= TVAR:t VID:i 										{: GlobalVariables.asignaID(i,t);
 
 nextArg ::= COMA TVAR:t VID:i 								{: GlobalVariables.asignaID(i,t);
 															:}
-				nextArg:n									{: RESULT = new SimboloArgs(t,i,n);
+				nextArg:n									{: RESULT = new SimboloArgs(t,i,n,false);
 															:}
 		|													{: RESULT = null;
 															:}
@@ -131,7 +135,8 @@ nextArg ::= COMA TVAR:t VID:i 								{: GlobalVariables.asignaID(i,t);
 		
 contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e); :}
 			| contenido:c condicional:d						{: RESULT = new SimboloContenido(c,d); :}
-			| contenido:c TRETURN:r Operacion:o PUNTOCOMA	{: RESULT = new SimboloContenido(c,r,o); :}
+			| contenido:c TRETURN:r Operacion:o PUNTOCOMA	{: TypeCheck.returnTypeMatch(o);
+																RESULT = new SimboloContenido(c,r,o); :}
 			| 												{: RESULT = null; :}
 			;
 
@@ -142,8 +147,8 @@ condicional ::= TIF PARENIZQ Operacion:o 					{: TypeCheck.checkBoolean(o); :}
 				condelse:e									{: RESULT = new SimboloCondicional(o,c,e); :}
 			;
 			
-condelse ::= TELSE LLAVEIZQ 								{: GlobalVariables.entraBloque(); :}
-				contenido:e 								{: GlobalVariables.saleBloque(); :}
+condelse ::= TELSE LLAVEIZQ 								{: :}
+				contenido:e 								{: :}
 				LLAVEDER									{: RESULT = new SimboloCondElse(e); :}
 			|												{: RESULT = null; :}
 			;
@@ -153,31 +158,31 @@ expresion ::= asignacion:a 									{: RESULT = new SimboloExpresion(a); :}
 			;
 		
 Operacion ::= Operacion1:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion:o OPSUMA:s factor:f						{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
-																TypeCheck.typesMatch(f.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), f.getTipoSubyacente());
-																RESULT = new SimboloOperacion(o,TipoOperador.getTipoOperador(s),f); :}
+		| Operacion:o OPSUMA:s Operacion:q						{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
+																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
+																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																RESULT = new SimboloOperacion(o,s,q); :}
 		;
 	
 Operacion1 ::= Operacion2:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion1:o OPPROD:p factor:f					{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
-																TypeCheck.typesMatch(f.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), f.getTipoSubyacente());
-																RESULT = new SimboloOperacion(o,TipoOperador.getTipoOperador(p),f); :}
+		| Operacion:o OPPROD:p Operacion:q					{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
+																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
+																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																RESULT = new SimboloOperacion(o,p,q); :}
 		;
 		
 Operacion2 ::= Operacion3:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion2:o COMPARADOR:c factor:f 				{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
-																TypeCheck.typesMatch(f.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), f.getTipoSubyacente());
-																RESULT = new SimboloOperacion(o,TipoOperador.getTipoOperador(c),f); :}
+		| Operacion:o COMPARADOR:c Operacion:q 				{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
+																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
+																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																RESULT = new SimboloOperacion(o,c,q); :}
 		;
 		
 Operacion3 ::= factor:f 									{: RESULT = new SimboloOperacion(f); :}
-		| Operacion3:o OPLOGICO:l factor:f					{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
-																TypeCheck.typesMatch(f.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), f.getTipoSubyacente());
-																RESULT = new SimboloOperacion(o,TipoOperador.getTipoOperador(l),f); :}
+		| Operacion:o OPLOGICO:l Operacion:q					{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
+																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
+																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																RESULT = new SimboloOperacion(o,l,q); :}
 		;
 	
 factor ::= VID:i 											{: GlobalVariables.compruebaID(i);
@@ -190,10 +195,10 @@ factor ::= VID:i 											{: GlobalVariables.compruebaID(i);
 		| PARENIZQ Operacion:o PARENDER 					{: RESULT = new SimboloFactor(o); :}
 		;
 		
-params ::= Operacion:o nextParam:n							{: RESULT = new SimboloParams(o,n); :}
+params ::= Operacion:o nextParam:n							{: RESULT = new SimboloParams(o,n,true); :}
 		| 													{: RESULT = null; :}
 		;
 
-nextParam ::= COMA Operacion:o nextParam:n 					{: RESULT = new SimboloParams(o,n); :}
+nextParam ::= COMA Operacion:o nextParam:n 					{: RESULT = new SimboloParams(o,n,false); :}
 			| 												{: RESULT = null; :}
 			;

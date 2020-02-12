@@ -1,8 +1,7 @@
-
 class ClasePrincipal {
-	
+    ?
 	class ClaseSecundaria {	
-		
+		int i = "a";
 	}
 	
 	int mi_funcion ( String argumento1, int argumento2 ){
@@ -13,7 +12,7 @@ class ClasePrincipal {
 	}
 	
 	void main(){
-		int prueba = mi_funcion("Hola", 1);
+		int prueba = mi_funcion("Hola", 1>2);
 	}
 	
 }

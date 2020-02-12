@@ -3,9 +3,40 @@ package analisisSintactico;
 import Checkers.Tipo;
 import Checkers.TipoOperador;
 import Checkers.TypeCheck;
+import Errores.ErrorHandler;
+import Errores.ErrorSemantico;
+import Errores.ErrorSintactico;
 import Procesador.GlobalVariables;
 import SimbolosNoTerminales.*;
+import java_cup.runtime.Symbol;
 import Procesador.Identificador;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+
+parser code {:
+
+
+	/** Trata errores de tipo sintáctico **/
+	@Override
+	public void report_error(String message, Object info) {
+		if(info != null) {
+			ComplexSymbol simboloEncontrado = (ComplexSymbol) info;
+			ErrorHandler.reportaError(new ErrorSintactico(simboloEncontrado));
+		}else {
+			ErrorHandler.reportaError(""+message);
+		}
+	}
+	
+	/** Para controlar que el parser no imprima texto de los errores por pantalla **/
+	@Override
+	public void syntax_error(Symbol token) {
+		report_error("Syntax error", token);
+	}
+	@Override
+	public void unrecovered_syntax_error(Symbol cur_token) throws java.lang.Exception {
+		report_fatal_error("\nCould not recover and keep parsing\n", null);
+	}
+
+ :}
 
 terminal    String			TCLASS, TVAR, TRETURN, TVOID, TIF, TELSE, LLAVEIZQ, LLAVEDER;
 terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER;
@@ -48,7 +79,11 @@ programa ::=  												{: GlobalVariables.entraBloqueClase(null);
 															:}
 			;
 			
-clase	::=	TCLASS:t VID:i 									{: GlobalVariables.asignaClaseID(i);
+clase	::=	TCLASS:t VID:i 									{: try{
+																GlobalVariables.asignaClaseID(i);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 															:}
 			LLAVEIZQ 										{: GlobalVariables.entraBloqueClase(new Identificador(i, Tipo.Class));
 															:}
@@ -68,22 +103,43 @@ elemento ::= asignacion:a 									{: RESULT = new SimboloElemento(a); :}
 			| clase:c										{: RESULT = new SimboloElemento(c); :}
 			;
 			
-asignacion ::= TVAR:t VID:i									{: GlobalVariables.asignaID(i,t);
+asignacion ::= TVAR:t VID:i									{: try{
+																	GlobalVariables.asignaID(i,t);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 															:}
-				IGUAL Operacion:o PUNTOCOMA 				{: TypeCheck.typesMatch(Tipo.getTipo(t), o.getTipoSubyacente());
+				IGUAL Operacion:o PUNTOCOMA 				{: try{
+																	TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), o.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloAsignacion(t,i,o);
 															:}
-			| TVAR:t VID:i PUNTOCOMA 						{: GlobalVariables.asignaID(i,t);
+			| TVAR:t VID:i PUNTOCOMA 						{: try{
+																	GlobalVariables.asignaID(i,t);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloAsignacion(t,i);
 															:}
-			| VID:i 											{: GlobalVariables.compruebaID(i);
+			| VID:i 										{: GlobalVariables.compruebaID(i);
 															:}
-				IGUAL Operacion:o PUNTOCOMA 				{: TypeCheck.typesMatch(GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());
+				IGUAL Operacion:o PUNTOCOMA 				{: 
+																try{
+																	TypeCheck.typesMatchAsignacion(GlobalVariables.entornoActual().fullGet(i).getId(), GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloAsignacion(i,o);
 															:}
 			;
 
-funcionDecl ::= TVAR:t VID:i 								{: GlobalVariables.asignaFuncionID(i,t);
+funcionDecl ::= TVAR:t VID:i 								{: 	try{
+																	GlobalVariables.asignaFuncionID(i,t);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 															:}
 				PARENIZQ									{: GlobalVariables.entraBloqueFuncion(new Identificador(i, Tipo.getTipo(t)));
 																GlobalVariables.asignaEntornoFuncionID(i);
@@ -96,7 +152,11 @@ funcionDecl ::= TVAR:t VID:i 								{: GlobalVariables.asignaFuncionID(i,t);
 				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,Tipo.getTipo(t),a,c);
 															:}
 				|
-				TVOID:t VID:i 								{: GlobalVariables.asignaFuncionID(i,Tipo.Void);
+				TVOID:t VID:i 								{: 	try{
+																	GlobalVariables.asignaFuncionID(i,Tipo.Void);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 															:}
 				PARENIZQ									{: GlobalVariables.entraBloqueFuncion(new Identificador(i, Tipo.Void));
 																GlobalVariables.asignaEntornoFuncionID(i);
@@ -135,12 +195,21 @@ nextArg ::= COMA TVAR:t VID:i 								{: GlobalVariables.asignaID(i,t);
 		
 contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e); :}
 			| contenido:c condicional:d						{: RESULT = new SimboloContenido(c,d); :}
-			| contenido:c TRETURN:r Operacion:o PUNTOCOMA	{: TypeCheck.returnTypeMatch(o);
+			| contenido:c TRETURN:r Operacion:o PUNTOCOMA	{: try{
+																TypeCheck.returnTypeMatch(o);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloContenido(c,r,o); :}
 			| 												{: RESULT = null; :}
 			;
 
-condicional ::= TIF PARENIZQ Operacion:o 					{: TypeCheck.checkBoolean(o); :}
+condicional ::= TIF PARENIZQ Operacion:o 					{: try{
+																TypeCheck.checkBoolean(o);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
+															:}
 				PARENDER LLAVEIZQ							{: :}
 				contenido:c 								{: :}
 				LLAVEDER									{: :}
@@ -158,34 +227,55 @@ expresion ::= asignacion:a 									{: RESULT = new SimboloExpresion(a); :}
 			;
 		
 Operacion ::= Operacion1:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion:o OPSUMA:s Operacion:q						{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
-																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+		| Operacion:o OPSUMA:s Operacion:q						{: 
+																try{
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
+																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloOperacion(o,s,q); :}
 		;
 	
 Operacion1 ::= Operacion2:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion:o OPPROD:p Operacion:q					{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
-																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+		| Operacion:o OPPROD:p Operacion:q					{: try{
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
+																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloOperacion(o,p,q); :}
 		;
 		
 Operacion2 ::= Operacion3:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion:o COMPARADOR:c Operacion:q 				{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
-																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+		| Operacion:o COMPARADOR:c Operacion:q 				{: try{
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
+																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloOperacion(o,c,q); :}
 		;
 		
 Operacion3 ::= factor:f 									{: RESULT = new SimboloOperacion(f); :}
-		| Operacion:o OPLOGICO:l Operacion:q					{: TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
-																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+		| Operacion:o OPLOGICO:l Operacion:q					{: try{
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
+																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloOperacion(o,l,q); :}
 		;
 	
-factor ::= VID:i 											{: GlobalVariables.compruebaID(i);
+factor ::= VID:i 											{: try{
+																	GlobalVariables.compruebaID(i);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloFactor(i, Tipo.Identificador);
 															:}
 		| VNUMERO:n 										{: RESULT = new SimboloFactor(n, Tipo.Integer); :}

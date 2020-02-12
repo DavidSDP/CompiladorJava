@@ -5,18 +5,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import Checkers.Tipo;
+import Errores.ErrorProcesador;
 import Procesador.GlobalVariables;
 import SimbolosNoTerminales.SimboloPrograma;
 import java_cup.runtime.Symbol;
 
 public class ArbolSintactico {
 	
-	public static void generar(Symbol topSymbol) {
+	public static void generar(Symbol topSymbol) throws ErrorProcesador, IOException {
 		generaDotRecursivo((INodo) topSymbol.value);
+		escribeLinea("\n}");
 		cierraFichero();
 	}
 	
-	private static void generaDotRecursivo(INodo nodo) {
+	private static void generaDotRecursivo(INodo nodo) throws ErrorProcesador, IOException {
 		if(nodo.getChildren() != null && !nodo.getChildren().isEmpty()) {
 			for(INodo hijo: nodo.getChildren()) {
 				escribeLinea(nodo.getIdentificadorUnico() + " -> " + hijo.getIdentificadorUnico());
@@ -39,34 +41,30 @@ public class ArbolSintactico {
 	}
 
 	public static FileWriter fileWriter;
+	private static File file;
 	
-	private static void abreFichero() {
+	public static void abreFichero() throws ErrorProcesador, IOException {
 		try {
-			File newFile = new File(GlobalVariables.FICHERO_ARBOL);
-			fileWriter = new FileWriter(newFile);
+			file = new File(GlobalVariables.FICHERO_ARBOL);
+			fileWriter = new FileWriter(file);
 		} catch (IOException e) {
-			throw new Error("Se ha producido un error al abrir el fichero del árbol sintáctico");
+			throw new ErrorProcesador("Se ha producido un error al abrir el fichero del árbol sintáctico");
 		}
 		escribeLinea("digraph G {\n");
 	}
 	
-	private static void cierraFichero() {
+	public static void cierraFichero() throws ErrorProcesador {
 		try {
-			escribeLinea("\n}");
+			System.out.println("Se ha generado el Árbol Sintáctico en: "+file.getAbsolutePath());
 			fileWriter.close();
 		} catch (IOException e) {
-			new Error("Se ha producido un error al cerrar el fichero del árbol sintáctico");
+			throw new ErrorProcesador("Se ha producido un error al cerrar el fichero del árbol sintáctico");
 		}
 	}
 	
-	private static void escribeLinea(String linea) {
-		if(fileWriter == null)
-			abreFichero();
-        try {
-			fileWriter.write(linea);
-			fileWriter.write(System.lineSeparator());
-		} catch (IOException e) {
-		}
+	private static void escribeLinea(String linea) throws IOException {
+		fileWriter.write(linea);
+		fileWriter.write(System.lineSeparator());
 	}
 	
 }

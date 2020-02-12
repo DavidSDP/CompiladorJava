@@ -3,54 +3,47 @@ package Ejecucion;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.logging.ConsoleHandler;
 
+import Errores.ErrorProcesador;
 import Procesador.GlobalVariables;
 import analisisSintactico.sym;
 import java_cup.runtime.Symbol;
 
 public class FicheroTokens {
 	
-	public static FileWriter fileWriter;
+	private static FileWriter fileWriter;
+	private static File file;
 	
-	private static void abreFichero() {
+	public static void abreFichero() throws IOException, ErrorProcesador {
 		try {
-			System.out.println(new File(".").getAbsolutePath());
-			File newFile = new File(GlobalVariables.FICHERO_TOKENS);
-			fileWriter = new FileWriter(newFile);
+			file = new File(GlobalVariables.FICHERO_TOKENS);
+			fileWriter = new FileWriter(file);
 		} catch (IOException e) {
-			throw new Error("Se ha producido un error al abrir el fichero de Tokens");
+			throw new ErrorProcesador("Se ha producido un error al abrir el fichero de Tokens");
 		}
 		escribeLinea("// TOKENS GENERADOS //");
 	}
 	
-	private static void cierraFichero() {
+	public static void cierraFichero() throws ErrorProcesador {
 		try {
+			System.out.println("Se ha generado el fichero de Tokens en: "+file.getAbsolutePath());
 			fileWriter.close();
 		} catch (IOException e) {
-			new Error("Se ha producido un error al cerrar el fichero de Tokens");
+			throw new ErrorProcesador("Se ha producido un error al cerrar el fichero de Tokens");
 		}
 	}
 	
-	private static void escribeLinea(String linea) {
-		if(fileWriter == null)
-			abreFichero();
-        try {
-			fileWriter.write(linea);
-			fileWriter.write(System.lineSeparator());
-		} catch (IOException e) {
-		}
+	private static void escribeLinea(String linea) throws IOException {
+		fileWriter.write(linea);
+		fileWriter.write(System.lineSeparator());
 	}
 	
-	public static void almacenaToken(Symbol symbol) {
-		if(symbol != null) {
-			if(symbol.sym == sym.EOF) {
-				escribeLinea("(" + sym.terminalNames[symbol.sym] + ", " + symbol.value + ")");
-				cierraFichero();
-			} else {
-				escribeLinea("(" + sym.terminalNames[symbol.sym] + ", " + symbol.value + ")");
-			}
-		}else {
-			cierraFichero();
+	public static void almacenaToken(Symbol symbol) throws IOException {
+		if(symbol.sym == sym.EOF) {
+			escribeLinea("(" + sym.terminalNames[symbol.sym] + ", " + symbol.value + ")");
+		} else {
+			escribeLinea("(" + sym.terminalNames[symbol.sym] + ", " + symbol.value + ")");
 		}
 	}
 }

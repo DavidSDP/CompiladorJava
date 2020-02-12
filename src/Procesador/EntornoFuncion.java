@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import Errores.ErrorSemantico;
+
 public class EntornoFuncion extends Entorno{
 	
 	// Se guardan los Identificadores que son argumentos del Entorno (Sólo funciones)
@@ -17,15 +19,15 @@ public class EntornoFuncion extends Entorno{
 	////////*	IDENTIFICADORES DE FUNCIONES/ARGUMENTOS		*////////
 	
 	// Especifica los argumentos de la función
-	public void putFuncionArgs(String funcionID, String argumentoID) {
+	public void putFuncionArgs(String funcionID, String argumentoID) throws ErrorSemantico {
 		if(!((EntornoClase)this.getEntornoAnterior()).containsFuncion(funcionID))
-			throw new Error("La función con identificador: '"+funcionID+"' no ha sido declarada en la tabla de funciones del entorno");
+			throw new ErrorSemantico("La función con identificador: '"+funcionID+"' no ha sido declarada en la tabla de funciones del entorno");
 		
 		if(!this.contains(argumentoID))
-			throw new Error("El identificador: '"+argumentoID+"' no ha sido declarado en la tabla de identificadores del entorno");
+			throw new ErrorSemantico("El identificador: '"+argumentoID+"' no ha sido declarado en la tabla de identificadores del entorno");
 		
 		if(this.getListaArgumentos().contains(argumentoID))
-			throw new Error("Se ha definido el argumento: '"+argumentoID+"' duplicado para la función '"+funcionID+"'");
+			throw new ErrorSemantico("Se ha definido el argumento: '"+argumentoID+"' duplicado para la función '"+funcionID+"'");
 		
 		this.getListaArgumentos().add(argumentoID);
 	}

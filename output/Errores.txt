@@ -1,0 +1,14 @@
+// ERRORES GENERADOS //
+
+Error léxico ->
+	Línea [1], Columna [4], el Token {?} no ha sido reconocido.
+<-
+
+Error semántico ->
+	Se ha producido un error en el id {i} al tratar de asignar un tipo String a un tipo Integer
+<-
+
+Error semántico ->
+	Se ha producido un error en los parámetros de la función {mi_funcion}, al tratar de asignar un tipo Boolean a un tipo Integer
+<-
+Se han encontrado errores, la ejecución se ha interrumpido.

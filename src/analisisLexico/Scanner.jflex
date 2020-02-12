@@ -4,13 +4,16 @@ import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import analisisSintactico.sym;
 import Ejecucion.FicheroTokens;
-
+import Errores.ErrorLexico;
+import Errores.ErrorHandler;
+import java.io.IOException;
 
 %%
 
 %public
 %class Scanner
 
+%throws ErrorLexico
 %unicode
 %line
 %column
@@ -28,7 +31,7 @@ import Ejecucion.FicheroTokens;
         symbolFactory = sf;
     }
     
-    public ComplexSymbol symbol(int type){
+    public ComplexSymbol symbol(int type) throws IOException{
     	ComplexSymbol symbol = (ComplexSymbol) symbolFactory.newSymbol(sym.terminalNames[type], type,
 						new Location(yyline+1, yycolumn+1, yychar),
 						new Location(yyline+1, yycolumn + yylength(), yychar + yylength())
@@ -37,7 +40,7 @@ import Ejecucion.FicheroTokens;
 		return symbol;
     }
     
-    public ComplexSymbol symbol(int type, String lexem){
+    public ComplexSymbol symbol(int type, String lexem) throws IOException{
     	ComplexSymbol symbol = (ComplexSymbol) symbolFactory.newSymbol(sym.terminalNames[type], type,
 						new Location(yyline+1, yycolumn+1, yychar),
 						new Location(yyline+1, yycolumn + yylength(), yychar + yylength()),
@@ -78,7 +81,7 @@ OPLOGICO	=	"&&"|"||"
 VBOOLEANO	=	"true"|"false"
 
 VSTRING		=	[\"][A-Za-z0-9_]*[\"]
-VNUMERO		=	(0|[1-9][0-9]*)
+VNUMERO		=	0|[1-9][0-9]*
 
 VID			=	[A-Za-z][A-Za-z0-9_]*
 
@@ -116,4 +119,4 @@ VID			=	[A-Za-z][A-Za-z0-9_]*
 {VNUMERO}		{return symbol(sym.VNUMERO, this.yytext());}
 {VID}			{return symbol(sym.VID, this.yytext());}
 
-[^]				{throw new Error("Carácter no reconocido: <"+yytext()+">"); }
+[^]				{ ErrorHandler.reportaError(new ErrorLexico(this.yytext(), this.yyline, this.yycolumn)); }

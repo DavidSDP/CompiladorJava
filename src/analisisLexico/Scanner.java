@@ -6,7 +6,9 @@ import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import analisisSintactico.sym;
 import Ejecucion.FicheroTokens;
-
+import Errores.ErrorLexico;
+import Errores.ErrorHandler;
+import java.io.IOException;
 
 
 /**
@@ -283,7 +285,7 @@ public class Scanner implements java_cup.runtime.Scanner {
         symbolFactory = sf;
     }
     
-    public ComplexSymbol symbol(int type){
+    public ComplexSymbol symbol(int type) throws IOException{
     	ComplexSymbol symbol = (ComplexSymbol) symbolFactory.newSymbol(sym.terminalNames[type], type,
 						new Location(yyline+1, yycolumn+1, yychar),
 						new Location(yyline+1, yycolumn + yylength(), yychar + yylength())
@@ -292,7 +294,7 @@ public class Scanner implements java_cup.runtime.Scanner {
 		return symbol;
     }
     
-    public ComplexSymbol symbol(int type, String lexem){
+    public ComplexSymbol symbol(int type, String lexem) throws IOException{
     	ComplexSymbol symbol = (ComplexSymbol) symbolFactory.newSymbol(sym.terminalNames[type], type,
 						new Location(yyline+1, yycolumn+1, yychar),
 						new Location(yyline+1, yycolumn + yylength(), yychar + yylength()),
@@ -545,7 +547,7 @@ public class Scanner implements java_cup.runtime.Scanner {
    * @return      the next token
    * @exception   java.io.IOException  if any I/O-Error occurs
    */
-  public ComplexSymbol next_token() throws java.io.IOException {
+  public ComplexSymbol next_token() throws java.io.IOException, ErrorLexico {
     int zzInput;
     int zzAction;
 
@@ -688,7 +690,7 @@ public class Scanner implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { throw new Error("Carácter no reconocido: <"+yytext()+">");
+            { ErrorHandler.reportaError(new ErrorLexico(this.yytext(), this.yyline, this.yycolumn));
             } 
             // fall through
           case 24: break;

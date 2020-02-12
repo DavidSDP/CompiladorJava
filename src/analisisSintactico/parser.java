@@ -8,9 +8,14 @@ package analisisSintactico;
 import Checkers.Tipo;
 import Checkers.TipoOperador;
 import Checkers.TypeCheck;
+import Errores.ErrorHandler;
+import Errores.ErrorSemantico;
+import Errores.ErrorSintactico;
 import Procesador.GlobalVariables;
 import SimbolosNoTerminales.*;
+import java_cup.runtime.Symbol;
 import Procesador.Identificador;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -274,6 +279,32 @@ public class parser extends java_cup.runtime.lr_parser {
   public int error_sym() {return 1;}
 
 
+
+
+
+	/** Trata errores de tipo sintáctico **/
+	@Override
+	public void report_error(String message, Object info) {
+		if(info != null) {
+			ComplexSymbol simboloEncontrado = (ComplexSymbol) info;
+			ErrorHandler.reportaError(new ErrorSintactico(simboloEncontrado));
+		}else {
+			ErrorHandler.reportaError(""+message);
+		}
+	}
+	
+	/** Para controlar que el parser no imprima texto de los errores por pantalla **/
+	@Override
+	public void syntax_error(Symbol token) {
+		report_error("Syntax error", token);
+	}
+	@Override
+	public void unrecovered_syntax_error(Symbol cur_token) throws java.lang.Exception {
+		report_fatal_error("\nCould not recover and keep parsing\n", null);
+	}
+
+ 
+
 /** Cup generated class to encapsulate user supplied action code.*/
 @SuppressWarnings({"rawtypes", "unchecked", "unused"})
 class CUP$parser$actions {
@@ -348,7 +379,11 @@ class CUP$parser$actions {
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- GlobalVariables.asignaClaseID(i);
+ try{
+																GlobalVariables.asignaClaseID(i);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$1",21, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -481,7 +516,11 @@ class CUP$parser$actions {
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- GlobalVariables.asignaID(i,t);
+ try{
+																	GlobalVariables.asignaID(i,t);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$4",24, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -502,7 +541,11 @@ class CUP$parser$actions {
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 TypeCheck.typesMatch(Tipo.getTipo(t), o.getTipoSubyacente());
+		 try{
+																	TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), o.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloAsignacion(t,i,o);
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("asignacion",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -519,7 +562,11 @@ class CUP$parser$actions {
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 GlobalVariables.asignaID(i,t);
+		 try{
+																	GlobalVariables.asignaID(i,t);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloAsignacion(t,i);
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("asignacion",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -551,7 +598,12 @@ class CUP$parser$actions {
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 TypeCheck.typesMatch(GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());
+		 
+																try{
+																	TypeCheck.typesMatchAsignacion(GlobalVariables.entornoActual().fullGet(i).getId(), GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloAsignacion(i,o);
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("asignacion",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -568,7 +620,11 @@ class CUP$parser$actions {
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- GlobalVariables.asignaFuncionID(i,t);
+ 	try{
+																	GlobalVariables.asignaFuncionID(i,t);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$6",26, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -684,7 +740,11 @@ class CUP$parser$actions {
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- GlobalVariables.asignaFuncionID(i,Tipo.Void);
+ 	try{
+																	GlobalVariables.asignaFuncionID(i,Tipo.Void);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$11",31, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -973,7 +1033,11 @@ class CUP$parser$actions {
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 TypeCheck.returnTypeMatch(o);
+		 try{
+																TypeCheck.returnTypeMatch(o);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloContenido(c,r,o); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("contenido",17, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -995,7 +1059,12 @@ class CUP$parser$actions {
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- TypeCheck.checkBoolean(o); 
+ try{
+																TypeCheck.checkBoolean(o);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
+															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$20",40, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1155,9 +1224,14 @@ class CUP$parser$actions {
 		int qleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int qright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloOperacion q = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
-																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+		 
+																try{
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
+																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloOperacion(o,s,q); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion",9, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1188,9 +1262,13 @@ class CUP$parser$actions {
 		int qleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int qright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloOperacion q = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
-																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+		 try{
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
+																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloOperacion(o,p,q); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion1",10, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1221,9 +1299,13 @@ class CUP$parser$actions {
 		int qleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int qright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloOperacion q = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
-																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+		 try{
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
+																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloOperacion(o,c,q); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion2",11, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1254,9 +1336,13 @@ class CUP$parser$actions {
 		int qleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int qright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloOperacion q = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
-																TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
-																TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+		 try{
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
+																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
+																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloOperacion(o,l,q); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Operacion3",12, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1269,7 +1355,11 @@ class CUP$parser$actions {
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 GlobalVariables.compruebaID(i);
+		 try{
+																	GlobalVariables.compruebaID(i);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
 																RESULT = new SimboloFactor(i, Tipo.Identificador);
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("factor",8, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

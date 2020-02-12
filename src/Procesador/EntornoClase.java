@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import Checkers.Tipo;
+import Errores.ErrorSemantico;
 
 public class EntornoClase extends Entorno{
 	
@@ -24,9 +25,9 @@ public class EntornoClase extends Entorno{
 	////////*	IDENTIFICADORES DE FUNCIONES	*////////
 
 	// Introduce nuevo ID de Función en el entorno actual
-	public void putFuncion(Tipo tipo, String s) {
+	public void putFuncion(Tipo tipo, String s) throws ErrorSemantico {
 		if(this.containsFuncion(s))
-			throw new Error("El identificador de función '"+s+"' se ha declarado por duplicado");
+			throw new ErrorSemantico("El identificador de función '"+s+"' se ha declarado por duplicado");
 		this.tablaFunciones.put(s, new Identificador(s, tipo));
 	}
 	
@@ -45,9 +46,9 @@ public class EntornoClase extends Entorno{
 	////////*	FUNCION - ENTORNO	*////////
 	
 	// Introduce nuevo ID de Función en el entorno actual
-	public void putFuncionEntorno(String idFuncion, EntornoFuncion entornoFuncion) {
+	public void putFuncionEntorno(String idFuncion, EntornoFuncion entornoFuncion) throws ErrorSemantico {
 		if(this.containsFuncionEntorno(idFuncion))
-			throw new Error("El entorno de la función '"+idFuncion+"' se ha declarado por duplicado");
+			throw new ErrorSemantico("El entorno de la función '"+idFuncion+"' se ha declarado por duplicado");
 		this.tablaFuncionEntorno.put(idFuncion, entornoFuncion);
 	}
 	
@@ -67,9 +68,9 @@ public class EntornoClase extends Entorno{
 	////////*	IDENTIFICADORES	DE CLASES	*////////
 	
 	// Introduce nuevo ID de Clase en el entorno actual
-	public void putClase(String s) {
+	public void putClase(String s) throws ErrorSemantico {
 		if(this.contains(s))
-			throw new Error("El identificador de clase '"+s+"' se ha declarado por duplicado");
+			throw new ErrorSemantico("El identificador de clase '"+s+"' se ha declarado por duplicado");
 		this.tablaClases.put(s, new Identificador(s, Tipo.Class));
 	}
 	

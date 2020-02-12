@@ -3,6 +3,7 @@ package Procesador;
 import java.util.Hashtable;
 
 import Checkers.Tipo;
+import Errores.ErrorSemantico;
 
 public class Entorno {
 	
@@ -33,9 +34,9 @@ public class Entorno {
 	////////*	IDENTIFICADORES		*////////
 	
 	// Introduce nuevo ID en el entorno actual
-	public void put(Tipo tipo, String s) {
+	public void put(Tipo tipo, String s) throws ErrorSemantico {
 		if(this.contains(s))
-			throw new Error("El identificador '"+s+"' se ha declarado por duplicado");
+			throw new ErrorSemantico("El identificador '"+s+"' se ha declarado por duplicado");
 		this.tablaIDs.put(s, new Identificador(s, tipo));
 	}
 	

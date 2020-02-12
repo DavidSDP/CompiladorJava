@@ -1,10 +1,12 @@
 package Checkers;
 
+import Errores.ErrorSemantico;
+
 public enum Tipo {
 	
 	Integer, String, Boolean, Class, Void, Identificador, Token, Comparable;
 	
-	public static Tipo getTipo(String s) {
+	public static Tipo getTipo(String s) throws ErrorSemantico {
 		switch(s) {
 			case "void":
 				return Tipo.Void;
@@ -17,7 +19,7 @@ public enum Tipo {
 			case "boolean":
 				return Tipo.Boolean;
 			default:
-				throw new Error("No se ha encontrado el tipo especificado");
+				throw new ErrorSemantico("No se ha encontrado el tipo especificado");
 		}
 	}
 	

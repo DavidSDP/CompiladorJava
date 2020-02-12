@@ -1,5 +1,6 @@
 package Procesador;
 
+import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
@@ -12,6 +13,7 @@ public class GlobalVariables{
 		public static final String FICHERO_TOKENS = "..\\output\\FicheroTokens.txt";
 		public static final String FICHERO_ARBOL = "..\\output\\ArbolSintactico.dot";
 		public static final String FICHERO_ERRORES = "..\\output\\Errores.txt";
+		public static final String FICHERO_ENTORNOS = "..\\output\\Entornos.txt";
 		
 		public static Boolean DEBUG_MODE = true;
 		public static Boolean hayErrores = false;
@@ -92,7 +94,7 @@ public class GlobalVariables{
 			pilaEntornos.push(e);
 		}
 		
-		public static void saleBloqueClase() {
+		public static void saleBloqueClase() throws IOException {
 			EntornoClase popped = (EntornoClase) pilaEntornos.pop();
 			if(DEBUG_MODE) {
 				popped.printEntorno();
@@ -104,7 +106,7 @@ public class GlobalVariables{
 			pilaEntornos.push(e);
 		}
 		
-		public static void saleBloqueFuncion() {
+		public static void saleBloqueFuncion() throws IOException {
 			EntornoFuncion popped = (EntornoFuncion) pilaEntornos.pop();
 			if(DEBUG_MODE) {
 				popped.printEntorno();

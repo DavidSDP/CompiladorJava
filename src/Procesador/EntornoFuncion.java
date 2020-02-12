@@ -1,9 +1,11 @@
 package Procesador;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
 
 public class EntornoFuncion extends Entorno{
@@ -46,40 +48,59 @@ public class EntornoFuncion extends Entorno{
 	
 	/* Dibujando el Entorno */
 	
-	public void printEntorno() {
-		System.out.println();
-		System.out.println(" -> ENTORNO FUNCIÓN "+this.get_identificador_entorno()+", de nivel "+this.getNivel()+" <- ");
-		System.out.println();
+	public void printEntorno() throws IOException {
+		StringBuffer sb = new StringBuffer();
+		sb.append("\n");
+		sb.append(" -> ENTORNO FUNCIÓN "+this.get_identificador_entorno()+", de nivel "+this.getNivel()+" <- ");
+		sb.append("\n");
+		sb.append("\n");
 		
-		System.out.println("ID: "+this.getIdentificador().getId()+" , TIPO: "+this.getIdentificador().getTipo());
+		sb.append("ID: "+this.getIdentificador().getId()+" , TIPO: "+this.getIdentificador().getTipo());
 
-		System.out.println();
-		System.out.println(" VARIABLES: ");
+		sb.append("\n");
+		sb.append(" VARIABLES: ");
+		sb.append("\n");
+		sb.append("\n");
 		if(this.getTablaIDs().isEmpty()) {
-			System.out.println(" - no hay identificadores declarados - ");
+			sb.append("\n");
+			sb.append(" - no hay identificadores declarados - ");
+			sb.append("\n");
+			sb.append("\n");
 		}else {
 			Iterator<String> iterator = this.getTablaIDs().keySet().iterator();
 			while(iterator.hasNext()) {
 				String key = (String) iterator.next();
 				Identificador id = this.getTablaIDs().get(key);
-				System.out.println("ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				sb.append("\n");
+				sb.append("ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				sb.append("\n");
+				sb.append("\n");
 			}
 		}
-		
-		System.out.println();
-		System.out.println("     -> argumentos: ");
+
+		sb.append("\n");
+		sb.append("     -> argumentos: ");
+		sb.append("\n");
+		sb.append("\n");
 		List<String> argumentos = this.listaArgumentos;
 		if(argumentos == null || argumentos.isEmpty()) {
-			System.out.println("              -> sin argumentos <-");
+			sb.append("\n");
+			sb.append("              -> sin argumentos <-");
+			sb.append("\n");
 		}else {
 			for(String arg: argumentos) {
 				Identificador idArgumento = this.get(arg);
-				System.out.println("             -> id: "+idArgumento.getId()+" , tipo: "+idArgumento.getTipo());
+				sb.append("\n");
+				sb.append("             -> id: "+idArgumento.getId()+" , tipo: "+idArgumento.getTipo());
+				sb.append("\n");
 			}
 		}
-		System.out.println();
-		System.out.println("_______________________________________");
-		System.out.println();
+		sb.append("\n");
+		sb.append("\n");
+		sb.append("_______________________________________");
+		sb.append("\n");
+		sb.append("\n");
+		FicheroEntornos.almacenaEntorno(sb.toString());
 	}
 
 	public List<String> getListaArgumentos() {

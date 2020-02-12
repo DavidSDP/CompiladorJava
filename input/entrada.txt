@@ -1,18 +1,13 @@
-class ClasePrincipal {
-    ?
-	class ClaseSecundaria {	
-		int i = "a";
-	}
+class ClasePrincipal [] {
 	
-	int mi_funcion ( String argumento1, int argumento2 ){
-		if(argumento1 == "Hola"){
-			return argumento2;
-		}
-		return 0;
+	int suma (int a, int b){
+		return a==b;
 	}
 	
 	void main(){
-		int prueba = mi_funcion("Hola", 1>2);
+		int a = c;
 	}
+	
+	String ?;
 	
 }

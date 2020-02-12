@@ -1,10 +1,12 @@
 package Procesador;
 
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
 import Checkers.Tipo;
+import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
 
 public class EntornoClase extends Entorno{
@@ -89,62 +91,90 @@ public class EntornoClase extends Entorno{
 	
 	/* Dibujando el Entorno */
 	
-	public void printEntorno() {
-		System.out.println();
-		System.out.println(" -> ENTORNO CLASE "+this.get_identificador_entorno()+", de nivel "+this.getNivel()+" <- ");
-		System.out.println();
-		
-		System.out.println(" VARIABLES: ");
+	public void printEntorno() throws IOException {
+		StringBuffer sb = new StringBuffer();
+		sb.append("\n");
+		sb.append(" -> ENTORNO CLASE "+this.get_identificador_entorno()+", de nivel "+this.getNivel()+" <- ");
+		sb.append("\n");
+
+		sb.append("\n");
+		sb.append(" VARIABLES: ");
+		sb.append("\n");
+		sb.append("\n");
 		if(this.getTablaIDs().isEmpty()) {
-			System.out.println(" - no hay identificadores declarados - ");
+			sb.append(" - no hay identificadores declarados - ");
+			sb.append("\n");
 		}else {
 			Iterator<String> iterator = this.getTablaIDs().keySet().iterator();
 			while(iterator.hasNext()) {
 				String key = (String) iterator.next();
 				Identificador id = this.getTablaIDs().get(key);
-				System.out.println("ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				sb.append("ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				sb.append("\n");
+				sb.append("\n");
 			}
 		}
 
-		System.out.println();
-		System.out.println(" CLASES: ");
+		sb.append("\n");
+		sb.append(" CLASES: ");
+		sb.append("\n");
+		sb.append("\n");
 		if(tablaClases.isEmpty()) {
-			System.out.println(" - no hay clases declaradas - ");
+			sb.append(" - no hay clases declaradas - ");
+			sb.append("\n");
+			sb.append("\n");
 		}else {
 			Iterator<String> iterator = tablaClases.keySet().iterator();
 			while(iterator.hasNext()) {
 				String key = (String) iterator.next();
 				Identificador id = tablaClases.get(key);
-				System.out.println("ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				sb.append("ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				sb.append("\n");
+				sb.append("\n");
 			}
 		}
-		
-		System.out.println();
-		System.out.println(" FUNCIONES: ");
+
+		sb.append("\n");
+		sb.append(" FUNCIONES: ");
+		sb.append("\n");
+		sb.append("\n");
 		
 		if(tablaFunciones.isEmpty()) {
-			System.out.println(" - no hay funciones declaradas - ");
+			sb.append("\n");
+			sb.append(" - no hay funciones declaradas - ");
+			sb.append("\n");
+			sb.append("\n");
 		}else {
 			Iterator<String> iteratorFunciones = tablaFunciones.keySet().iterator();
 			while(iteratorFunciones.hasNext()) {
 				String key = (String) iteratorFunciones.next();
 				Identificador funcionId = tablaFunciones.get(key);
-				System.out.println("ID: "+funcionId.getId()+" , TIPO: "+funcionId.getTipo());
-				System.out.println("     -> argumentos: ");
+				sb.append("ID: "+funcionId.getId()+" , TIPO: "+funcionId.getTipo());
+				sb.append("\n");
+				sb.append("     -> argumentos: ");
+				sb.append("\n");
+				sb.append("\n");
 				List<String> argumentos = ((EntornoFuncion)this.tablaFuncionEntorno.get(funcionId.getId())).getArgs();
 				if(argumentos == null || argumentos.isEmpty()) {
-					System.out.println("              -> sin argumentos <-");
+					sb.append("              -> sin argumentos <-");
+					sb.append("\n");
+					sb.append("\n");
 				}else {
 					for(String arg: argumentos) {
 						Identificador idArgumento = this.tablaFuncionEntorno.get(funcionId.getId()).get(arg);
-						System.out.println("             -> id: "+idArgumento.getId()+" , tipo: "+idArgumento.getTipo());
+						sb.append("             -> id: "+idArgumento.getId()+" , tipo: "+idArgumento.getTipo());
+						sb.append("\n");
+						sb.append("\n");
 					}
 				}
 			}
 		}
-		System.out.println();
-		System.out.println("_______________________________________");
-		System.out.println();
+		sb.append("\n");
+		sb.append("\n");
+		sb.append("_______________________________________");
+		sb.append("\n");
+		sb.append("\n");
+		FicheroEntornos.almacenaEntorno(sb.toString());
 	}
 
 }

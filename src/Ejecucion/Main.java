@@ -59,6 +59,7 @@ public class Main {
 		FicheroTokens.abreFichero();
 		ArbolSintactico.abreFichero();
 		ErrorHandler.abreFichero();
+		FicheroEntornos.abreFichero();
 		System.out.println("Ejecución Procesador de Lenguaje...");
 	}
 
@@ -82,6 +83,7 @@ public class Main {
 			FicheroTokens.cierraFichero();
 			ArbolSintactico.cierraFichero();
 			ErrorHandler.cierraFichero();
+			FicheroEntornos.cierraFichero();
 		} catch (ErrorProcesador e) {
 			System.out.println(e.getMensaje());
 		}

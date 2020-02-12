@@ -80,7 +80,7 @@ COMPARADOR	=	"=="|"!="|">"|"<"|">="|"<="
 OPLOGICO	=	"&&"|"||"
 VBOOLEANO	=	"true"|"false"
 
-VSTRING		=	[\"][A-Za-z0-9_]*[\"]
+VSTRING		=	[\"][A-Za-z0-9_ ]*[\"]
 VNUMERO		=	0|[1-9][0-9]*
 
 VID			=	[A-Za-z][A-Za-z0-9_]*

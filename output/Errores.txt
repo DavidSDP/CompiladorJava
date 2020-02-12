@@ -1,14 +1,34 @@
 // ERRORES GENERADOS //
 
 Error léxico ->
-	Línea [1], Columna [4], el Token {?} no ha sido reconocido.
+	Línea [0], Columna [21], el Token {[} no ha sido reconocido.
+<-
+
+Error léxico ->
+	Línea [0], Columna [22], el Token {]} no ha sido reconocido.
 <-
 
 Error semántico ->
-	Se ha producido un error en el id {i} al tratar de asignar un tipo String a un tipo Integer
+	El valor de retorno de la función {suma} debería ser de tipo Integer, en cambio se encontró un valor de tipo Boolean
 <-
 
 Error semántico ->
-	Se ha producido un error en los parámetros de la función {mi_funcion}, al tratar de asignar un tipo Boolean a un tipo Integer
+	El id c no es un símbolo declarado en el entorno
 <-
+
+Error semántico ->
+	Se ha producido un error en el id {a} al tratar de asignar un tipo null a un tipo Integer
+<-
+
+Error léxico ->
+	Línea [10], Columna [8], el Token {?} no ha sido reconocido.
+<-
+
+Error sintáctico ->
+	Linea [11], Columna [10], se ha encontrado un Token {PUNTOCOMA, null} inesperado.
+<-
+
+Could not recover and keep parsing
+
+Can't recover from previous error(s)
 Se han encontrado errores, la ejecución se ha interrumpido.

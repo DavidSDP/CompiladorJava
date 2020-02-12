@@ -1,0 +1,10 @@
+// ERRORES GENERADOS //
+
+Error semántico ->
+	El valor de retorno de la función {my_function} debería ser de tipo String, en cambio se encontró un valor de tipo Integer
+<-
+
+Error semántico ->
+	El id print no es un símbolo de función declarado en el entorno
+<-
+Se han encontrado errores, la ejecución se ha interrumpido.

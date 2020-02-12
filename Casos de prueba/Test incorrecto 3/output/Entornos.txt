@@ -1,0 +1,43 @@
+
+ -> ENTORNO FUNCIÓN 3, de nivel 2 <- 
+
+ID: suma , TIPO: Integer
+ VARIABLES: 
+
+
+ID: b , TIPO: Integer
+
+
+ID: a , TIPO: Integer
+
+
+     -> argumentos: 
+
+
+             -> id: a , tipo: Integer
+
+             -> id: b , tipo: Integer
+
+
+_______________________________________
+
+
+
+ -> ENTORNO FUNCIÓN 4, de nivel 2 <- 
+
+ID: main , TIPO: Void
+ VARIABLES: 
+
+
+ID: a , TIPO: Integer
+
+
+     -> argumentos: 
+
+
+              -> sin argumentos <-
+
+
+_______________________________________
+
+

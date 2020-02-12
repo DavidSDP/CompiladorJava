@@ -1,0 +1,10 @@
+// ERRORES GENERADOS //
+
+Error semántico ->
+	Se ha producido un error. La función {print} no esperaba valor de retorno.
+<-
+
+Error semántico ->
+	Se ha producido un error al operar un tipo Void con un tipo Integer
+<-
+Se han encontrado errores, pero la ejecución ha continuado.

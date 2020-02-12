@@ -1,0 +1,13 @@
+class ClasePrincipal {
+
+	void print(int i){}
+
+	int a = 200;
+	
+	void main(String args){
+		if(a > 100){
+			int b = a*1000;
+			print(b);
+		}
+	}
+}

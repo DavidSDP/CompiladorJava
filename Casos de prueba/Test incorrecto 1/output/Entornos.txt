@@ -1,0 +1,120 @@
+
+ -> ENTORNO FUNCIÓN 3, de nivel 2 <- 
+
+ID: print , TIPO: Void
+ VARIABLES: 
+
+
+ID: numero , TIPO: Integer
+
+
+     -> argumentos: 
+
+
+             -> id: numero , tipo: Integer
+
+
+_______________________________________
+
+
+
+ -> ENTORNO FUNCIÓN 4, de nivel 2 <- 
+
+ID: suma , TIPO: Integer
+ VARIABLES: 
+
+
+ID: b , TIPO: Integer
+
+
+ID: a , TIPO: Integer
+
+
+     -> argumentos: 
+
+
+             -> id: a , tipo: Integer
+
+             -> id: b , tipo: Integer
+
+
+_______________________________________
+
+
+
+ -> ENTORNO FUNCIÓN 5, de nivel 2 <- 
+
+ID: main , TIPO: Void
+ VARIABLES: 
+
+
+ - no hay identificadores declarados - 
+
+
+     -> argumentos: 
+
+
+              -> sin argumentos <-
+
+
+_______________________________________
+
+
+
+ -> ENTORNO CLASE 2, de nivel 1 <- 
+
+ VARIABLES: 
+
+ - no hay identificadores declarados - 
+
+ CLASES: 
+
+ - no hay clases declaradas - 
+
+
+ FUNCIONES: 
+
+ID: main , TIPO: Void
+     -> argumentos: 
+
+              -> sin argumentos <-
+
+ID: suma , TIPO: Integer
+     -> argumentos: 
+
+             -> id: a , tipo: Integer
+
+             -> id: b , tipo: Integer
+
+ID: print , TIPO: Void
+     -> argumentos: 
+
+             -> id: numero , tipo: Integer
+
+
+
+_______________________________________
+
+
+
+ -> ENTORNO CLASE 1, de nivel 0 <- 
+
+ VARIABLES: 
+
+ - no hay identificadores declarados - 
+
+ CLASES: 
+
+ID: ClasePrincipal , TIPO: Class
+
+
+ FUNCIONES: 
+
+
+ - no hay funciones declaradas - 
+
+
+
+_______________________________________
+
+

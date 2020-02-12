@@ -1,0 +1,271 @@
+digraph G {
+
+75 -> 74
+74 -> 84
+84 [color=lightgrey,style=filled,label="Class (Identificador)"]
+74 -> 85
+85 [color=lightgrey,style=filled,label="ClasePrincipal (Identificador)"]
+74 -> 86
+86 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+74 -> 73
+73 -> 26
+26 -> 9
+9 -> 8
+8 -> 7
+7 -> 100
+100 [color=lightgrey,style=filled,label="Void (Identificador)"]
+7 -> 101
+101 [color=lightgrey,style=filled,label="print (Identificador)"]
+7 -> 102
+102 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+7 -> 0
+0 -> 110
+110 [color=lightgrey,style=filled,label="int (Identificador)"]
+0 -> 111
+111 [color=lightgrey,style=filled,label="numero (Identificador)"]
+0 [label="SimboloArgs"]
+7 -> 103
+103 [color=lightblue,style=filled,label="PARENDER (Token)"]
+7 -> 104
+104 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+7 -> 6
+6 -> 116
+116 [color=lightblue,style=filled,label="TRETURN (Token)"]
+6 -> 5
+5 -> 4
+4 -> 3
+3 -> 2
+2 -> 1
+1 -> 120
+120 [color=lightgrey,style=filled,label="0 (Integer)"]
+1 [label="SimboloFactor"]
+2 [label="SimboloOperacion"]
+3 [label="SimboloOperacion"]
+4 [label="SimboloOperacion"]
+5 [label="SimboloOperacion"]
+6 -> 117
+117 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+6 [label="SimboloContenido"]
+7 -> 105
+105 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+7 [label="SimboloFuncionDecl"]
+8 [label="SimboloElemento"]
+9 [label="SimboloCuerpo"]
+26 -> 25
+25 -> 24
+24 -> 133
+133 [color=lightgrey,style=filled,label="Integer (Identificador)"]
+24 -> 134
+134 [color=lightgrey,style=filled,label="suma (Identificador)"]
+24 -> 135
+135 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+24 -> 11
+11 -> 143
+143 [color=lightgrey,style=filled,label="int (Identificador)"]
+11 -> 144
+144 [color=lightgrey,style=filled,label="a (Identificador)"]
+11 -> 10
+10 -> 151
+151 [color=lightblue,style=filled,label="COMA (Token)"]
+10 -> 152
+152 [color=lightgrey,style=filled,label="int (Identificador)"]
+10 -> 153
+153 [color=lightgrey,style=filled,label="b (Identificador)"]
+10 [label="SimboloArgs"]
+11 [label="SimboloArgs"]
+24 -> 136
+136 [color=lightblue,style=filled,label="PARENDER (Token)"]
+24 -> 137
+137 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+24 -> 23
+23 -> 158
+158 [color=lightblue,style=filled,label="TRETURN (Token)"]
+23 -> 22
+22 -> 16
+16 -> 15
+15 -> 14
+14 -> 13
+13 -> 12
+12 -> 165
+165 [color=lightgrey,style=filled,label="a (Identificador)"]
+12 [label="SimboloFactor"]
+13 [label="SimboloOperacion"]
+14 [label="SimboloOperacion"]
+15 [label="SimboloOperacion"]
+16 [label="SimboloOperacion"]
+22 -> 162
+162 [color=lightblue,style=filled,label="+ (Token)"]
+22 -> 21
+21 -> 20
+20 -> 19
+19 -> 18
+18 -> 17
+17 -> 168
+168 [color=lightgrey,style=filled,label="b (Identificador)"]
+17 [label="SimboloFactor"]
+18 [label="SimboloOperacion"]
+19 [label="SimboloOperacion"]
+20 [label="SimboloOperacion"]
+21 [label="SimboloOperacion"]
+22 [label="SimboloOperacion"]
+23 -> 159
+159 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+23 [label="SimboloContenido"]
+24 -> 138
+138 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+24 [label="SimboloFuncionDecl"]
+25 [label="SimboloElemento"]
+26 [label="SimboloCuerpo"]
+73 -> 72
+72 -> 71
+71 -> 181
+181 [color=lightgrey,style=filled,label="Void (Identificador)"]
+71 -> 182
+182 [color=lightgrey,style=filled,label="main (Identificador)"]
+71 -> 183
+183 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+71 -> 184
+184 [color=lightblue,style=filled,label="PARENDER (Token)"]
+71 -> 185
+185 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+71 -> 70
+70 -> 69
+69 -> 197
+197 [color=lightblue,style=filled,label="TIF (Token)"]
+69 -> 198
+198 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+69 -> 59
+59 -> 58
+58 -> 57
+57 -> 31
+31 -> 30
+30 -> 29
+29 -> 28
+28 -> 27
+27 -> 207
+207 [color=lightgrey,style=filled,label="1 (Integer)"]
+27 [label="SimboloFactor"]
+28 [label="SimboloOperacion"]
+29 [label="SimboloOperacion"]
+30 [label="SimboloOperacion"]
+31 [label="SimboloOperacion"]
+57 -> 204
+204 [color=lightblue,style=filled,label="< (Token)"]
+57 -> 56
+56 -> 55
+55 -> 54
+54 -> 53
+53 -> 52
+52 -> 51
+51 -> 214
+214 [color=lightgrey,style=filled,label="print (Identificador)"]
+51 -> 215
+215 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+51 -> 50
+50 -> 49
+49 -> 48
+48 -> 47
+47 -> 46
+46 -> 45
+45 -> 44
+44 -> 223
+223 [color=lightgrey,style=filled,label="suma (Identificador)"]
+44 -> 224
+224 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+44 -> 43
+43 -> 36
+36 -> 35
+35 -> 34
+34 -> 33
+33 -> 32
+32 -> 228
+228 [color=lightgrey,style=filled,label="2 (Integer)"]
+32 [label="SimboloFactor"]
+33 [label="SimboloOperacion"]
+34 [label="SimboloOperacion"]
+35 [label="SimboloOperacion"]
+36 [label="SimboloOperacion"]
+43 -> 42
+42 -> 231
+231 [color=lightblue,style=filled,label="COMA (Token)"]
+42 -> 41
+41 -> 40
+40 -> 39
+39 -> 38
+38 -> 37
+37 -> 234
+234 [color=lightgrey,style=filled,label="4 (Integer)"]
+37 [label="SimboloFactor"]
+38 [label="SimboloOperacion"]
+39 [label="SimboloOperacion"]
+40 [label="SimboloOperacion"]
+41 [label="SimboloOperacion"]
+42 [label="SimboloParams"]
+43 [label="SimboloParams"]
+44 -> 225
+225 [color=lightblue,style=filled,label="PARENDER (Token)"]
+44 [label="SimboloFuncionInvk"]
+45 [label="SimboloFactor"]
+46 [label="SimboloOperacion"]
+47 [label="SimboloOperacion"]
+48 [label="SimboloOperacion"]
+49 [label="SimboloOperacion"]
+50 [label="SimboloParams"]
+51 -> 216
+216 [color=lightblue,style=filled,label="PARENDER (Token)"]
+51 [label="SimboloFuncionInvk"]
+52 [label="SimboloFactor"]
+53 [label="SimboloOperacion"]
+54 [label="SimboloOperacion"]
+55 [label="SimboloOperacion"]
+56 [label="SimboloOperacion"]
+57 [label="SimboloOperacion"]
+58 [label="SimboloOperacion"]
+59 [label="SimboloOperacion"]
+69 -> 199
+199 [color=lightblue,style=filled,label="PARENDER (Token)"]
+69 -> 200
+200 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+69 -> 68
+68 -> 67
+67 -> 66
+66 -> 244
+244 [color=lightgrey,style=filled,label="print (Identificador)"]
+66 -> 245
+245 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+66 -> 65
+65 -> 64
+64 -> 63
+63 -> 62
+62 -> 61
+61 -> 60
+60 -> 249
+249 [color=lightgrey,style=filled,label="1 (Integer)"]
+60 [label="SimboloFactor"]
+61 [label="SimboloOperacion"]
+62 [label="SimboloOperacion"]
+63 [label="SimboloOperacion"]
+64 [label="SimboloOperacion"]
+65 [label="SimboloParams"]
+66 -> 246
+246 [color=lightblue,style=filled,label="PARENDER (Token)"]
+66 [label="SimboloFuncionInvk"]
+67 -> 237
+237 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+67 [label="SimboloExpresion"]
+68 [label="SimboloContenido"]
+69 -> 201
+201 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+69 [label="SimboloCondicional"]
+70 [label="SimboloContenido"]
+71 -> 186
+186 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+71 [label="SimboloFuncionDecl"]
+72 [label="SimboloElemento"]
+73 [label="SimboloCuerpo"]
+74 -> 87
+87 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+74 [label="SimboloClase"]
+75 [color=black,style=filled,label="SimboloPrograma"]
+
+}

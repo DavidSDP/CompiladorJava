@@ -10,10 +10,10 @@ import SimbolosNoTerminales.SimboloArgs;
 
 public class GlobalVariables{
 		
-		public static final String FICHERO_TOKENS = "..\\output\\FicheroTokens.txt";
-		public static final String FICHERO_ARBOL = "..\\output\\ArbolSintactico.dot";
-		public static final String FICHERO_ERRORES = "..\\output\\Errores.txt";
-		public static final String FICHERO_ENTORNOS = "..\\output\\Entornos.txt";
+		public static final String FICHERO_TOKENS = ".\\output\\FicheroTokens.txt";
+		public static final String FICHERO_ARBOL = ".\\output\\ArbolSintactico.dot";
+		public static final String FICHERO_ERRORES = ".\\output\\Errores.txt";
+		public static final String FICHERO_ENTORNOS = ".\\output\\Entornos.txt";
 		
 		public static Boolean DEBUG_MODE = true;
 		public static Boolean hayErrores = false;
@@ -33,6 +33,8 @@ public class GlobalVariables{
 		public static void declaraBuiltInFunctions(EntornoClase raiz) throws ErrorSemantico, IOException {
 			asignaBuiltInFuncionID("read", Tipo.String, null);
 			asignaBuiltInFuncionID("write", Tipo.Void, new SimboloArgs("String", "input", null, true));
+			asignaBuiltInFuncionID("integerToString", Tipo.String, new SimboloArgs("int", "numero", null, true));
+			asignaBuiltInFuncionID("stringToInteger", Tipo.Integer, new SimboloArgs("String", "string", null, true));
 		}
 		
 		private static void asignaBuiltInFuncionID(String idFuncion, Tipo tipoRetorno, SimboloArgs args) throws ErrorSemantico, IOException {

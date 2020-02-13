@@ -1,6 +1,2 @@
 // ERRORES GENERADOS //
-
-Error semántico ->
-	El valor a evaluar por la sentencia WHILE no es de tipo Boolean
-<-
-Se han encontrado errores, pero la ejecución ha continuado.
+La ejecución ha finalizado sin errores.

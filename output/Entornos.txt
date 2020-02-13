@@ -1,5 +1,5 @@
 
- -> ENTORNO TIPO: WHILE 6, de nivel 3 <- 
+ -> ENTORNO TIPO: WHILE 8, de nivel 3 <- 
 
  VARIABLES: 
 
@@ -10,7 +10,7 @@
 _______________________________________
 
 
- -> ENTORNO FUNCIÓN 5, de nivel 2 <- 
+ -> ENTORNO FUNCIÓN 7, de nivel 2 <- 
 
 		ID FUNCION: compilar , TIPO: Void
  VARIABLES: 
@@ -32,7 +32,7 @@ _______________________________________
 
 
 
- -> ENTORNO CLASE 4, de nivel 1 <- 
+ -> ENTORNO CLASE 6, de nivel 1 <- 
 
  VARIABLES: 
 
@@ -68,6 +68,16 @@ ID: ClasePrincipal , TIPO: Class
 
 
  FUNCIONES: 
+
+ID: integerToString , TIPO: String
+     -> argumentos: 
+
+             -> id: numero , tipo: Integer
+
+ID: stringToInteger , TIPO: Integer
+     -> argumentos: 
+
+             -> id: string , tipo: String
 
 ID: write , TIPO: Void
      -> argumentos: 

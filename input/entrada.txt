@@ -3,9 +3,10 @@ class ClasePrincipal {
 	void compilar(){
 		int b = 2;
 		String a = "";
-		while(1 + 2){
+		while(b>=1){
 			a = read();
 			write(a);
+			b = b - 1;
 		}
 	}
 	

@@ -8,35 +8,37 @@ package analisisSintactico;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int OPSUMA = 19;
-  public static final int IGUAL = 11;
-  public static final int OPLOGICO = 17;
+  public static final int OPSUMA = 20;
+  public static final int IGUAL = 12;
+  public static final int OPLOGICO = 18;
   public static final int TCLASS = 2;
-  public static final int VBOOLEANO = 18;
-  public static final int TWHILE = 7;
+  public static final int VBOOLEANO = 19;
+  public static final int TWHILE = 8;
   public static final int TVAR = 3;
-  public static final int VSTRING = 21;
-  public static final int LLAVEIZQ = 9;
-  public static final int COMA = 13;
-  public static final int COMPARADOR = 16;
-  public static final int LLAVEDER = 10;
+  public static final int VSTRING = 22;
+  public static final int LLAVEIZQ = 10;
+  public static final int COMA = 14;
+  public static final int COMPARADOR = 17;
+  public static final int LLAVEDER = 11;
   public static final int EOF = 0;
-  public static final int OPPROD = 20;
-  public static final int VNUMERO = 22;
-  public static final int PARENIZQ = 14;
+  public static final int OPPROD = 21;
+  public static final int VNUMERO = 23;
+  public static final int PARENIZQ = 15;
   public static final int error = 1;
-  public static final int TVOID = 5;
-  public static final int PARENDER = 15;
-  public static final int PUNTOCOMA = 12;
-  public static final int TIF = 6;
-  public static final int TRETURN = 4;
-  public static final int TELSE = 8;
-  public static final int VID = 23;
+  public static final int TVOID = 6;
+  public static final int PARENDER = 16;
+  public static final int PUNTOCOMA = 13;
+  public static final int TIF = 7;
+  public static final int TFINAL = 4;
+  public static final int TRETURN = 5;
+  public static final int TELSE = 9;
+  public static final int VID = 24;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
   "TCLASS",
   "TVAR",
+  "TFINAL",
   "TRETURN",
   "TVOID",
   "TIF",

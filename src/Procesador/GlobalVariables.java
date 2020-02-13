@@ -60,6 +60,11 @@ public class GlobalVariables{
 			top.put(tipo, id);
 		}
 		
+		public static void asignaIDConstante(String id, String tipo) throws ErrorSemantico {
+			Entorno top = entornoActual();
+			top.put(Tipo.getTipo(tipo), id, true);
+		}
+		
 		public static void asignaFuncionID(String idFuncion, String tipo) throws ErrorSemantico {
 			EntornoClase top = (EntornoClase) entornoActual();
 			top.putFuncion(Tipo.getTipo(tipo), idFuncion);
@@ -93,6 +98,13 @@ public class GlobalVariables{
 			Identificador i = top.fullGet(id);
 			if(i == null)
 				throw new ErrorSemantico("El id "+id+" no es un símbolo declarado en el entorno");
+		}
+		
+		public static void compruebaAsignacionPermitida(String id) throws ErrorSemantico {
+			Entorno top = entornoActual();
+			Identificador i = top.fullGet(id);
+			if(i.getEsConstante())
+				throw new ErrorSemantico("El valor del identificador "+id+" no puede ser modificado al tener el atributo FINAL");
 		}
 		
 		public static void compruebaFuncionID(String id) throws ErrorSemantico {

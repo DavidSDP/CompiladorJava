@@ -58,6 +58,7 @@ ESPACIO		= {FINLINEA} | [ \t\f]
 
 TCLASS		=	"class"
 TVAR		=	"int"|"boolean"|"String"
+TFINAL		=	"final"
 TVOID		=	"void"
 TRETURN		=	"return"
 TIF			= 	"if"
@@ -92,6 +93,7 @@ VID			=	[A-Za-z][A-Za-z0-9_]*
 
 {TCLASS}		{return symbol(sym.TCLASS);}
 {TVAR}			{return symbol(sym.TVAR, this.yytext());}
+{TFINAL}		{return symbol(sym.TFINAL);}
 {TVOID}			{return symbol(sym.TVOID);}
 {TRETURN}		{return symbol(sym.TRETURN);}
 {TIF}			{return symbol(sym.TIF);}

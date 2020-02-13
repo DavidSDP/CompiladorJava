@@ -52,6 +52,14 @@ public class Entorno {
 		this.tablaIDs.put(s, new Identificador(s, tipo));
 	}
 	
+	// Introduce nuevo ID constante en el entorno actual
+	public void put(Tipo tipo, String s, Boolean esConstante) throws ErrorSemantico {
+		if(this.contains(s))
+			throw new ErrorSemantico("El identificador '"+s+"' se ha declarado por duplicado");
+		Identificador nuevoIdentificador = new Identificador(s, tipo, esConstante);
+		this.tablaIDs.put(s, nuevoIdentificador);
+	}
+	
 	// Devuelve true si el ID ha sido declarado en el entorno actual
 	public Boolean contains(String s) {
 		return this.tablaIDs.containsKey(s);
@@ -132,7 +140,12 @@ public class Entorno {
 				String key = (String) iterator.next();
 				Identificador id = this.getTablaIDs().get(key);
 				sb.append("\n");
-				sb.append("ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				sb.append("\n");
+				if(id.getEsConstante()) {
+					sb.append("CONSTANTE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
+				}else {
+					sb.append("VARIABLE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
+				}
 				sb.append("\n");
 				sb.append("\n");
 			}

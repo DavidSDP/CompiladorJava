@@ -1,94 +1,41 @@
 
- -> ENTORNO TIPO: WHILE 8, de nivel 3 <- 
-
- VARIABLES: 
-
-
- - no hay identificadores declarados - 
-
-
-_______________________________________
-
-
  -> ENTORNO FUNCIÓN 7, de nivel 2 <- 
 
-		ID FUNCION: compilar , TIPO: Void
+		ID FUNCION: suma , TIPO: Integer
  VARIABLES: 
 
 
-			ID: b , TIPO: Integer
+VARIABLE ID: b , TIPO: Integer
 
 
-			ID: a , TIPO: String
+VARIABLE ID: a , TIPO: Integer
 
 
      -> argumentos: 
 
 
-              -> sin argumentos <-
+             -> id: a , tipo: Integer
+
+             -> id: b , tipo: Integer
 
 
 _______________________________________
 
 
 
- -> ENTORNO CLASE 6, de nivel 1 <- 
+ -> ENTORNO FUNCIÓN 8, de nivel 2 <- 
 
+		ID FUNCION: main , TIPO: Void
  VARIABLES: 
 
- - no hay identificadores declarados - 
 
- CLASES: 
-
- - no hay clases declaradas - 
+VARIABLE ID: a , TIPO: Integer
 
 
- FUNCIONES: 
-
-ID: compilar , TIPO: Void
      -> argumentos: 
+
 
               -> sin argumentos <-
-
-
-
-_______________________________________
-
-
-
- -> ENTORNO PROGRAMA PRINCIPAL 1, de nivel 0 <- 
-
- VARIABLES: 
-
- - no hay identificadores declarados - 
-
- CLASES: 
-
-ID: ClasePrincipal , TIPO: Class
-
-
- FUNCIONES: 
-
-ID: integerToString , TIPO: String
-     -> argumentos: 
-
-             -> id: numero , tipo: Integer
-
-ID: stringToInteger , TIPO: Integer
-     -> argumentos: 
-
-             -> id: string , tipo: String
-
-ID: write , TIPO: Void
-     -> argumentos: 
-
-             -> id: input , tipo: String
-
-ID: read , TIPO: String
-     -> argumentos: 
-
-              -> sin argumentos <-
-
 
 
 _______________________________________

@@ -39,7 +39,7 @@ parser code {:
 
  :}
 
-terminal    String			TCLASS, TVAR, TRETURN, TVOID, TIF, TWHILE, TELSE, LLAVEIZQ, LLAVEDER;
+terminal    String			TCLASS, TVAR, TFINAL, TRETURN, TVOID, TIF, TWHILE, TELSE, LLAVEIZQ, LLAVEDER;
 terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER;
 terminal	String			COMPARADOR, OPLOGICO, VBOOLEANO, OPSUMA, OPPROD;
 terminal	String			VSTRING;
@@ -126,7 +126,9 @@ asignacion ::= TVAR:t VID:i									{: try{
 																}
 																RESULT = new SimboloAsignacion(t,i);
 															:}
-			| VID:i 										{: GlobalVariables.compruebaID(i);
+			| VID:i 										{: 
+																GlobalVariables.compruebaID(i);
+																GlobalVariables.compruebaAsignacionPermitida(i);
 															:}
 				IGUAL Operacion:o PUNTOCOMA 				{: 
 																try{
@@ -135,6 +137,20 @@ asignacion ::= TVAR:t VID:i									{: try{
 																	ErrorHandler.reportaError(e);
 																}
 																RESULT = new SimboloAsignacion(i,o);
+															:}
+			| TFINAL TVAR:t VID:i 							{: try{
+																	GlobalVariables.asignaIDConstante(i,t);
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
+															:}
+				IGUAL Operacion:o PUNTOCOMA					{: 
+																try{
+																	TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), o.getTipoSubyacente());
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
+																RESULT = new SimboloAsignacion(t,i,o);
 															:}
 			;
 

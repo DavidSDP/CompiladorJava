@@ -72,7 +72,11 @@ public class EntornoFuncion extends Entorno{
 				String key = (String) iterator.next();
 				Identificador id = this.getTablaIDs().get(key);
 				sb.append("\n");
-				sb.append("			ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				if(id.getEsConstante()) {
+					sb.append("CONSTANTE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
+				}else {
+					sb.append("VARIABLE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
+				}
 				sb.append("\n");
 				sb.append("\n");
 			}

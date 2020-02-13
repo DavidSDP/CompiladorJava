@@ -7,6 +7,7 @@ import Errores.ErrorHandler;
 import Errores.ErrorSemantico;
 import Errores.ErrorSintactico;
 import Procesador.GlobalVariables;
+import Procesador.EntornoClase;
 import SimbolosNoTerminales.*;
 import java_cup.runtime.Symbol;
 import Procesador.Identificador;
@@ -38,13 +39,14 @@ parser code {:
 
  :}
 
-terminal    String			TCLASS, TVAR, TRETURN, TVOID, TIF, TELSE, LLAVEIZQ, LLAVEDER;
+terminal    String			TCLASS, TVAR, TRETURN, TVOID, TIF, TWHILE, TELSE, LLAVEIZQ, LLAVEDER;
 terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER;
 terminal	String			COMPARADOR, OPLOGICO, VBOOLEANO, OPSUMA, OPPROD;
 terminal	String			VSTRING;
 terminal	String			VNUMERO;
 terminal	String			VID;
 
+non terminal	SimboloBucle		bucle;
 non terminal	SimboloCondicional	condicional;
 non terminal	SimboloCondElse		condelse;
 non terminal	SimboloExpresion	expresion;
@@ -72,6 +74,7 @@ precedence left OPLOGICO, COMPARADOR;
 start with programa;
 
 programa ::=  												{: GlobalVariables.entraBloqueClase(null);
+ 																GlobalVariables.declaraBuiltInFunctions((EntornoClase)GlobalVariables.entornoActual());
 															:}
 			clase:c
 															{: GlobalVariables.saleBloqueClase();
@@ -147,7 +150,7 @@ funcionDecl ::= TVAR:t VID:i 								{: 	try{
 				args:a										{: GlobalVariables.asignaFuncionArgs(i,a);
 															:}
 				PARENDER LLAVEIZQ							{: :}
-				contenido:c									{: GlobalVariables.saleBloqueFuncion();
+				contenido:c									{: GlobalVariables.saleBloqueFuncion(false);
 															:}
 				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,Tipo.getTipo(t),a,c);
 															:}
@@ -164,7 +167,7 @@ funcionDecl ::= TVAR:t VID:i 								{: 	try{
 				args:a										{: GlobalVariables.asignaFuncionArgs(i,a);
 															:}
 				PARENDER LLAVEIZQ							{: :}
-				contenido:c									{: GlobalVariables.saleBloqueFuncion();
+				contenido:c									{: GlobalVariables.saleBloqueFuncion(false);
 															:}
 				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,Tipo.Void,a,c);
 															:}
@@ -195,6 +198,7 @@ nextArg ::= COMA TVAR:t VID:i 								{: GlobalVariables.asignaID(i,t);
 		
 contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e); :}
 			| contenido:c condicional:d						{: RESULT = new SimboloContenido(c,d); :}
+			| contenido:c bucle:b							{: RESULT = new SimboloContenido(c,b); :}
 			| contenido:c TRETURN:r Operacion:o PUNTOCOMA	{: try{
 																TypeCheck.returnTypeMatch(o);
 																}catch(ErrorSemantico e){
@@ -203,21 +207,32 @@ contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e)
 																RESULT = new SimboloContenido(c,r,o); :}
 			| 												{: RESULT = null; :}
 			;
+			
+bucle ::= TWHILE PARENIZQ Operacion:o 				{:  try{
+															TypeCheck.checkBoolean(o,true);
+														}catch(ErrorSemantico e){
+															ErrorHandler.reportaError(e);
+														}
+													:}
+				PARENDER LLAVEIZQ 					{: GlobalVariables.entraBloqueWhile(); :}
+				contenido:c 						{: GlobalVariables.saleBloqueWhile(); :}
+				LLAVEDER							{: RESULT = new SimboloBucle(o,c); :}
+				;
 
 condicional ::= TIF PARENIZQ Operacion:o 					{: try{
-																TypeCheck.checkBoolean(o);
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
+																TypeCheck.checkBoolean(o,false);
+															}catch(ErrorSemantico e){
+																ErrorHandler.reportaError(e);
+															}
 															:}
-				PARENDER LLAVEIZQ							{: :}
-				contenido:c 								{: :}
+				PARENDER LLAVEIZQ							{: GlobalVariables.entraBloqueIf(); :}
+				contenido:c 								{: GlobalVariables.saleBloqueIf(); :}
 				LLAVEDER									{: :}
 				condelse:e									{: RESULT = new SimboloCondicional(o,c,e); :}
 			;
 			
-condelse ::= TELSE LLAVEIZQ 								{: :}
-				contenido:e 								{: :}
+condelse ::= TELSE LLAVEIZQ 								{: GlobalVariables.entraBloqueElse(); :}
+				contenido:e 								{: GlobalVariables.saleBloqueElse(); :}
 				LLAVEDER									{: RESULT = new SimboloCondElse(e); :}
 			|												{: RESULT = null; :}
 			;

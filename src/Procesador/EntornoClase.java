@@ -94,7 +94,11 @@ public class EntornoClase extends Entorno{
 	public void printEntorno() throws IOException {
 		StringBuffer sb = new StringBuffer();
 		sb.append("\n");
-		sb.append(" -> ENTORNO CLASE "+this.get_identificador_entorno()+", de nivel "+this.getNivel()+" <- ");
+		if(this.getIdentificador() == null) {
+			sb.append(" -> ENTORNO PROGRAMA PRINCIPAL "+this.get_identificador_entorno()+", de nivel "+this.getNivel()+" <- ");
+		}else {
+			sb.append(" -> ENTORNO CLASE "+this.get_identificador_entorno()+", de nivel "+this.getNivel()+" <- ");
+		}
 		sb.append("\n");
 
 		sb.append("\n");

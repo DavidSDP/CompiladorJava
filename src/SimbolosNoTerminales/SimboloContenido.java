@@ -16,6 +16,7 @@ public class SimboloContenido extends Nodo implements TipoSubyacente{
 	private SimboloExpresion expresion;
 	private SimboloOperacion operacion;
 	private SimboloCondicional condicional;
+	private SimboloBucle bucle;
 	private String retorno;
 	
 	public SimboloContenido(SimboloContenido c, SimboloExpresion e) {
@@ -26,6 +27,11 @@ public class SimboloContenido extends Nodo implements TipoSubyacente{
 	public SimboloContenido(SimboloContenido c, SimboloCondicional d) {
 		this.contenido = c;
 		this.condicional = d;
+	}
+	
+	public SimboloContenido(SimboloContenido c, SimboloBucle b) {
+		this.contenido = c;
+		this.bucle = b;
 	}
 	
 	public SimboloContenido(SimboloContenido c, String r, SimboloOperacion o) {
@@ -48,6 +54,11 @@ public class SimboloContenido extends Nodo implements TipoSubyacente{
 		
 		if(condicional != null) {
 			hijos.add(condicional);
+			return hijos;
+		}
+		
+		if(bucle != null) {
+			hijos.add(bucle);
 			return hijos;
 		}
 		

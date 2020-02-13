@@ -62,6 +62,7 @@ TVOID		=	"void"
 TRETURN		=	"return"
 TIF			= 	"if"
 TELSE		= 	"else"
+TWHILE		=	"while"
 
 LLAVEIZQ	=	"{"
 LLAVEDER	=	"}"
@@ -95,6 +96,8 @@ VID			=	[A-Za-z][A-Za-z0-9_]*
 {TRETURN}		{return symbol(sym.TRETURN);}
 {TIF}			{return symbol(sym.TIF);}
 {TELSE}			{return symbol(sym.TELSE);}
+
+{TWHILE}		{return symbol(sym.TWHILE);}
 
 {LLAVEIZQ}		{return symbol(sym.LLAVEIZQ);}
 {LLAVEDER}		{return symbol(sym.LLAVEDER);}

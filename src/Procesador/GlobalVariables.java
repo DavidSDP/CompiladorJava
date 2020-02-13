@@ -30,6 +30,24 @@ public class GlobalVariables{
 			}
 		}
 		
+		public static void declaraBuiltInFunctions(EntornoClase raiz) throws ErrorSemantico, IOException {
+			asignaBuiltInFuncionID("read", Tipo.String, null);
+			asignaBuiltInFuncionID("write", Tipo.Void, new SimboloArgs("String", "input", null, true));
+		}
+		
+		private static void asignaBuiltInFuncionID(String idFuncion, Tipo tipoRetorno, SimboloArgs args) throws ErrorSemantico, IOException {
+			asignaFuncionID(idFuncion, tipoRetorno);
+			entraBloqueFuncion(new Identificador(idFuncion, tipoRetorno));
+			asignaEntornoFuncionID(idFuncion);
+			if(args != null) {
+				for(SimboloArgs a = args; a != null; a = a.getNextArg()) {
+					GlobalVariables.asignaID(a.getId(), a.getTipo());
+				}
+				asignaFuncionArgs(idFuncion, args);
+			}
+			saleBloqueFuncion(true);
+		}
+
 		public static void asignaID(String id, String tipo) throws ErrorSemantico {
 			Entorno top = entornoActual();
 			top.put(Tipo.getTipo(tipo), id);
@@ -94,6 +112,42 @@ public class GlobalVariables{
 			pilaEntornos.push(e);
 		}
 		
+		public static void entraBloqueIf() {
+			Entorno e = new Entorno(entornoActual(), Tipo.IF);
+			pilaEntornos.push(e);
+		}
+		
+		public static void saleBloqueIf() throws IOException {
+			Entorno popped = pilaEntornos.pop();
+			if(DEBUG_MODE) {
+				popped.printEntorno();
+			}
+		}
+		
+		public static void entraBloqueElse() {
+			Entorno e = new Entorno(entornoActual(), Tipo.ELSE);
+			pilaEntornos.push(e);
+		}
+		
+		public static void saleBloqueElse() throws IOException {
+			Entorno popped = pilaEntornos.pop();
+			if(DEBUG_MODE) {
+				popped.printEntorno();
+			}
+		}
+		
+		public static void entraBloqueWhile() {
+			Entorno e = new Entorno(entornoActual(), Tipo.WHILE);
+			pilaEntornos.push(e);
+		}
+		
+		public static void saleBloqueWhile() throws IOException {
+			Entorno popped = pilaEntornos.pop();
+			if(DEBUG_MODE) {
+				popped.printEntorno();
+			}
+		}
+		
 		public static void saleBloqueClase() throws IOException {
 			EntornoClase popped = (EntornoClase) pilaEntornos.pop();
 			if(DEBUG_MODE) {
@@ -106,9 +160,9 @@ public class GlobalVariables{
 			pilaEntornos.push(e);
 		}
 		
-		public static void saleBloqueFuncion() throws IOException {
+		public static void saleBloqueFuncion(Boolean isBuiltIn) throws IOException {
 			EntornoFuncion popped = (EntornoFuncion) pilaEntornos.pop();
-			if(DEBUG_MODE) {
+			if(DEBUG_MODE && !isBuiltIn) {
 				popped.printEntorno();
 			}
 		}

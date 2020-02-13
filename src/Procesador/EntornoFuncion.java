@@ -55,7 +55,7 @@ public class EntornoFuncion extends Entorno{
 		sb.append("\n");
 		sb.append("\n");
 		
-		sb.append("ID: "+this.getIdentificador().getId()+" , TIPO: "+this.getIdentificador().getTipo());
+		sb.append("		ID FUNCION: "+this.getIdentificador().getId()+" , TIPO: "+this.getIdentificador().getTipo());
 
 		sb.append("\n");
 		sb.append(" VARIABLES: ");
@@ -63,7 +63,7 @@ public class EntornoFuncion extends Entorno{
 		sb.append("\n");
 		if(this.getTablaIDs().isEmpty()) {
 			sb.append("\n");
-			sb.append(" - no hay identificadores declarados - ");
+			sb.append(" 	- no hay identificadores declarados - ");
 			sb.append("\n");
 			sb.append("\n");
 		}else {
@@ -72,7 +72,7 @@ public class EntornoFuncion extends Entorno{
 				String key = (String) iterator.next();
 				Identificador id = this.getTablaIDs().get(key);
 				sb.append("\n");
-				sb.append("ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				sb.append("			ID: "+id.getId()+" , TIPO: "+id.getTipo());
 				sb.append("\n");
 				sb.append("\n");
 			}

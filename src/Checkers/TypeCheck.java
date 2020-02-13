@@ -12,9 +12,10 @@ import SimbolosNoTerminales.SimboloParams;
 
 public class TypeCheck {
 	
-	public static void checkBoolean(SimboloOperacion o) throws ErrorSemantico {
+	public static void checkBoolean(SimboloOperacion o, Boolean esBucle) throws ErrorSemantico {
+		String sentencia = esBucle?"WHILE":"IF";
 		if(!Tipo.Boolean.equals(o.getTipoSubyacente()))
-			throw new ErrorSemantico("El valor a evaluar por la sentencia IF no es de tipo Boolean");
+			throw new ErrorSemantico("El valor a evaluar por la sentencia "+sentencia+" no es de tipo Boolean");
 	}
 	
 	public static void lanzaErrorTypeMismatch(Tipo tipo1, Tipo tipo2) throws ErrorSemantico {

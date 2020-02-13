@@ -1,16 +1,16 @@
 package Procesador;
 
+import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import Checkers.Tipo;
+import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
 
 public class Entorno {
 	
 	private Integer nivel;
-	
-	// EXTRAPOLAR FUNCION-ENTORNO (HERENCIA)
-	// CORREGIR SOBRECARGA DE CLASES -> IDENTIFICADOR concat ARGS...
 	
 	private Identificador identificador;
 	
@@ -18,6 +18,18 @@ public class Entorno {
 	
 	private Entorno entornoAnterior;
 	private Integer _identificador_entorno;
+	
+	public Entorno(Entorno entornoAnterior, Tipo tipo) {
+		if(entornoAnterior == null) {
+			this.setNivel(0);
+		}else {
+			this.setNivel(entornoAnterior.getNivel() + 1);
+		}
+		this.set_identificador_entorno(GlobalVariables.getIdentificador());
+		this.identificador = new Identificador(tipo.name(), tipo);
+		this.tablaIDs = new Hashtable<>();
+		this.entornoAnterior = entornoAnterior;
+	}
 	
 	public Entorno(Entorno entornoAnterior, Identificador identificador) {
 		if(entornoAnterior == null) {
@@ -95,6 +107,40 @@ public class Entorno {
 			}
 		}
 		return null;
+	}
+	
+	/* Dibujando el Entorno */
+	
+	public void printEntorno() throws IOException {
+		StringBuffer sb = new StringBuffer();
+		sb.append("\n");
+		sb.append(" -> ENTORNO TIPO: "+this.getIdentificador().getTipo()+" "+this.get_identificador_entorno()+", de nivel "+this.getNivel()+" <- ");
+		sb.append("\n");
+
+		sb.append("\n");
+		sb.append(" VARIABLES: ");
+		sb.append("\n");
+		sb.append("\n");
+		if(this.getTablaIDs().isEmpty()) {
+			sb.append("\n");
+			sb.append(" - no hay identificadores declarados - ");
+			sb.append("\n");
+			sb.append("\n");
+		}else {
+			Iterator<String> iterator = this.getTablaIDs().keySet().iterator();
+			while(iterator.hasNext()) {
+				String key = (String) iterator.next();
+				Identificador id = this.getTablaIDs().get(key);
+				sb.append("\n");
+				sb.append("ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				sb.append("\n");
+				sb.append("\n");
+			}
+		}
+		sb.append("\n");
+		sb.append("_______________________________________");
+		sb.append("\n");
+		FicheroEntornos.almacenaEntorno(sb.toString());
 	}
 	
 	public Integer getNivel() {

@@ -1,13 +1,12 @@
-class ClasePrincipal [] {
-	
-	int suma (int a, int b){
-		return a==b;
+class ClasePrincipal {
+
+	void compilar(){
+		int b = 2;
+		String a = "";
+		while(1 + 2){
+			a = read();
+			write(a);
+		}
 	}
-	
-	void main(){
-		int a = c;
-	}
-	
-	String ?;
 	
 }

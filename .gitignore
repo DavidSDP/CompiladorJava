@@ -1,4 +1,6 @@
 /bin/
 /input/
 /output/
-/nbproject/private/
+/nbproject/
+/manifest.mf
+/build.xml

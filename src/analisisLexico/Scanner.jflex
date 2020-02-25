@@ -75,6 +75,9 @@ COMA		=	","
 PARENIZQ	=	"("
 PARENDER	=	")"
 
+CORCHIZQ	=	"["
+CORCHDER	=	"]"
+
 OPSUMA		=	"+"|"-"
 OPPROD		=	"*"|"/"
 

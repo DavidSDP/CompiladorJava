@@ -320,7 +320,7 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
 
-	/** Trata errores de tipo sint·ctico **/
+	/** Trata errores de tipo sint√°ctico **/
 	@Override
 	public void report_error(String message, Object info) {
 		if(info != null) {

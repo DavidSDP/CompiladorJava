@@ -18,7 +18,7 @@ public class ErrorLexico extends ErrorProcesador{
 	@Override
 	public String getErrorLine() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("Línea ["+this.yyline+"], Columna ["+this.yycolumn+"], el Token {"+this.yytext+"} no ha sido reconocido.");
+		sb.append("LÃ­nea ["+this.yyline+"], Columna ["+this.yycolumn+"], el Token {"+this.yytext+"} no ha sido reconocido.");
 		return sb.toString();
 	}
 	

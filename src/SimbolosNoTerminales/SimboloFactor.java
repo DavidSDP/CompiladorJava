@@ -36,7 +36,7 @@ public class SimboloFactor extends Nodo implements TipoSubyacente{
 				this.id = s;
 				break;
 			default:
-				throw new Error("Mal uso -> generaciÛn de nuevo SimboloFactor()");
+				throw new Error("Mal uso -> generaci√≥n de nuevo SimboloFactor()");
 		}
 	}
 	

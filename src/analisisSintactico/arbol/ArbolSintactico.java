@@ -48,17 +48,17 @@ public class ArbolSintactico {
 			file = new File(GlobalVariables.FICHERO_ARBOL);
 			fileWriter = new FileWriter(file);
 		} catch (IOException e) {
-			throw new ErrorProcesador("Se ha producido un error al abrir el fichero del árbol sintáctico");
+			throw new ErrorProcesador("Se ha producido un error al abrir el fichero del Ã¡rbol sintÃ¡ctico");
 		}
 		escribeLinea("digraph G {\n");
 	}
 	
 	public static void cierraFichero() throws ErrorProcesador {
 		try {
-			System.out.println("Se ha generado el Árbol Sintáctico en: "+file.getAbsolutePath());
+			System.out.println("Se ha generado el Ãrbol SintÃ¡ctico en: "+file.getAbsolutePath());
 			fileWriter.close();
 		} catch (IOException e) {
-			throw new ErrorProcesador("Se ha producido un error al cerrar el fichero del árbol sintáctico");
+			throw new ErrorProcesador("Se ha producido un error al cerrar el fichero del Ã¡rbol sintÃ¡ctico");
 		}
 	}
 	

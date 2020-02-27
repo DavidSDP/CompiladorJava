@@ -75,6 +75,9 @@ COMA		=	","
 PARENIZQ	=	"("
 PARENDER	=	")"
 
+CORCHIZQ	=	"["
+CORCHDER	=	"]"
+
 OPSUMA		=	"+"|"-"
 OPPROD		=	"*"|"/"
 
@@ -110,6 +113,9 @@ VID			=	[A-Za-z][A-Za-z0-9_]*
 
 {PARENIZQ}		{return symbol(sym.PARENIZQ);}
 {PARENDER}		{return symbol(sym.PARENDER);}
+
+{CORCHIZQ}		{return symbol(sym.CORCHIZQ);}
+{CORCHDER}		{return symbol(sym.CORCHDER);}
 
 {OPSUMA}		{return symbol(sym.OPSUMA, this.yytext());}
 {OPPROD}		{return symbol(sym.OPPROD, this.yytext());}

@@ -54,10 +54,19 @@ public class GlobalVariables{
 			Entorno top = entornoActual();
 			top.put(Tipo.getTipo(tipo), id);
 		}
-		
+                
 		public static void asignaID(String id, Tipo tipo) throws ErrorSemantico {
 			Entorno top = entornoActual();
 			top.put(tipo, id);
+		}
+                
+                public static void asignaIDArray(String id, String tipo) throws ErrorSemantico {
+			asignaIDArray(id, Tipo.getTipo(tipo));
+		}
+                
+                public static void asignaIDArray(String id, Tipo tipo) throws ErrorSemantico {
+			Entorno top = entornoActual();
+			top.putArray(tipo, id);
 		}
 		
 		public static void asignaIDConstante(String id, String tipo) throws ErrorSemantico {

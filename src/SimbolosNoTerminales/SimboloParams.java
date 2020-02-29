@@ -10,7 +10,7 @@ import analisisSintactico.arbol.INodo;
 import analisisSintactico.arbol.Nodo;
 import analisisSintactico.arbol.SimboloTerminal;
 
-public class SimboloParams extends Nodo implements TipoSubyacente{
+public class SimboloParams extends Nodo implements TipoSubyacente {
 	
 	private SimboloOperacion operacion;
 	private SimboloParams nextParam;

@@ -119,8 +119,13 @@ asignacion ::= TVAR:t VID:i									{: try{
 																}
 																RESULT = new SimboloAsignacion(t,i,o);
 															:}
-			| TVAR:t VID:i array:a PUNTOCOMA 						{: try{
-																	GlobalVariables.asignaID(i,t);
+			| TVAR:t VID:i array:a PUNTOCOMA 						{: 
+																try{
+																	if(array) {
+																		GlobalVariables.asignaIDArray(i, t);
+																	} else {
+																		GlobalVariables.asignaID(i,t);
+																	}
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
@@ -196,7 +201,12 @@ funcionInvk ::= VID:i										{: GlobalVariables.compruebaFuncionID(i);
 															:}
 		;
 		
-args ::= TVAR:t VID:i array		{: GlobalVariables.asignaID(i,t);
+args ::= TVAR:t VID:i array:a		{: 
+																		if (array) {
+																			GlobalVariables.asignaIDArray(i, t);
+																		} else {
+																			GlobalVariables.asignaID(i,t);
+																		}
 															:}
 			nextArg:n										{: RESULT = new SimboloArgs(t,i,n,true);
 															:}
@@ -204,7 +214,12 @@ args ::= TVAR:t VID:i array		{: GlobalVariables.asignaID(i,t);
 															:}
 		;
 
-nextArg ::= COMA TVAR:t VID:i array	{: GlobalVariables.asignaID(i,t);
+nextArg ::= COMA TVAR:t VID:i array	{: 
+																		if (array) {
+																			GlobalVariables.asignaIDArray(i, t);
+																		} else {
+																			GlobalVariables.asignaID(i, t);
+																		}
 															:}
 				nextArg:n									{: RESULT = new SimboloArgs(t,i,n,false);
 															:}
@@ -302,7 +317,13 @@ Operacion3 ::= factor:f 									{: RESULT = new SimboloOperacion(f); :}
 																RESULT = new SimboloOperacion(o,l,q); :}
 		;
 	
-factor ::= VID:i array				{: try{
+factor ::= VID:i array				{:
+																// TODO Llegado el momento aqui se tiene que comprobar
+																// si la variable es un array y si el indice esta 
+																// dentro del rango, si es posible establecerlo en tiempo de
+																// de compilacion. Si no se tendrán que meter las isntr
+																// necesarias para garantizar que no hay overflow
+																try{
 																	GlobalVariables.compruebaID(i);
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
@@ -338,5 +359,7 @@ Las cosas se pueden hacer de diferentes maneras llegados a este punto:
 
 Poll is now on!
 */
-array  ::= CORCHIZQ VNUMERO CORCHDER
-					 | CORCHIZQ CORCHDER;
+
+// Ojo! el numero no es un numero es un string. Esto tiene que cambiar
+array  ::= CORCHIZQ VNUMERO:n CORCHDER {: RESULT = new SimboloArray(n); :}
+					 | CORCHIZQ CORCHDER; {: RESULT = new SimboloArray(); :}

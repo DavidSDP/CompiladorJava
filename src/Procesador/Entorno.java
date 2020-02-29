@@ -49,6 +49,12 @@ public class Entorno {
 			throw new ErrorSemantico("El identificador '"+s+"' se ha declarado por duplicado");
 		this.tablaIDs.put(s, new Identificador(s, tipo));
 	}
+        
+        public void putArray(Tipo tipo, String s) throws ErrorSemantico {
+		if(this.contains(s))
+			throw new ErrorSemantico("El identificador '"+s+"' se ha declarado por duplicado");
+		this.tablaIDs.put(s, new IdentificadoraArray(s, tipo));
+	}
 	
 	// Introduce nuevo ID constante en el entorno actual
 	public void put(Tipo tipo, String s, Boolean esConstante) throws ErrorSemantico {

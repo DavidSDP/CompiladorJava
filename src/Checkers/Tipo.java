@@ -4,7 +4,7 @@ import Errores.ErrorSemantico;
 
 public enum Tipo {
 	
-	Integer, String, Boolean, Class, Void, Final, Identificador, Token, Comparable, IF, WHILE, ELSE;
+	Integer, String, Boolean, Class, Void, Final, Identificador, Token, Comparable, IF, WHILE, ELSE, Array;
 	
 	public static Tipo getTipo(String s) throws ErrorSemantico {
 		switch(s) {

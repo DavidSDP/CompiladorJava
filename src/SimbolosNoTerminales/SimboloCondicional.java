@@ -27,6 +27,13 @@ public class SimboloCondicional extends Nodo implements TipoSubyacente{
 		this.contenido = contenido;
 		this.contenidoElse = contenidoElse;
 	}
+        
+        public SimboloCondicional(SimboloCondicionalBloquePrincipal ppal, 
+                SimboloCondElse contenidoElse) {
+            this.operacion = ppal.getClausula().getOperacion();
+            this.contenido = ppal.getContenido();
+            this.contenidoElse = contenidoElse;
+        }
 
 	@Override
 	public List<INodo> getChildren() {

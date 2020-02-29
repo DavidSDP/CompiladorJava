@@ -68,6 +68,8 @@ non terminal	SimboloContenido	contenido;
 non terminal	SimboloParams		params;
 non terminal	SimboloParams		nextParam;
 non terminal  array;
+non terminal  SimboloCondicionalBloquePrincipal cond_main_block;
+non terminal  SimboloClausulaCondicion clausula_cond;
 
 precedence left OPSUMA, OPPROD;
 precedence left OPLOGICO, COMPARADOR;
@@ -236,17 +238,29 @@ bucle ::= TWHILE PARENIZQ Operacion:o 				{:  try{
 				LLAVEDER							{: RESULT = new SimboloBucle(o,c); :}
 				;
 
-condicional ::= TIF PARENIZQ Operacion:o 					{: try{
-																TypeCheck.checkBoolean(o,false);
-															}catch(ErrorSemantico e){
-																ErrorHandler.reportaError(e);
-															}
-															:}
-				PARENDER LLAVEIZQ							{: GlobalVariables.entraBloqueIf(); :}
-				contenido:c 								{: GlobalVariables.saleBloqueIf(); :}
-				LLAVEDER									{: :}
-				condelse:e									{: RESULT = new SimboloCondicional(o,c,e); :}
-			;
+condicional     ::= cond_main_block:cmb condelse:e {: RESULT = new SimboloCondicional(cmb, e); :};
+
+cond_main_block ::= clausula_cond:cc LLAVEIZQ {: GobalVariables.entraBloqueIf(); :}
+							  contenido:c {:
+									GlobalVariables.saleBloqueIf(); 
+									// TODO Aquí se generaria el c3@ de la etiqueta que tiene cc
+									// auto i3Direcciones = GlobalVariables.generarC3@(TipoInstr.COND_JUMP, cc.expresion, Valor.FALSO, cc.etiqueta);
+									RESULT = new SimboloCondicionalBloquePrincipal(cc, c);
+								:}
+								LLAVEDER;
+
+clausula_cond   ::= TIF PARENIZQ Operacion:o PARENDER 
+									{:
+										try {
+											TypeCheck.checkBoolean(o, false);
+										} catch(ErrorSemantico e) {
+											ErrorHandler.reportarError(e);
+										} 
+									  // TODO Generar etiqueta y propagar dentro del SimboloClausulaCond
+									  //  auto et = GlobalVariables.generarEtiqueta();
+										//  RESULT = new SimboloClausulaCond(o, et);
+										RESULT = new SimboloClausulaCond(o);
+									:};
 			
 condelse ::= TELSE LLAVEIZQ 								{: GlobalVariables.entraBloqueElse(); :}
 				contenido:e 								{: GlobalVariables.saleBloqueElse(); :}

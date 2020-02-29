@@ -224,17 +224,24 @@ contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e)
 																RESULT = new SimboloContenido(c,r,o); :}
 			| 												{: RESULT = null; :}
 			;
-			
-bucle ::= TWHILE PARENIZQ Operacion:o 				{:  try{
-															TypeCheck.checkBoolean(o,true);
-														}catch(ErrorSemantico e){
-															ErrorHandler.reportaError(e);
-														}
-													:}
-				PARENDER LLAVEIZQ 					{: GlobalVariables.entraBloqueWhile(); :}
-				contenido:c 						{: GlobalVariables.saleBloqueWhile(); :}
-				LLAVEDER							{: RESULT = new SimboloBucle(o,c); :}
-				;
+		
+bucle ::= cond_bucle:cb LLAVEIZQ {: GlobalVariables.entraBloqueWhile(); :}
+					contenido:o  {: GlobalVariables.saleBloqueWhile(); :}
+					LLAVEDER {: RESULT = new SimboloBucle(o, cb); :}
+					;
+
+cond_bucle ::= M1 TWHILE PARENIZQ Operacion:o {:
+								try{
+									TypeCheck.checkBoolean(o, true);
+								} catch(ErrorSemantico e) {
+									ErrorHandler.reportaError(e);
+								}
+								RESULT = new SimboloCondicionBucle(o);
+							:}
+					  	PARENDER
+;
+
+M1 ::= {: /* TODO Generar etiqueta y asignarsela al resultado */ :} ;
 
 condicional ::= TIF PARENIZQ Operacion:o 					{: try{
 																TypeCheck.checkBoolean(o,false);

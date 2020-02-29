@@ -12,12 +12,12 @@ import analisisSintactico.arbol.SimboloTerminal;
 
 public class SimboloBucle extends Nodo implements TipoSubyacente{
 	
-	private SimboloOperacion operacion;
+        private SimboloCondicionBucle operacion;
 	private SimboloContenido contenido;
 	
-	public SimboloBucle(SimboloOperacion operacion, SimboloContenido contenido) {
-		this.operacion = operacion;
-		this.contenido = contenido;
+	public SimboloBucle(SimboloCondicionBucle operacion, SimboloContenido contenido) {
+            this.operacion = operacion;
+            this.contenido = contenido;
 	}
 
 	@Override

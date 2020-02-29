@@ -68,6 +68,8 @@ non terminal	SimboloContenido	contenido;
 non terminal	SimboloParams		params;
 non terminal	SimboloParams		nextParam;
 non terminal  array;
+non terminal  SimboloCondicionBucle cond_bucle;
+non terminal  M1;
 
 precedence left OPSUMA, OPPROD;
 precedence left OPLOGICO, COMPARADOR;
@@ -227,7 +229,7 @@ contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e)
 		
 bucle ::= cond_bucle:cb LLAVEIZQ {: GlobalVariables.entraBloqueWhile(); :}
 					contenido:o  {: GlobalVariables.saleBloqueWhile(); :}
-					LLAVEDER {: RESULT = new SimboloBucle(o, cb); :}
+					LLAVEDER {: RESULT = new SimboloBucle(cb, o); :}
 					;
 
 cond_bucle ::= M1 TWHILE PARENIZQ Operacion:o {:
@@ -347,4 +349,5 @@ Las cosas se pueden hacer de diferentes maneras llegados a este punto:
 Poll is now on!
 */
 array  ::= CORCHIZQ VNUMERO CORCHDER
-					 | CORCHIZQ CORCHDER;
+					 | CORCHIZQ CORCHDER
+					 | ;

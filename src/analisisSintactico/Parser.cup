@@ -67,6 +67,7 @@ non terminal	SimboloArgs			nextArg;
 non terminal	SimboloContenido	contenido;
 non terminal	SimboloParams		params;
 non terminal	SimboloParams		nextParam;
+non terminal  array;
 
 precedence left OPSUMA, OPPROD;
 precedence left OPLOGICO, COMPARADOR;

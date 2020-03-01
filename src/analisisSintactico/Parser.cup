@@ -68,7 +68,8 @@ non terminal	SimboloContenido	contenido;
 non terminal	SimboloParams		params;
 non terminal	SimboloParams		nextParam;
 non terminal  array;
-non terminal	asigM1, asigM2, asigM3, asigM4, funcM1, funcM2, funcM3, funcM4, funcM5, funcM6, funcM7, funcM8, funcInvM1, funcInvM2;
+non terminal  declaracion, inicializacion, rvalue;
+non terminal	funcM1, funcM2, funcM3, funcM4, funcM5, funcM6, funcM7;
 
 precedence left OPSUMA, OPPROD;
 precedence left OPLOGICO, COMPARADOR;
@@ -105,103 +106,52 @@ cuerpo ::= cuerpo:c elemento:e 								{: RESULT = new SimboloCuerpo(c,e); :}
 			;
 			
 elemento ::= asignacion:a 									{: RESULT = new SimboloElemento(a); :}
+			| declaracion	{: /* TODO Falta esta rutina semantica*/ :}
 			| funcionDecl:f									{: RESULT = new SimboloElemento(f); :}
 			| clase:c										{: RESULT = new SimboloElemento(c); :}
 			;
 			
-asigM1 ::= 		{:
-					try{
-						GlobalVariables.asignaID(i,t);
-					}catch(ErrorSemantico e){
-						ErrorHandler.reportaError(e);
-					}
-				:}
-		;
-			
-asigM2 ::= 		{:
-					GlobalVariables.compruebaID(i);
-					GlobalVariables.compruebaAsignacionPermitida(i);
-				:}
-		;
-				
-asigM3 ::= 		{:
-					try{
-						GlobalVariables.asignaIDConstante(i,t);
-					}catch(ErrorSemantico e){
-						ErrorHandler.reportaError(e);
-					}
-				:}
-		;
-				
-asigM4 ::= 		{:
-					try{
-						GlobalVariables.asignaIDArray(i,t);
-					}catch(ErrorSemantico e){
-						ErrorHandler.reportaError(e);
-					}
-				:}
-		;
-			
-asignacion ::= TVAR:t VID:i	asigM1:M IGUAL Operacion:o PUNTOCOMA
-					{:
-						try{
-							TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), o.getTipoSubyacente());
-						}catch(ErrorSemantico e){
-							ErrorHandler.reportaError(e);
-						}
-						RESULT = new SimboloAsignacion(t,i,o);
-					:}
-				
-			| TVAR:t VID:i array:a PUNTOCOMA
-					{:
-						try{
-							GlobalVariables.asignaID(i,t);
-						}catch(ErrorSemantico e){
-							ErrorHandler.reportaError(e);
-						}
-						RESULT = new SimboloAsignacion(t,i);
-					:}
-			
-			| VID:i array asigM2:M IGUAL Operacion:o PUNTOCOMA
+
+declaracion ::= TVAR:t VID:i array:a inicializacion:init PUNTOCOMA
+						{:													
+							try{
+								// TODO Adaptar para aceptar la declaración de arrays
+								GlobalVariables.asignaID(i, t);
+								TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), r.getOperacion().getTipoSubyacente());
+							}catch(ErrorSemantico e){
+								ErrorHandler.reportaError(e);
+							}
+							RESULT = new SimboloDeclaracion(t, i, r.getOperacion());
+						:}
+						| TFINAL TVAR:t VID:i inicializacion:init PUNTOCOMA
+						{: 							
+							try{
+								// TODO De momento no aceptamos declaración de arrays constantes. ¿Queremos hacerlo?
+								GlobalVariables.asignaIDConstante(i,t);
+								TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), r.getOperacion().getTipoSubyacente());
+							}catch(ErrorSemantico e){
+								ErrorHandler.reportaError(e);
+							}
+							RESULT = new SimboloAsignacion(t,i,o);
+						:};
+inicializacion ::= IGUAL Operacion:o | ;
+
+// rvalue deberia ser algo que pueda ser nullable, ya que si no las  declaraciones no pueden ir sin inicializacion
+rvalue ::= IGUAL Operacion:o {: :} rvalue | Operacion:o ;
+
+asignacion ::=  VID:i array rvalue:r PUNTOCOMA
 					{: 
 						try{
+							// TODO Adaptar a array. Debera coger la declaracion del tipo del elemento
+							GlobalVariables.compruebaID(i);
+							GlobalVariables.compruebaAsignacionPermitida(i);
 							TypeCheck.typesMatchAsignacion(GlobalVariables.entornoActual().fullGet(i).getId(), GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());
 						}catch(ErrorSemantico e){
 							ErrorHandler.reportaError(e);
 						}
 						RESULT = new SimboloAsignacion(i,o);
 					:}
-					
-			| TFINAL TVAR:t VID:i asigM3:M IGUAL Operacion:o PUNTOCOMA
-					{: 
-						try{
-							TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), o.getTipoSubyacente());
-						}catch(ErrorSemantico e){
-							ErrorHandler.reportaError(e);
-						}
-						RESULT = new SimboloAsignacion(t,i,o);
-					:}
-					
-			| TVAR:t VID:i array asigM4:M IGUAL Operacion:o PUNTOCOMA
-					{:
-						try{
-							TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), o.getTipoSubyacente());
-						}catch(ErrorSemantico e){
-							ErrorHandler.reportaError(e);
-						}
-						RESULT = new SimboloAsignacion(t,i,o);
-					:}
-					
-			| TVAR:t VID:i array PUNTOCOMA
-					{:
-						try{
-							GlobalVariables.asignaIDArray(i,t);
-						}catch(ErrorSemantico e){
-							ErrorHandler.reportaError(e);
-						}
-						RESULT = new SimboloAsignacion(t,i);
-					:}
-			;
+					;
 
 funcM1 ::=  {:
 				try{
@@ -248,35 +198,25 @@ funcM7 ::=  {:
 			:}
 		;
 
-funcM8 ::=  {:
-				GlobalVariables.saleBloqueFuncion(false);
-			:}
-		;
-		
-funcInvM1 ::=	{:
-					GlobalVariables.compruebaFuncionID(i);
-				:}
-		;
-		
-funcInvM2 ::=	{:
-					TypeCheck.parameterMatch(i,p);
-				:}
-		;
-
 funcionDecl ::= TVAR:t VID:i funcM1:M1 PARENIZQ funcM2:M2 args:a funcM3:M3 PARENDER LLAVEIZQ contenido:c funcM4:M4 LLAVEDER 
 					{:
 						RESULT = new SimboloFuncionDecl(i,Tipo.getTipo(t),a,c);
 					:}
 					
 				|
-				TVOID:t VID:i funcM5:M5 PARENIZQ funcM6:M6 args:a funcM7:M7 PARENDER LLAVEIZQ contenido:c funcM8:M8 LLAVEDER
+				TVOID:t VID:i funcM5:M5 PARENIZQ funcM6:M6 args:a funcM7:M7 PARENDER LLAVEIZQ contenido:c funcM4:M4 LLAVEDER
 					{:
 						RESULT = new SimboloFuncionDecl(i,Tipo.Void,a,c);
 					:}
 			;
 			
-funcionInvk ::= VID:i funcInvM1:M1 PARENIZQ params:p funcInvM2:M2 PARENDER
+funcionInvk ::= VID:i PARENIZQ params:p PARENDER
 					{:
+					  // En caso de querer admitir sobrecarga de funciones deberiamos 
+						// utilizar los parametros para identificar la funcion de forma
+						// univoca
+						GlobalVariables.compruebaFuncionID(i); 
+						TypeCheck.parameterMatch(i, p);
 						RESULT = new SimboloFuncionInvk(i,p);
 					:}
 			;
@@ -387,6 +327,7 @@ Operacion3 ::= factor:f 									{: RESULT = new SimboloOperacion(f); :}
 																RESULT = new SimboloOperacion(o,l,q); :}
 		;
 	
+//funcionInvk ::= VID:i PARENIZQ params:p PARENDER
 factor ::= VID:i array				{: try{
 																	GlobalVariables.compruebaID(i);
 																}catch(ErrorSemantico e){
@@ -398,9 +339,8 @@ factor ::= VID:i array				{: try{
 		| VBOOLEANO:b										{: RESULT = new SimboloFactor(b, Tipo.Boolean); :}
 		| VSTRING:s											{: RESULT = new SimboloFactor(s, Tipo.String); :}
 		| funcionInvk:f										{: RESULT = new SimboloFactor(f); :}
-		| PARENIZQ Operacion:o PARENDER 					{: RESULT = new SimboloFactor(o); :}
 		;
-		
+	
 params ::= Operacion:o nextParam:n							{: RESULT = new SimboloParams(o,n,true); :}
 		| 													{: RESULT = null; :}
 		;

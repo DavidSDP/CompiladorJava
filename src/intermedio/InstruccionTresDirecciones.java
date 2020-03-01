@@ -7,8 +7,13 @@ package intermedio;
 
 /**
  *
- * @author jesus
+ * Definicion de instruccion de codigo de tres direcciones
+ * -------------------------------------------
+ * | operacion | primero | segundo | tercero |
+ * -------------------------------------------
  */
 public class InstruccionTresDirecciones {
+    private InstruccionMaquina operacion;
+    private Operando primero, segundo, tercero;
     
 }

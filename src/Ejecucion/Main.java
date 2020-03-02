@@ -31,13 +31,13 @@ public class Main {
 			parser parser = new parser(scanner, symbolFactory);
 			System.out.println(" se ha cargado el Parser");
 
-			System.out.print("Comienza an谩lisis del fichero...");
+			System.out.print("Comienza an醠isis del fichero...");
 			Symbol topSymbol = parser.parse();
-			System.out.println(" el an谩lisis ha finalizado");
+			System.out.println(" el an醠isis ha finalizado");
 
-			System.out.print("Generando 谩rbol de derivaci贸n...");
+			System.out.print("Generando 醨bol de derivaci髇...");
 			ArbolSintactico.generar(topSymbol);
-			System.out.println(" se ha generado el 谩rbol de derivaci贸n");
+			System.out.println(" se ha generado el 醨bol de derivaci髇");
 			
 		} catch (FileNotFoundException e) {
 			ErrorHandler.reportaError("El fichero de entrada '"+args[0]+"' no existe");
@@ -60,23 +60,23 @@ public class Main {
 		ArbolSintactico.abreFichero();
 		ErrorHandler.abreFichero();
 		FicheroEntornos.abreFichero();
-		System.out.println("Ejecuci贸n Procesador de Lenguaje...");
+		System.out.println("Ejecuci髇 Procesador de Lenguaje...");
 	}
 
 	private static void terminaEjecucion(Boolean errorGrave) {
 		if(errorGrave) {
 			System.out.println();
-			System.out.println("Se han encontrado errores, la ejecuci贸n se ha interrumpido.");
-			ErrorHandler.reportaError("Se han encontrado errores, la ejecuci贸n se ha interrumpido.");
+			System.out.println("Se han encontrado errores, la ejecuci髇 se ha interrumpido.");
+			ErrorHandler.reportaError("Se han encontrado errores, la ejecuci髇 se ha interrumpido.");
 			System.out.println("Puede consultar los errores en el fichero /output/Errores.txt");
 		}else if(GlobalVariables.hayErrores) {
 			System.out.println();
-			System.out.println("La ejecuci贸n ha finalizado con errores, puede consultarlos en el fichero /output/Errores.txt");
-			ErrorHandler.reportaError("Se han encontrado errores, pero la ejecuci贸n ha continuado.");
+			System.out.println("La ejecuci髇 ha finalizado con errores, puede consultarlos en el fichero /output/Errores.txt");
+			ErrorHandler.reportaError("Se han encontrado errores, pero la ejecuci髇 ha continuado.");
 		}else {
 			System.out.println();
-			System.out.println("La ejecuci贸n ha finalizado sin errores.");
-			ErrorHandler.reportaError("La ejecuci贸n ha finalizado sin errores.");
+			System.out.println("La ejecuci髇 ha finalizado sin errores.");
+			ErrorHandler.reportaError("La ejecuci髇 ha finalizado sin errores.");
 		}
 		System.out.println();
 		try {

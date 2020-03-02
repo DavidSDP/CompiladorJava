@@ -40,7 +40,7 @@ parser code {:
  :}
 
 terminal    String			TCLASS, TVAR, TFINAL, TRETURN, TVOID, TIF, TWHILE, TELSE, LLAVEIZQ, LLAVEDER;
-terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER;
+terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER, CORCHIZQ, CORCHDER;
 terminal	String			COMPARADOR, OPLOGICO, VBOOLEANO, OPSUMA, OPPROD;
 terminal	String			VSTRING;
 terminal	String			VNUMERO;
@@ -67,6 +67,7 @@ non terminal	SimboloArgs			nextArg;
 non terminal	SimboloContenido	contenido;
 non terminal	SimboloParams		params;
 non terminal	SimboloParams		nextParam;
+non terminal	array, inicializacion, declaracion;
 
 precedence left OPSUMA, OPPROD;
 precedence left OPLOGICO, COMPARADOR;
@@ -101,58 +102,68 @@ cuerpo ::= cuerpo:c elemento:e 								{: RESULT = new SimboloCuerpo(c,e); :}
 			|												{: RESULT = null; :}
 			;
 			
-elemento ::= asignacion:a 									{: RESULT = new SimboloElemento(a); :}
+elemento ::= declaracion:d									{: RESULT = new SimboloElemento(d); :}
 			| funcionDecl:f									{: RESULT = new SimboloElemento(f); :}
 			| clase:c										{: RESULT = new SimboloElemento(c); :}
 			;
-			
-asignacion ::= TVAR:t VID:i									{: try{
+
+inicializacion ::= IGUAL Operacion:o PUNTOCOMA
+			|
+			;
+
+declaracion ::= TVAR:t VID:i									{: try{
 																	GlobalVariables.asignaID(i,t);
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
 															:}
-				IGUAL Operacion:o PUNTOCOMA 				{: try{
-																	TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), o.getTipoSubyacente());
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-																RESULT = new SimboloAsignacion(t,i,o);
-															:}
-			| TVAR:t VID:i PUNTOCOMA 						{: try{
-																	GlobalVariables.asignaID(i,t);
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-																RESULT = new SimboloAsignacion(t,i);
-															:}
-			| VID:i 										{: 
-																GlobalVariables.compruebaID(i);
-																GlobalVariables.compruebaAsignacionPermitida(i);
-															:}
-				IGUAL Operacion:o PUNTOCOMA 				{: 
+				array:a inicializacion:init 				{: 
+																if(a!=null && init != null)
+																	lanzaErrorArrayNoInicializable();
 																try{
-																	TypeCheck.typesMatchAsignacion(GlobalVariables.entornoActual().fullGet(i).getId(), GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());
+																	TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getOperacion().getTipoSubyacente());
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
-																RESULT = new SimboloAsignacion(i,o);
+																RESULT = new SimboloAsignacion(t,i,init.getOperacion());
 															:}
+															
 			| TFINAL TVAR:t VID:i 							{: try{
 																	GlobalVariables.asignaIDConstante(i,t);
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
 															:}
-				IGUAL Operacion:o PUNTOCOMA					{: 
+				inicializacion:init							{: 
 																try{
-																	TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), o.getTipoSubyacente());
+																	TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getOperacion().getTipoSubyacente());
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
-																RESULT = new SimboloAsignacion(t,i,o);
+																RESULT = new SimboloAsignacion(t,i,init.getOperacion());
 															:}
 			;
+															
+asignacion ::= VID:i array:a IGUAL Operacion:o PUNTOCOMA 	{: 
+																GlobalVariables.compruebaID(i);
+																GlobalVariables.compruebaAsignacionPermitida(i);
+																try{
+																	if(a != null){
+																		// adaptar arrays TypeCheck.typesMatchAsignacion(GlobalVariables.entornoActual().fullGet(i).getId(), GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());
+																	}else{
+																		TypeCheck.typesMatchAsignacion(GlobalVariables.entornoActual().fullGet(i).getId(), GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());
+																	}
+																}catch(ErrorSemantico e){
+																	ErrorHandler.reportaError(e);
+																}
+																RESULT = new SimboloAsignacion(i,o);
+															:}
+			;
+			
+array  ::= CORCHIZQ VNUMERO CORCHDER
+		 | CORCHIZQ CORCHDER
+		 |
+		;
 
 funcionDecl ::= TVAR:t VID:i 								{: 	try{
 																	GlobalVariables.asignaFuncionID(i,t);
@@ -196,7 +207,11 @@ funcionInvk ::= VID:i										{: GlobalVariables.compruebaFuncionID(i);
 															:}
 		;
 		
-args ::= TVAR:t VID:i 										{: GlobalVariables.asignaID(i,t);
+args ::= TVAR:t VID:i array:a								{: 
+																if(array!=null)
+																	asignoArray();
+																else
+																	GlobalVariables.asignaID(i,t);
 															:}
 			nextArg:n										{: RESULT = new SimboloArgs(t,i,n,true);
 															:}
@@ -204,7 +219,11 @@ args ::= TVAR:t VID:i 										{: GlobalVariables.asignaID(i,t);
 															:}
 		;
 
-nextArg ::= COMA TVAR:t VID:i 								{: GlobalVariables.asignaID(i,t);
+nextArg ::= COMA TVAR:t VID:i array:a						{: 
+																if(array!=null)
+																	asignoArray();
+																else
+																	GlobalVariables.asignaID(i,t);
 															:}
 				nextArg:n									{: RESULT = new SimboloArgs(t,i,n,false);
 															:}
@@ -254,6 +273,7 @@ condelse ::= TELSE LLAVEIZQ 								{: GlobalVariables.entraBloqueElse(); :}
 			;
 			
 expresion ::= asignacion:a 									{: RESULT = new SimboloExpresion(a); :}
+			| declaracion:d 								{: RESULT = new SimboloExpresion(d); :}
 			| funcionInvk:f PUNTOCOMA						{: RESULT = new SimboloExpresion(f); :}
 			;
 		
@@ -302,7 +322,7 @@ Operacion3 ::= factor:f 									{: RESULT = new SimboloOperacion(f); :}
 																RESULT = new SimboloOperacion(o,l,q); :}
 		;
 	
-factor ::= VID:i 											{: try{
+factor ::= VID:i array:a									{: try{
 																	GlobalVariables.compruebaID(i);
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);

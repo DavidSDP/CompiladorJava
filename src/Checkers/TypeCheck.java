@@ -23,7 +23,7 @@ public class TypeCheck {
 	}
 	
 	public static void lanzaErrorParamTypeMismatch(String id, Tipo tipo1, Tipo tipo2) throws ErrorSemantico {
-		throw new ErrorSemantico("Se ha producido un error en los par√°metros de la funci√≥n {"+id+"}, al tratar de asignar un tipo "+tipo2+" a un tipo "+tipo1);
+		throw new ErrorSemantico("Se ha producido un error en los par·metros de la funciÛn {"+id+"}, al tratar de asignar un tipo "+tipo2+" a un tipo "+tipo1);
 	}
 	
 	public static void lanzaErrorTypeMismatchAsignacion(String id, Tipo tipo1, Tipo tipo2) throws ErrorSemantico {
@@ -31,15 +31,15 @@ public class TypeCheck {
 	}
 	
 	public static void lanzaErrorReturnTypeVoid(String idFuncion) throws ErrorSemantico {
-		throw new ErrorSemantico("Se ha producido un error. La funci√≥n {"+idFuncion+"} no esperaba valor de retorno.");
+		throw new ErrorSemantico("Se ha producido un error. La funciÛn {"+idFuncion+"} no esperaba valor de retorno.");
 	}
 	
 	public static void lanzaErrorReturnTypeMismatch(String idFuncion, Tipo tipoPrevisto, Tipo tipo2) throws ErrorSemantico {
-		throw new ErrorSemantico("El valor de retorno de la funci√≥n {"+idFuncion+"} deber√≠a ser de tipo "+tipoPrevisto+", en cambio se encontr√≥ un valor de tipo "+tipo2);
+		throw new ErrorSemantico("El valor de retorno de la funciÛn {"+idFuncion+"} deberÌa ser de tipo "+tipoPrevisto+", en cambio se encontrÛ un valor de tipo "+tipo2);
 	}
 	
 	public static void lanzaErrorParamNumberMismatch(String idFuncion) throws ErrorSemantico {
-		throw new ErrorSemantico("El n√∫mero de par√°metros en la llamada a la funci√≥n "+idFuncion+" no corresponde con los indicados en su definici√≥n");
+		throw new ErrorSemantico("El n˙mero de par·metros en la llamada a la funciÛn "+idFuncion+" no corresponde con los indicados en su definiciÛn");
 	}
 	
 	public static void parameterMatch(String idFuncion, SimboloParams p) throws ErrorSemantico {

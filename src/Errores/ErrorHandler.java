@@ -40,19 +40,19 @@ public class ErrorHandler {
 			GlobalVariables.hayErrores = true;
 			if(errorProcesador instanceof ErrorLexico) {
 				escribeLinea("");
-				escribeLinea("Error lÃ©xico ->");
+				escribeLinea("Error léxico ->");
 				escribeLinea("\t" + errorProcesador.getErrorLine());
 				escribeLinea("<-");
 			}
 			if(errorProcesador instanceof ErrorSintactico) {
 				escribeLinea("");
-				escribeLinea("Error sintÃ¡ctico ->");
+				escribeLinea("Error sintáctico ->");
 				escribeLinea("\t" + errorProcesador.getErrorLine());
 				escribeLinea("<-");
 			}
 			if(errorProcesador instanceof ErrorSemantico) {
 				escribeLinea("");
-				escribeLinea("Error semÃ¡ntico ->");
+				escribeLinea("Error semántico ->");
 				escribeLinea("\t" + errorProcesador.getErrorLine());
 				escribeLinea("<-");
 			}

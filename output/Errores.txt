@@ -1,14 +1,2 @@
 // ERRORES GENERADOS //
-
-Error léxico ->
-	Línea [11], Columna [8], el Token {.} no ha sido reconocido.
-<-
-
-Error sintáctico ->
-	Linea [12], Columna [10], se ha encontrado un Token {VID, B} inesperado.
-<-
-
-Could not recover and keep parsing
-
-Can't recover from previous error(s)
-Se han encontrado errores, la ejecución se ha interrumpido.
+La ejecución ha finalizado sin errores.

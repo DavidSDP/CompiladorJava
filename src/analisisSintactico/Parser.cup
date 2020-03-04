@@ -67,7 +67,9 @@ non terminal	SimboloArgs			nextArg;
 non terminal	SimboloContenido	contenido;
 non terminal	SimboloParams		params;
 non terminal	SimboloParams		nextParam;
-non terminal	array, inicializacion, declaracion;
+non terminal	SimboloArray 		array;
+non terminal	SimboloInicializacion inicializacion;
+non terminal 	SimboloDeclaracion	declaracion;
 
 precedence left OPSUMA, OPPROD;
 precedence left OPLOGICO, COMPARADOR;
@@ -107,8 +109,8 @@ elemento ::= declaracion:d									{: RESULT = new SimboloElemento(d); :}
 			| clase:c										{: RESULT = new SimboloElemento(c); :}
 			;
 
-inicializacion ::= IGUAL Operacion:o PUNTOCOMA
-			|
+inicializacion ::= IGUAL Operacion:o PUNTOCOMA				{: RESULT = new SimboloInicializacion(o); :}
+			| PUNTOCOMA										{: RESULT = new SimboloInicializacion(); :}
 			;
 
 declaracion ::= TVAR:t VID:i									{: try{
@@ -117,15 +119,17 @@ declaracion ::= TVAR:t VID:i									{: try{
 																	ErrorHandler.reportaError(e);
 																}
 															:}
-				array:a inicializacion:init 				{: 
-																if(a!=null && init != null)
+				array:a inicializacion:init 				{:  
+																Boolean esArray = a!=null;
+																if(esArray && init != null)
 																	lanzaErrorArrayNoInicializable();
 																try{
-																	TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getOperacion().getTipoSubyacente());
+																	if(init.getSimboloOperacion()!=null)
+																		TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getSimboloOperacion().getTipoSubyacente());
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
-																RESULT = new SimboloAsignacion(t,i,init.getOperacion());
+															RESULT = new SimboloDeclaracion(i,Tipo.getTipo(t),esArray,init);
 															:}
 															
 			| TFINAL TVAR:t VID:i 							{: try{
@@ -136,11 +140,12 @@ declaracion ::= TVAR:t VID:i									{: try{
 															:}
 				inicializacion:init							{: 
 																try{
-																	TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getOperacion().getTipoSubyacente());
+																	if(init.getSimboloOperacion()!=null)
+																		TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getSimboloOperacion().getTipoSubyacente());
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
-																RESULT = new SimboloAsignacion(t,i,init.getOperacion());
+																RESULT = new SimboloDeclaracion(i,Tipo.getTipo(t),false,init);
 															:}
 			;
 															
@@ -160,9 +165,9 @@ asignacion ::= VID:i array:a IGUAL Operacion:o PUNTOCOMA 	{:
 															:}
 			;
 			
-array  ::= CORCHIZQ VNUMERO CORCHDER
-		 | CORCHIZQ CORCHDER
-		 |
+array  ::= CORCHIZQ VNUMERO:n CORCHDER						{: RESULT = new SimboloArray(n); :}
+		 | CORCHIZQ CORCHDER								{: RESULT = new SimboloArray(); :}
+		 |													{: RESULT = null; :}
 		;
 
 funcionDecl ::= TVAR:t VID:i 								{: 	try{
@@ -208,7 +213,7 @@ funcionInvk ::= VID:i										{: GlobalVariables.compruebaFuncionID(i);
 		;
 		
 args ::= TVAR:t VID:i array:a								{: 
-																if(array!=null)
+																if(a!=null)
 																	asignoArray();
 																else
 																	GlobalVariables.asignaID(i,t);
@@ -220,7 +225,7 @@ args ::= TVAR:t VID:i array:a								{:
 		;
 
 nextArg ::= COMA TVAR:t VID:i array:a						{: 
-																if(array!=null)
+																if(a!=null)
 																	asignoArray();
 																else
 																	GlobalVariables.asignaID(i,t);

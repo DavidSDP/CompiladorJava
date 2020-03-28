@@ -1,82 +1,41 @@
 
- -> ENTORNO FUNCIï¿½N 7, de nivel 2 <- 
+ -> ENTORNO FUNCIÓN 7, de nivel 2 <- 
 
-		ID FUNCION: mainFuncion , TIPO: Integer
+		ID FUNCION: suma , TIPO: Integer
  VARIABLES: 
 
 
- 	- no hay identificadores declarados - 
+VARIABLE ID: b , TIPO: Integer
+
+
+VARIABLE ID: a , TIPO: Integer
 
 
      -> argumentos: 
 
 
-              -> sin argumentos <-
+             -> id: a , tipo: Integer
+
+             -> id: b , tipo: Integer
 
 
 _______________________________________
 
 
 
- -> ENTORNO FUNCIï¿½N 10, de nivel 4 <- 
+ -> ENTORNO FUNCIÓN 8, de nivel 2 <- 
 
-		ID FUNCION: mifuncion , TIPO: Void
+		ID FUNCION: main , TIPO: Void
  VARIABLES: 
 
 
- 	- no hay identificadores declarados - 
+VARIABLE ID: a , TIPO: Integer
 
 
      -> argumentos: 
 
 
               -> sin argumentos <-
-
-
-_______________________________________
-
-
-
- -> ENTORNO CLASE 9, de nivel 3 <- 
-
- VARIABLES: 
-
- - no hay identificadores declarados - 
-
- CLASES: 
-
- - no hay clases declaradas - 
-
-
- FUNCIONES: 
-
-ID: mifuncion , TIPO: Void
-     -> argumentos: 
-
-              -> sin argumentos <-
-
-
-
-_______________________________________
-
-
-
- -> ENTORNO CLASE 8, de nivel 2 <- 
-
- VARIABLES: 
-
- - no hay identificadores declarados - 
-
- CLASES: 
-
-ID: B , TIPO: Class
-
-
- FUNCIONES: 
-
-
- - no hay funciones declaradas - 
-
 
 
 _______________________________________

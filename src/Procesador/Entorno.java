@@ -11,11 +11,13 @@ import Errores.ErrorSemantico;
 public class Entorno {
 	
 	private Integer nivel;
+	
 	private Identificador identificador;
-	private Integer _identificador_entorno;
 	
 	private Hashtable<String, Identificador> tablaIDs;
+	
 	private Entorno entornoAnterior;
+	private Integer _identificador_entorno;
 	
 	public Entorno(Entorno entornoAnterior, Tipo tipo) {
 		if(entornoAnterior == null) {
@@ -71,7 +73,7 @@ public class Entorno {
 		return this.tablaIDs.get(s);
 	}
 	
-	// Devuelve el ID declarado mï¿½s cercano (hacia arriba por entornos), null si no ha sido declarado
+	// Devuelve el ID declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
 	public Identificador fullGet(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(e.contains(s)) {
@@ -81,7 +83,7 @@ public class Entorno {
 		return null;
 	}
 	
-	// Devuelve el ID  de Funciï¿½n declarado mï¿½s cercano (hacia arriba por entornos), null si no ha sido declarado
+	// Devuelve el ID  de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
 	public Identificador fullGetFuncion(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(e instanceof EntornoClase) {
@@ -93,7 +95,7 @@ public class Entorno {
 		return null;
 	}
 	
-	// Devuelve el Entorno de Funciï¿½n declarado mï¿½s cercano (hacia arriba por entornos), null si no ha sido declarado
+	// Devuelve el Entorno de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
 	public EntornoFuncion fullGetFuncionEntorno(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(e instanceof EntornoClase) {
@@ -105,7 +107,7 @@ public class Entorno {
 		return null;
 	}
 	
-	// Devuelve el ID de Clase declarado mï¿½s cercano (hacia arriba por entornos), null si no ha sido declarado
+	// Devuelve el ID de Clase declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
 	public Identificador fullGetClase(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(((EntornoClase)e).containsClase(s)) {

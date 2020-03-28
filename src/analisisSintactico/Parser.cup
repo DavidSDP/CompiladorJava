@@ -40,7 +40,7 @@ parser code {:
  :}
 
 terminal    String			TCLASS, TVAR, TFINAL, TRETURN, TVOID, TIF, TWHILE, TELSE, LLAVEIZQ, LLAVEDER;
-terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER, CORCHIZQ, CORCHDER;
+terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER;
 terminal	String			COMPARADOR, OPLOGICO, VBOOLEANO, OPSUMA, OPPROD;
 terminal	String			VSTRING;
 terminal	String			VNUMERO;
@@ -122,14 +122,14 @@ asignacion ::= TVAR:t VID:i									{: try{
 																}
 																RESULT = new SimboloAsignacion(t,i,o);
 															:}
-			| TVAR:t VID:i array:a PUNTOCOMA 						{: try{
+			| TVAR:t VID:i PUNTOCOMA 						{: try{
 																	GlobalVariables.asignaID(i,t);
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
 																RESULT = new SimboloAsignacion(t,i);
 															:}
-			| VID:i array						{: 
+			| VID:i 										{: 
 																GlobalVariables.compruebaID(i);
 																GlobalVariables.compruebaAsignacionPermitida(i);
 															:}
@@ -199,7 +199,7 @@ funcionInvk ::= VID:i										{: GlobalVariables.compruebaFuncionID(i);
 															:}
 		;
 		
-args ::= TVAR:t VID:i array		{: GlobalVariables.asignaID(i,t);
+args ::= TVAR:t VID:i 										{: GlobalVariables.asignaID(i,t);
 															:}
 			nextArg:n										{: RESULT = new SimboloArgs(t,i,n,true);
 															:}
@@ -207,7 +207,7 @@ args ::= TVAR:t VID:i array		{: GlobalVariables.asignaID(i,t);
 															:}
 		;
 
-nextArg ::= COMA TVAR:t VID:i array	{: GlobalVariables.asignaID(i,t);
+nextArg ::= COMA TVAR:t VID:i 								{: GlobalVariables.asignaID(i,t);
 															:}
 				nextArg:n									{: RESULT = new SimboloArgs(t,i,n,false);
 															:}
@@ -317,7 +317,7 @@ Operacion3 ::= factor:f 									{: RESULT = new SimboloOperacion(f); :}
 																RESULT = new SimboloOperacion(o,l,q); :}
 		;
 	
-factor ::= VID:i array				{: try{
+factor ::= VID:i 											{: try{
 																	GlobalVariables.compruebaID(i);
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
@@ -338,20 +338,3 @@ params ::= Operacion:o nextParam:n							{: RESULT = new SimboloParams(o,n,true)
 nextParam ::= COMA Operacion:o nextParam:n 					{: RESULT = new SimboloParams(o,n,false); :}
 			| 												{: RESULT = null; :}
 			;
-
-
-/*
-Las cosas se pueden hacer de diferentes maneras llegados a este punto:
-	1. Podemos tener 2 producciones para la declaracion de arrays para 
-		 simplificar la gramatica y comprobar en las rutinas semanticas
-     que tenemos un rango/indice declarado para todo lo que no sea declaracion
-     de parametros
-
-  2. Podemos tener 2 producciones diferentes 1 para la declaracion de variables y 
-     su uso en en el codigo de las funciones. Y otra para la declaracion de parametros 
-     de funcion
-
-Poll is now on!
-*/
-array  ::= CORCHIZQ VNUMERO CORCHDER
-					 | CORCHIZQ CORCHDER;

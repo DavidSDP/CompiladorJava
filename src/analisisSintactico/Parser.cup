@@ -259,6 +259,10 @@ clausula_cond   ::= TIF PARENIZQ Operacion:o PARENDER
 									  // TODO Generar etiqueta y propagar dentro del SimboloClausulaCond
 									  //  auto et = GlobalVariables.generarEtiqueta();
 										//  RESULT = new SimboloClausulaCond(o, et);
+
+										// Ademas, aqui ya podemos generar la condición de salto al caso falso y
+										// Necesitaria generar una etiqueta e_test_fallido (por ejemplo) y
+										// propagarla para ponerla una vez se ha evaluado el cuerpo del main.
 										RESULT = new SimboloClausulaCond(o);
 									:};
 			

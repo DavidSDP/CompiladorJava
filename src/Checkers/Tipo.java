@@ -4,12 +4,14 @@ import Errores.ErrorSemantico;
 
 public enum Tipo {
 	
-	Integer, String, Boolean, Class, Void, Final, Identificador, Token, Comparable, IF, WHILE, ELSE;
+	Integer, String, Boolean, Class, Void, Array, Final, Identificador, Token, Comparable, IF, WHILE, ELSE;
 	
 	public static Tipo getTipo(String s) throws ErrorSemantico {
 		switch(s) {
 			case "void":
 				return Tipo.Void;
+			case "array":
+				return Tipo.Array;
 			case "final":
 				return Tipo.Final;
 			case "if":

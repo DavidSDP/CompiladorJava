@@ -1,11 +1,34 @@
 
+ -> ENTORNO TIPO: IF 8, de nivel 3 <- 
+
+ VARIABLES: 
+
+
+
+VARIABLE ID: Procesador.Identificador@14ae5a5 , TIPO: Array
+
+
+_______________________________________
+
+
+ -> ENTORNO TIPO: ELSE 9, de nivel 3 <- 
+
+ VARIABLES: 
+
+
+ - no hay identificadores declarados - 
+
+
+_______________________________________
+
+
  -> ENTORNO FUNCIÓN 7, de nivel 2 <- 
 
 		ID FUNCION: mainFuncion , TIPO: Integer
  VARIABLES: 
 
 
-VARIABLE ID: a , TIPO: Integer
+ 	- no hay identificadores declarados - 
 
 
      -> argumentos: 

@@ -12,9 +12,9 @@ public class Entorno {
 	
 	private Integer nivel;
 	
-	private Identificador identificador;
+	private Declaracion identificador;
 	
-	private Hashtable<String, Identificador> tablaIDs;
+	private Hashtable<String, Declaracion> tablaIDs;
 	
 	private Entorno entornoAnterior;
 	private Integer _identificador_entorno;
@@ -26,12 +26,12 @@ public class Entorno {
 			this.setNivel(entornoAnterior.getNivel() + 1);
 		}
 		this.set_identificador_entorno(GlobalVariables.getIdentificador());
-		this.identificador = new Identificador(tipo.name(), tipo);
+		this.identificador = new Declaracion(new Identificador(tipo.name(), tipo.name()), tipo);
 		this.tablaIDs = new Hashtable<>();
 		this.entornoAnterior = entornoAnterior;
 	}
 	
-	public Entorno(Entorno entornoAnterior, Identificador identificador) {
+	public Entorno(Entorno entornoAnterior, Declaracion identificador) {
 		if(entornoAnterior == null) {
 			this.setNivel(0);
 		}else {
@@ -42,6 +42,21 @@ public class Entorno {
 		this.tablaIDs = new Hashtable<>();
 		this.entornoAnterior = entornoAnterior;
 	}
+	
+	public Declaracion getIdentificadorFuncionRetorno() {
+		EntornoFuncion entornoFuncionSuperior = (EntornoFuncion) getEntornoFuncionSuperior(this);
+		if(entornoFuncionSuperior == null)
+			return null;
+		return entornoFuncionSuperior.getIdentificador();
+	}
+	
+	private static Entorno getEntornoFuncionSuperior(Entorno entorno) {
+		if(entorno == null)
+			return null;
+		if(entorno instanceof EntornoFuncion)
+			return entorno;
+		return getEntornoFuncionSuperior(entorno.getEntornoAnterior());
+	}
 
 	////////*	IDENTIFICADORES		*////////
 	
@@ -49,14 +64,14 @@ public class Entorno {
 	public void put(Tipo tipo, String s) throws ErrorSemantico {
 		if(this.contains(s))
 			throw new ErrorSemantico("El identificador '"+s+"' se ha declarado por duplicado");
-		this.tablaIDs.put(s, new Identificador(s, tipo));
+		this.tablaIDs.put(s, new Declaracion(new Identificador(s, s), tipo));
 	}
 	
 	// Introduce nuevo ID constante en el entorno actual
 	public void put(Tipo tipo, String s, Boolean esConstante) throws ErrorSemantico {
 		if(this.contains(s))
 			throw new ErrorSemantico("El identificador '"+s+"' se ha declarado por duplicado");
-		Identificador nuevoIdentificador = new Identificador(s, tipo, esConstante);
+		Declaracion nuevoIdentificador = new Declaracion(new Identificador(s, s), tipo, esConstante);
 		this.tablaIDs.put(s, nuevoIdentificador);
 	}
 	
@@ -66,15 +81,15 @@ public class Entorno {
 	}
 
 	// Devuelve el ID especificado en el entorno actual
-	public Identificador get(String s) {
+	public Declaracion get(String s) {
 		if(!this.contains(s)) {
 			return null;
 		}
 		return this.tablaIDs.get(s);
 	}
 	
-	// Devuelve el ID declarado mÃ¡s cercano (hacia arriba por entornos), null si no ha sido declarado
-	public Identificador fullGet(String s) {
+	// Devuelve el ID declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
+	public Declaracion fullGet(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(e.contains(s)) {
 				return e.get(s);
@@ -83,8 +98,8 @@ public class Entorno {
 		return null;
 	}
 	
-	// Devuelve el ID  de FunciÃ³n declarado mÃ¡s cercano (hacia arriba por entornos), null si no ha sido declarado
-	public Identificador fullGetFuncion(String s) {
+	// Devuelve el ID  de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
+	public Declaracion fullGetFuncion(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(e instanceof EntornoClase) {
 				if(((EntornoClase)e).containsFuncion(s)) {
@@ -95,7 +110,7 @@ public class Entorno {
 		return null;
 	}
 	
-	// Devuelve el Entorno de FunciÃ³n declarado mÃ¡s cercano (hacia arriba por entornos), null si no ha sido declarado
+	// Devuelve el Entorno de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
 	public EntornoFuncion fullGetFuncionEntorno(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(e instanceof EntornoClase) {
@@ -107,8 +122,8 @@ public class Entorno {
 		return null;
 	}
 	
-	// Devuelve el ID de Clase declarado mÃ¡s cercano (hacia arriba por entornos), null si no ha sido declarado
-	public Identificador fullGetClase(String s) {
+	// Devuelve el ID de Clase declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
+	public Declaracion fullGetClase(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(((EntornoClase)e).containsClase(s)) {
 				return ((EntornoClase)e).getClase(s);
@@ -138,7 +153,7 @@ public class Entorno {
 			Iterator<String> iterator = this.getTablaIDs().keySet().iterator();
 			while(iterator.hasNext()) {
 				String key = (String) iterator.next();
-				Identificador id = this.getTablaIDs().get(key);
+				Declaracion id = this.getTablaIDs().get(key);
 				sb.append("\n");
 				sb.append("\n");
 				if(id.getEsConstante()) {
@@ -164,11 +179,11 @@ public class Entorno {
 		return entornoAnterior;
 	}
 
-	public Hashtable<String, Identificador> getTablaIDs() {
+	public Hashtable<String, Declaracion> getTablaIDs() {
 		return tablaIDs;
 	}
 
-	public void setTablaIDs(Hashtable<String, Identificador> tablaIDs) {
+	public void setTablaIDs(Hashtable<String, Declaracion> tablaIDs) {
 		this.tablaIDs = tablaIDs;
 	}
 
@@ -184,11 +199,11 @@ public class Entorno {
 		this.nivel = nivel;
 	}
 
-	public Identificador getIdentificador() {
+	public Declaracion getIdentificador() {
 		return identificador;
 	}
 
-	public void setIdentificador(Identificador identificador) {
+	public void setIdentificador(Declaracion identificador) {
 		this.identificador = identificador;
 	}
 }

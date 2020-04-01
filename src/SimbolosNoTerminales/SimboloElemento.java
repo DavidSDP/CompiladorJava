@@ -10,12 +10,12 @@ import analisisSintactico.arbol.Nodo;
 
 public class SimboloElemento extends Nodo implements TipoSubyacente{
 	
-	private SimboloAsignacion asignacion;
+	private SimboloDeclaracion declaracion;
 	private SimboloFuncionDecl funcionDecl;
 	private SimboloClase clase;
 	
-	public SimboloElemento(SimboloAsignacion a) {
-		this.asignacion = a;
+	public SimboloElemento(SimboloDeclaracion d) {
+		this.declaracion = d;
 	}
 	
 	public SimboloElemento(SimboloFuncionDecl f) {
@@ -29,8 +29,8 @@ public class SimboloElemento extends Nodo implements TipoSubyacente{
 	@Override
 	public List<INodo> getChildren() {
 		List<INodo> hijos = new ArrayList<>();
-		if(asignacion != null) {
-			hijos.add(asignacion);
+		if(declaracion != null) {
+			hijos.add(declaracion);
 			return hijos;
 		}
 		if(funcionDecl != null) {

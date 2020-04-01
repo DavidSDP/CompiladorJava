@@ -13,7 +13,7 @@ public class EntornoFuncion extends Entorno{
 	// Se guardan los Identificadores que son argumentos del Entorno (Sólo funciones)
 	private List<String> listaArgumentos;
 
-	public EntornoFuncion(EntornoClase entornoAnterior, Identificador identificador) {
+	public EntornoFuncion(EntornoClase entornoAnterior, Declaracion identificador) {
 		super(entornoAnterior, identificador);
 		this.setListaArgumentos(new ArrayList<>());
 	}
@@ -55,7 +55,7 @@ public class EntornoFuncion extends Entorno{
 		sb.append("\n");
 		sb.append("\n");
 		
-		sb.append("		ID FUNCION: "+this.getIdentificador().getId()+" , TIPO: "+this.getIdentificador().getTipo());
+		sb.append("		ID FUNCION: "+this.getIdentificador().getId().getId()+" , TIPO: "+this.getIdentificador().getTipo());
 
 		sb.append("\n");
 		sb.append(" VARIABLES: ");
@@ -70,12 +70,12 @@ public class EntornoFuncion extends Entorno{
 			Iterator<String> iterator = this.getTablaIDs().keySet().iterator();
 			while(iterator.hasNext()) {
 				String key = (String) iterator.next();
-				Identificador id = this.getTablaIDs().get(key);
+				Declaracion id = this.getTablaIDs().get(key);
 				sb.append("\n");
 				if(id.getEsConstante()) {
-					sb.append("CONSTANTE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
+					sb.append("CONSTANTE "+"ID: "+id.getId().getId()+" , TIPO: "+id.getTipo()+"");
 				}else {
-					sb.append("VARIABLE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
+					sb.append("VARIABLE "+"ID: "+id.getId().getId()+" , TIPO: "+id.getTipo()+"");
 				}
 				sb.append("\n");
 				sb.append("\n");
@@ -93,9 +93,9 @@ public class EntornoFuncion extends Entorno{
 			sb.append("\n");
 		}else {
 			for(String arg: argumentos) {
-				Identificador idArgumento = this.get(arg);
+				Declaracion idArgumento = this.get(arg);
 				sb.append("\n");
-				sb.append("             -> id: "+idArgumento.getId()+" , tipo: "+idArgumento.getTipo());
+				sb.append("             -> id: "+idArgumento.getId().getId()+" , tipo: "+idArgumento.getTipo());
 				sb.append("\n");
 			}
 		}

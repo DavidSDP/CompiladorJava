@@ -1,41 +1,103 @@
 
- -> ENTORNO FUNCIÓN 7, de nivel 2 <- 
+ -> ENTORNO TIPO: IF 8, de nivel 3 <- 
 
-		ID FUNCION: suma , TIPO: Integer
  VARIABLES: 
 
 
-VARIABLE ID: b , TIPO: Integer
 
-
-VARIABLE ID: a , TIPO: Integer
-
-
-     -> argumentos: 
-
-
-             -> id: a , tipo: Integer
-
-             -> id: b , tipo: Integer
+VARIABLE ID: Procesador.Identificador@14ae5a5 , TIPO: Array
 
 
 _______________________________________
 
 
+ -> ENTORNO TIPO: ELSE 9, de nivel 3 <- 
 
- -> ENTORNO FUNCIÓN 8, de nivel 2 <- 
-
-		ID FUNCION: main , TIPO: Void
  VARIABLES: 
 
 
-VARIABLE ID: a , TIPO: Integer
+ - no hay identificadores declarados - 
+
+
+_______________________________________
+
+
+ -> ENTORNO FUNCIÓN 7, de nivel 2 <- 
+
+		ID FUNCION: mainFuncion , TIPO: Integer
+ VARIABLES: 
+
+
+ 	- no hay identificadores declarados - 
 
 
      -> argumentos: 
 
 
               -> sin argumentos <-
+
+
+_______________________________________
+
+
+
+ -> ENTORNO CLASE 6, de nivel 1 <- 
+
+ VARIABLES: 
+
+ - no hay identificadores declarados - 
+
+ CLASES: 
+
+ - no hay clases declaradas - 
+
+
+ FUNCIONES: 
+
+ID: mainFuncion , TIPO: Integer
+     -> argumentos: 
+
+              -> sin argumentos <-
+
+
+
+_______________________________________
+
+
+
+ -> ENTORNO PROGRAMA PRINCIPAL 1, de nivel 0 <- 
+
+ VARIABLES: 
+
+ - no hay identificadores declarados - 
+
+ CLASES: 
+
+ID: ClasePrincipal , TIPO: Class
+
+
+ FUNCIONES: 
+
+ID: integerToString , TIPO: String
+     -> argumentos: 
+
+             -> id: numero , tipo: Integer
+
+ID: stringToInteger , TIPO: Integer
+     -> argumentos: 
+
+             -> id: string , tipo: String
+
+ID: write , TIPO: Void
+     -> argumentos: 
+
+             -> id: input , tipo: String
+
+ID: read , TIPO: String
+     -> argumentos: 
+
+              -> sin argumentos <-
+
 
 
 _______________________________________

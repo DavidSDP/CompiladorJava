@@ -11,13 +11,13 @@ import Errores.ErrorSemantico;
 
 public class EntornoClase extends Entorno{
 	
-	private Hashtable<String, Identificador> tablaFunciones;
-	private Hashtable<String, Identificador> tablaClases;
+	private Hashtable<String, Declaracion> tablaFunciones;
+	private Hashtable<String, Declaracion> tablaClases;
 	
-	// La tabla FuncionEntorno se declara en el mismo entorno donde la funci贸n ha sido declarada
+	// La tabla FuncionEntorno se declara en el mismo entorno donde la funci髇 ha sido declarada
 	private Hashtable<String, EntornoFuncion> tablaFuncionEntorno;
 
-	public EntornoClase(Entorno entornoAnterior, Identificador identificador) {
+	public EntornoClase(Entorno entornoAnterior, Declaracion identificador) {
 		super(entornoAnterior, identificador);
 		this.tablaFunciones = new Hashtable<>();
 		this.tablaClases = new Hashtable<>();
@@ -26,20 +26,20 @@ public class EntornoClase extends Entorno{
 	
 	////////*	IDENTIFICADORES DE FUNCIONES	*////////
 
-	// Introduce nuevo ID de Funci贸n en el entorno actual
+	// Introduce nuevo ID de Funci髇 en el entorno actual
 	public void putFuncion(Tipo tipo, String s) throws ErrorSemantico {
 		if(this.containsFuncion(s))
-			throw new ErrorSemantico("El identificador de funci贸n '"+s+"' se ha declarado por duplicado");
-		this.tablaFunciones.put(s, new Identificador(s, tipo));
+			throw new ErrorSemantico("El identificador de funci髇 '"+s+"' se ha declarado por duplicado");
+		this.tablaFunciones.put(s, new Declaracion(new Identificador(s, s), tipo));
 	}
 	
-	// Devuelve true si el ID de Funci贸n ha sido declarado en el entorno actual
+	// Devuelve true si el ID de Funci髇 ha sido declarado en el entorno actual
 	public Boolean containsFuncion(String s) {
 		return this.tablaFunciones.containsKey(s);
 	}
 	
-	// Devuelve el ID de Funci贸n especificado en el entorno actual
-	public Identificador getFuncion(String s) {
+	// Devuelve el ID de Funci髇 especificado en el entorno actual
+	public Declaracion getFuncion(String s) {
 		if(!this.containsFuncion(s)) {
 			return null;
 		}
@@ -47,19 +47,19 @@ public class EntornoClase extends Entorno{
 	}
 	////////*	FUNCION - ENTORNO	*////////
 	
-	// Introduce nuevo ID de Funci贸n en el entorno actual
+	// Introduce nuevo ID de Funci髇 en el entorno actual
 	public void putFuncionEntorno(String idFuncion, EntornoFuncion entornoFuncion) throws ErrorSemantico {
 		if(this.containsFuncionEntorno(idFuncion))
-			throw new ErrorSemantico("El entorno de la funci贸n '"+idFuncion+"' se ha declarado por duplicado");
+			throw new ErrorSemantico("El entorno de la funci髇 '"+idFuncion+"' se ha declarado por duplicado");
 		this.tablaFuncionEntorno.put(idFuncion, entornoFuncion);
 	}
 	
-	// Devuelve true si el ID de Funci贸n ha sido declarado en el entorno actual
+	// Devuelve true si el ID de Funci髇 ha sido declarado en el entorno actual
 	public Boolean containsFuncionEntorno(String s) {
 		return this.tablaFuncionEntorno.containsKey(s);
 	}
 	
-	// Devuelve el ID de Funci贸n especificado en el entorno actual
+	// Devuelve el ID de Funci髇 especificado en el entorno actual
 	public EntornoFuncion getFuncionEntorno(String s) {
 		if(!this.containsFuncionEntorno(s)) {
 			return null;
@@ -73,7 +73,7 @@ public class EntornoClase extends Entorno{
 	public void putClase(String s) throws ErrorSemantico {
 		if(this.contains(s))
 			throw new ErrorSemantico("El identificador de clase '"+s+"' se ha declarado por duplicado");
-		this.tablaClases.put(s, new Identificador(s, Tipo.Class));
+		this.tablaClases.put(s, new Declaracion(new Identificador(s, s), Tipo.Class));
 	}
 	
 	// Devuelve true si el ID de Clase ha sido declarado en el entorno actual
@@ -82,7 +82,7 @@ public class EntornoClase extends Entorno{
 	}
 
 	// Devuelve el ID de Clase especificado en el entorno actual
-	public Identificador getClase(String s) {
+	public Declaracion getClase(String s) {
 		if(!this.containsClase(s)) {
 			return null;
 		}
@@ -112,11 +112,11 @@ public class EntornoClase extends Entorno{
 			Iterator<String> iterator = this.getTablaIDs().keySet().iterator();
 			while(iterator.hasNext()) {
 				String key = (String) iterator.next();
-				Identificador id = this.getTablaIDs().get(key);
+				Declaracion id = this.getTablaIDs().get(key);
 				if(id.getEsConstante()) {
-					sb.append("CONSTANTE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
+					sb.append("CONSTANTE "+"ID: "+id.getId().getId()+" , TIPO: "+id.getTipo()+"");
 				}else {
-					sb.append("VARIABLE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
+					sb.append("VARIABLE "+"ID: "+id.getId().getId()+" , TIPO: "+id.getTipo()+"");
 				}
 				sb.append("\n");
 				sb.append("\n");
@@ -135,8 +135,8 @@ public class EntornoClase extends Entorno{
 			Iterator<String> iterator = tablaClases.keySet().iterator();
 			while(iterator.hasNext()) {
 				String key = (String) iterator.next();
-				Identificador id = tablaClases.get(key);
-				sb.append("ID: "+id.getId()+" , TIPO: "+id.getTipo());
+				Declaracion id = tablaClases.get(key);
+				sb.append("ID: "+id.getId().getId()+" , TIPO: "+id.getTipo());
 				sb.append("\n");
 				sb.append("\n");
 			}
@@ -156,21 +156,21 @@ public class EntornoClase extends Entorno{
 			Iterator<String> iteratorFunciones = tablaFunciones.keySet().iterator();
 			while(iteratorFunciones.hasNext()) {
 				String key = (String) iteratorFunciones.next();
-				Identificador funcionId = tablaFunciones.get(key);
-				sb.append("ID: "+funcionId.getId()+" , TIPO: "+funcionId.getTipo());
+				Declaracion funcionId = tablaFunciones.get(key);
+				sb.append("ID: "+funcionId.getId().getId()+" , TIPO: "+funcionId.getTipo());
 				sb.append("\n");
 				sb.append("     -> argumentos: ");
 				sb.append("\n");
 				sb.append("\n");
-				List<String> argumentos = ((EntornoFuncion)this.tablaFuncionEntorno.get(funcionId.getId())).getArgs();
+				List<String> argumentos = ((EntornoFuncion)this.tablaFuncionEntorno.get(funcionId.getId().getId())).getArgs();
 				if(argumentos == null || argumentos.isEmpty()) {
 					sb.append("              -> sin argumentos <-");
 					sb.append("\n");
 					sb.append("\n");
 				}else {
 					for(String arg: argumentos) {
-						Identificador idArgumento = this.tablaFuncionEntorno.get(funcionId.getId()).get(arg);
-						sb.append("             -> id: "+idArgumento.getId()+" , tipo: "+idArgumento.getTipo());
+						Declaracion idArgumento = this.tablaFuncionEntorno.get(funcionId.getId().getId()).get(arg);
+						sb.append("             -> id: "+idArgumento.getId().getId()+" , tipo: "+idArgumento.getTipo());
 						sb.append("\n");
 						sb.append("\n");
 					}

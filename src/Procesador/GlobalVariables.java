@@ -82,7 +82,7 @@ public class GlobalVariables{
 			top.putFuncion(tipo, idFuncion);
 		}
 		
-		// Llamar una vez dentro del entorno de la función
+		// Llamar una vez dentro del entorno de la funciÃ³n
 		public static void asignaEntornoFuncionID(String idFuncion) throws ErrorSemantico {
 			EntornoFuncion top = (EntornoFuncion) entornoActual();
 			((EntornoClase)top.getEntornoAnterior()).putFuncionEntorno(idFuncion, top);
@@ -104,14 +104,14 @@ public class GlobalVariables{
 			Entorno top = entornoActual();
 			Declaracion i = top.fullGet(id);
 			if(i == null)
-				throw new ErrorSemantico("El id "+id+" no es un símbolo declarado en el entorno");
+				throw new ErrorSemantico("El id "+id+" no es un sÃ­mbolo declarado en el entorno");
 		}
 		
 		public static void compruebaIDArray(String id) throws ErrorSemantico {
 			Entorno top = entornoActual();
 			Declaracion d = top.fullGet(id);
 			if(!(d instanceof DeclaracionArray))
-				throw new ErrorSemantico("El id "+id+" no es un s�mbolo de array declarado en el entorno");
+				throw new ErrorSemantico("El id "+id+" no es un símbolo de array declarado en el entorno");
 		}
 		
 		public static void compruebaAsignacionPermitida(String id) throws ErrorSemantico {
@@ -125,14 +125,14 @@ public class GlobalVariables{
 			Entorno top = entornoActual();
 			Declaracion i = top.fullGetFuncion(id);
 			if(i == null)
-				throw new ErrorSemantico("El id "+id+" no es un símbolo de función declarado en el entorno");
+				throw new ErrorSemantico("El id "+id+" no es un sÃ­mbolo de funciÃ³n declarado en el entorno");
 		}
 		
 		public static void compruebaClaseID(String id) throws ErrorSemantico {
 			EntornoClase top = (EntornoClase) entornoActual();
 			Declaracion i = top.fullGetClase(id);
 			if(i == null)
-				throw new ErrorSemantico("El id "+id+" no es un símbolo de clase declarado en el entorno");
+				throw new ErrorSemantico("El id "+id+" no es un sÃ­mbolo de clase declarado en el entorno");
 		}
 		
 		public static void entraBloqueClase(Declaracion identificadorClase) {

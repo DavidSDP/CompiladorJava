@@ -88,7 +88,7 @@ public class Entorno {
 		return this.tablaIDs.get(s);
 	}
 	
-	// Devuelve el ID declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
+	// Devuelve el ID declarado mÃ¡s cercano (hacia arriba por entornos), null si no ha sido declarado
 	public Declaracion fullGet(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(e.contains(s)) {
@@ -98,7 +98,7 @@ public class Entorno {
 		return null;
 	}
 	
-	// Devuelve el ID  de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
+	// Devuelve el ID  de FunciÃ³n declarado mÃ¡s cercano (hacia arriba por entornos), null si no ha sido declarado
 	public Declaracion fullGetFuncion(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(e instanceof EntornoClase) {
@@ -110,7 +110,7 @@ public class Entorno {
 		return null;
 	}
 	
-	// Devuelve el Entorno de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
+	// Devuelve el Entorno de FunciÃ³n declarado mÃ¡s cercano (hacia arriba por entornos), null si no ha sido declarado
 	public EntornoFuncion fullGetFuncionEntorno(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(e instanceof EntornoClase) {
@@ -122,7 +122,7 @@ public class Entorno {
 		return null;
 	}
 	
-	// Devuelve el ID de Clase declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
+	// Devuelve el ID de Clase declarado mÃ¡s cercano (hacia arriba por entornos), null si no ha sido declarado
 	public Declaracion fullGetClase(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(((EntornoClase)e).containsClase(s)) {

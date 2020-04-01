@@ -14,7 +14,7 @@ public class EntornoClase extends Entorno{
 	private Hashtable<String, Declaracion> tablaFunciones;
 	private Hashtable<String, Declaracion> tablaClases;
 	
-	// La tabla FuncionEntorno se declara en el mismo entorno donde la funci髇 ha sido declarada
+	// La tabla FuncionEntorno se declara en el mismo entorno donde la funci贸n ha sido declarada
 	private Hashtable<String, EntornoFuncion> tablaFuncionEntorno;
 
 	public EntornoClase(Entorno entornoAnterior, Declaracion identificador) {
@@ -26,19 +26,19 @@ public class EntornoClase extends Entorno{
 	
 	////////*	IDENTIFICADORES DE FUNCIONES	*////////
 
-	// Introduce nuevo ID de Funci髇 en el entorno actual
+	// Introduce nuevo ID de Funci贸n en el entorno actual
 	public void putFuncion(Tipo tipo, String s) throws ErrorSemantico {
 		if(this.containsFuncion(s))
-			throw new ErrorSemantico("El identificador de funci髇 '"+s+"' se ha declarado por duplicado");
+			throw new ErrorSemantico("El identificador de funci贸n '"+s+"' se ha declarado por duplicado");
 		this.tablaFunciones.put(s, new Declaracion(new Identificador(s, s), tipo));
 	}
 	
-	// Devuelve true si el ID de Funci髇 ha sido declarado en el entorno actual
+	// Devuelve true si el ID de Funci贸n ha sido declarado en el entorno actual
 	public Boolean containsFuncion(String s) {
 		return this.tablaFunciones.containsKey(s);
 	}
 	
-	// Devuelve el ID de Funci髇 especificado en el entorno actual
+	// Devuelve el ID de Funci贸n especificado en el entorno actual
 	public Declaracion getFuncion(String s) {
 		if(!this.containsFuncion(s)) {
 			return null;
@@ -47,19 +47,19 @@ public class EntornoClase extends Entorno{
 	}
 	////////*	FUNCION - ENTORNO	*////////
 	
-	// Introduce nuevo ID de Funci髇 en el entorno actual
+	// Introduce nuevo ID de Funci贸n en el entorno actual
 	public void putFuncionEntorno(String idFuncion, EntornoFuncion entornoFuncion) throws ErrorSemantico {
 		if(this.containsFuncionEntorno(idFuncion))
-			throw new ErrorSemantico("El entorno de la funci髇 '"+idFuncion+"' se ha declarado por duplicado");
+			throw new ErrorSemantico("El entorno de la funci贸n '"+idFuncion+"' se ha declarado por duplicado");
 		this.tablaFuncionEntorno.put(idFuncion, entornoFuncion);
 	}
 	
-	// Devuelve true si el ID de Funci髇 ha sido declarado en el entorno actual
+	// Devuelve true si el ID de Funci贸n ha sido declarado en el entorno actual
 	public Boolean containsFuncionEntorno(String s) {
 		return this.tablaFuncionEntorno.containsKey(s);
 	}
 	
-	// Devuelve el ID de Funci髇 especificado en el entorno actual
+	// Devuelve el ID de Funci贸n especificado en el entorno actual
 	public EntornoFuncion getFuncionEntorno(String s) {
 		if(!this.containsFuncionEntorno(s)) {
 			return null;

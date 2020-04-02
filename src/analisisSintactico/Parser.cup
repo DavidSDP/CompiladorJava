@@ -287,7 +287,7 @@ M1 ::= {: /* TODO Generar etiqueta y asignarsela al resultado */ :} ;
 
 condicional     ::= cond_main_block:cmb condelse:e {: RESULT = new SimboloCondicional(cmb, e); :};
 
-cond_main_block ::= clausula_cond:cc LLAVEIZQ {: GobalVariables.entraBloqueIf(); :}
+cond_main_block ::= clausula_cond:cc LLAVEIZQ {: GlobalVariables.entraBloqueIf(); :}
 							  contenido:c {:
 									GlobalVariables.saleBloqueIf(); 
 									// TODO Aquí se generaria el c3@ de la etiqueta que tiene cc
@@ -301,7 +301,7 @@ clausula_cond   ::= TIF PARENIZQ Operacion:o PARENDER
 										try {
 											TypeCheck.checkBoolean(o, false);
 										} catch(ErrorSemantico e) {
-											ErrorHandler.reportarError(e);
+											ErrorHandler.reportaError(e);
 										} 
 									  // TODO Generar etiqueta y propagar dentro del SimboloClausulaCond
 									  //  auto et = GlobalVariables.generarEtiqueta();
@@ -310,7 +310,7 @@ clausula_cond   ::= TIF PARENIZQ Operacion:o PARENDER
 										// Ademas, aqui ya podemos generar la condición de salto al caso falso y
 										// Necesitaria generar una etiqueta e_test_fallido (por ejemplo) y
 										// propagarla para ponerla una vez se ha evaluado el cuerpo del main.
-										RESULT = new SimboloClausulaCond(o);
+										RESULT = new SimboloClausulaCondicion(o);
 									:};
 			
 condelse ::= TELSE LLAVEIZQ 								{: GlobalVariables.entraBloqueElse(); :}

@@ -5,7 +5,7 @@ import java.util.List;
 
 import Checkers.Tipo;
 import Procesador.GlobalVariables;
-import Procesador.Identificador;
+import Procesador.Declaracion;
 import Procesador.TipoSubyacente;
 import analisisSintactico.sym;
 import analisisSintactico.arbol.INodo;
@@ -36,7 +36,7 @@ public class SimboloFactor extends Nodo implements TipoSubyacente{
 				this.id = s;
 				break;
 			default:
-				throw new Error("Mal uso -> generaciÛn de nuevo SimboloFactor()");
+				throw new Error("Mal uso -> generaci√≥n de nuevo SimboloFactor()");
 		}
 	}
 	
@@ -89,7 +89,7 @@ public class SimboloFactor extends Nodo implements TipoSubyacente{
 	@Override
 	public Tipo getTipoSubyacente() {
 		if(id != null) {
-			Identificador identificador = GlobalVariables.entornoActual().fullGet(id);
+			Declaracion identificador = GlobalVariables.entornoActual().fullGet(id);
 			if(identificador != null) {
 				return identificador.getTipo();
 			}

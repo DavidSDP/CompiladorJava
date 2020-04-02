@@ -10,38 +10,38 @@ import Errores.ErrorSemantico;
 
 public class EntornoFuncion extends Entorno{
 	
-	// Se guardan los Identificadores que son argumentos del Entorno (S髄o funciones)
+	// Se guardan los Identificadores que son argumentos del Entorno (S贸lo funciones)
 	private List<String> listaArgumentos;
 
-	public EntornoFuncion(EntornoClase entornoAnterior, Identificador identificador) {
+	public EntornoFuncion(EntornoClase entornoAnterior, Declaracion identificador) {
 		super(entornoAnterior, identificador);
 		this.setListaArgumentos(new ArrayList<>());
 	}
 	
 	////////*	IDENTIFICADORES DE FUNCIONES/ARGUMENTOS		*////////
 	
-	// Especifica los argumentos de la funci髇
+	// Especifica los argumentos de la funci贸n
 	public void putFuncionArgs(String funcionID, String argumentoID) throws ErrorSemantico {
 		if(!((EntornoClase)this.getEntornoAnterior()).containsFuncion(funcionID))
-			throw new ErrorSemantico("La funci髇 con identificador: '"+funcionID+"' no ha sido declarada en la tabla de funciones del entorno");
+			throw new ErrorSemantico("La funci贸n con identificador: '"+funcionID+"' no ha sido declarada en la tabla de funciones del entorno");
 		
 		if(!this.contains(argumentoID))
 			throw new ErrorSemantico("El identificador: '"+argumentoID+"' no ha sido declarado en la tabla de identificadores del entorno");
 		
 		if(this.getListaArgumentos().contains(argumentoID))
-			throw new ErrorSemantico("Se ha definido el argumento: '"+argumentoID+"' duplicado para la funci髇 '"+funcionID+"'");
+			throw new ErrorSemantico("Se ha definido el argumento: '"+argumentoID+"' duplicado para la funci贸n '"+funcionID+"'");
 		
 		this.getListaArgumentos().add(argumentoID);
 	}
 	
-	// Devuelve true si el ID es un argumento de funci髇 especificada. Mismo entorno.
+	// Devuelve true si el ID es un argumento de funci贸n especificada. Mismo entorno.
 	public Boolean containsArgs(String argumentoID) {
 		if(!this.getListaArgumentos().contains(argumentoID))
 			return false; 
 		return true;
 	}
 	
-	// Devuelve la lista de Argumentos para la funci髇 especificada. Mismo entorno.
+	// Devuelve la lista de Argumentos para la funci贸n especificada. Mismo entorno.
 	public List<String> getArgs() {
 		return this.getListaArgumentos();
 	}
@@ -51,11 +51,11 @@ public class EntornoFuncion extends Entorno{
 	public void printEntorno() throws IOException {
 		StringBuffer sb = new StringBuffer();
 		sb.append("\n");
-		sb.append(" -> ENTORNO FUNCI覰 "+this.get_identificador_entorno()+", de nivel "+this.getNivel()+" <- ");
+		sb.append(" -> ENTORNO FUNCI脫N "+this.get_identificador_entorno()+", de nivel "+this.getNivel()+" <- ");
 		sb.append("\n");
 		sb.append("\n");
 		
-		sb.append("		ID FUNCION: "+this.getIdentificador().getId()+" , TIPO: "+this.getIdentificador().getTipo());
+		sb.append("		ID FUNCION: "+this.getIdentificador().getId().getId()+" , TIPO: "+this.getIdentificador().getTipo());
 
 		sb.append("\n");
 		sb.append(" VARIABLES: ");
@@ -70,12 +70,12 @@ public class EntornoFuncion extends Entorno{
 			Iterator<String> iterator = this.getTablaIDs().keySet().iterator();
 			while(iterator.hasNext()) {
 				String key = (String) iterator.next();
-				Identificador id = this.getTablaIDs().get(key);
+				Declaracion id = this.getTablaIDs().get(key);
 				sb.append("\n");
 				if(id.getEsConstante()) {
-					sb.append("CONSTANTE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
+					sb.append("CONSTANTE "+"ID: "+id.getId().getId()+" , TIPO: "+id.getTipo()+"");
 				}else {
-					sb.append("VARIABLE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
+					sb.append("VARIABLE "+"ID: "+id.getId().getId()+" , TIPO: "+id.getTipo()+"");
 				}
 				sb.append("\n");
 				sb.append("\n");
@@ -93,9 +93,9 @@ public class EntornoFuncion extends Entorno{
 			sb.append("\n");
 		}else {
 			for(String arg: argumentos) {
-				Identificador idArgumento = this.get(arg);
+				Declaracion idArgumento = this.get(arg);
 				sb.append("\n");
-				sb.append("             -> id: "+idArgumento.getId()+" , tipo: "+idArgumento.getTipo());
+				sb.append("             -> id: "+idArgumento.getId().getId()+" , tipo: "+idArgumento.getTipo());
 				sb.append("\n");
 			}
 		}

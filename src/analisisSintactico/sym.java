@@ -8,21 +8,23 @@ package analisisSintactico;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int OPSUMA = 20;
+  public static final int OPSUMA = 22;
   public static final int IGUAL = 12;
-  public static final int OPLOGICO = 18;
+  public static final int OPLOGICO = 20;
   public static final int TCLASS = 2;
-  public static final int VBOOLEANO = 19;
+  public static final int VBOOLEANO = 21;
   public static final int TWHILE = 8;
   public static final int TVAR = 3;
-  public static final int VSTRING = 22;
+  public static final int VSTRING = 24;
   public static final int LLAVEIZQ = 10;
   public static final int COMA = 14;
-  public static final int COMPARADOR = 17;
+  public static final int COMPARADOR = 19;
   public static final int LLAVEDER = 11;
   public static final int EOF = 0;
-  public static final int OPPROD = 21;
-  public static final int VNUMERO = 23;
+  public static final int OPPROD = 23;
+  public static final int CORCHIZQ = 17;
+  public static final int VNUMERO = 25;
+  public static final int CORCHDER = 18;
   public static final int PARENIZQ = 15;
   public static final int error = 1;
   public static final int TVOID = 6;
@@ -32,7 +34,7 @@ public class sym {
   public static final int TFINAL = 4;
   public static final int TRETURN = 5;
   public static final int TELSE = 9;
-  public static final int VID = 24;
+  public static final int VID = 26;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -51,6 +53,8 @@ public class sym {
   "COMA",
   "PARENIZQ",
   "PARENDER",
+  "CORCHIZQ",
+  "CORCHDER",
   "COMPARADOR",
   "OPLOGICO",
   "VBOOLEANO",

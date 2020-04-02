@@ -12,23 +12,23 @@ import analisisSintactico.arbol.SimboloTerminal;
 
 public class SimboloArgs extends Nodo implements TipoSubyacente {
 	
-	private String tipo;
+	private Tipo tipo;
 	private String id;
 	private SimboloArgs nextArg;
 	private Boolean esPrimeraProduccion;
 	
-	public SimboloArgs(String t, String i, SimboloArgs n, Boolean esPrimeraProduccion) {
-		this.tipo = t;
-		this.id = i;
-		this.nextArg = n;
+	public SimboloArgs(SimboloArgDecl argDecl, SimboloArgs nextArg, Boolean esPrimeraProduccion) {
+		this.tipo = argDecl.getTipoSubyacente();
+		this.id = argDecl.getId();
+		this.nextArg = nextArg;
 		this.esPrimeraProduccion = esPrimeraProduccion;
 	}
 
-	public String getTipo() {
+	public Tipo getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(String tipo) {
+	public void setTipo(Tipo tipo) {
 		this.tipo = tipo;
 	}
 
@@ -60,7 +60,7 @@ public class SimboloArgs extends Nodo implements TipoSubyacente {
 		if(!esPrimeraProduccion)
 			hijos.add(new SimboloTerminal(sym.terminalNames[sym.COMA], Tipo.Token));
 		
-		hijos.add(new SimboloTerminal(tipo, Tipo.Identificador));
+		hijos.add(new SimboloTerminal(tipo.name(), Tipo.Identificador));
 		hijos.add(new SimboloTerminal(id, Tipo.Identificador));
 		if(nextArg != null)
 			hijos.add(nextArg);

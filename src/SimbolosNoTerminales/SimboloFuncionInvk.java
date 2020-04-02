@@ -5,7 +5,7 @@ import java.util.List;
 
 import Checkers.Tipo;
 import Procesador.GlobalVariables;
-import Procesador.Identificador;
+import Procesador.Declaracion;
 import Procesador.TipoSubyacente;
 import analisisSintactico.sym;
 import analisisSintactico.arbol.INodo;
@@ -40,7 +40,7 @@ public class SimboloFuncionInvk extends Nodo implements TipoSubyacente{
 
 	@Override
 	public Tipo getTipoSubyacente() {
-		Identificador identificadorFuncion = GlobalVariables.entornoActual().fullGetFuncion(idFuncion);
+		Declaracion identificadorFuncion = GlobalVariables.entornoActual().fullGetFuncion(idFuncion);
 		return identificadorFuncion.getTipo();
 	}
 	

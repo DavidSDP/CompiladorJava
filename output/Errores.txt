@@ -1,14 +1,6 @@
 // ERRORES GENERADOS //
 
-Error lÃ©xico ->
-	Lï¿½nea [11], Columna [8], el Token {.} no ha sido reconocido.
+Error semántico ->
+	Se ha producido un error en el id {arr} al tratar de asignar un tipo Boolean a un tipo Integer
 <-
-
-Error sintÃ¡ctico ->
-	Linea [12], Columna [10], se ha encontrado un Token {VID, B} inesperado.
-<-
-
-Could not recover and keep parsing
-
-Can't recover from previous error(s)
-Se han encontrado errores, la ejecuciï¿½n se ha interrumpido.
+Se han encontrado errores, pero la ejecución ha continuado.

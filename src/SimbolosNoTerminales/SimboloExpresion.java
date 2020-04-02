@@ -14,6 +14,7 @@ public class SimboloExpresion extends Nodo implements TipoSubyacente{
 	
 	private SimboloAsignacion a;
 	private SimboloFuncionInvk f;
+	private SimboloDeclaracion d;
 	
 	public SimboloExpresion(SimboloAsignacion a) {
 		this.a = a;
@@ -23,6 +24,10 @@ public class SimboloExpresion extends Nodo implements TipoSubyacente{
 		this.f = f;
 	}
 	
+	public SimboloExpresion(SimboloDeclaracion d) {
+		this.d = d;
+	}
+	
 	@Override
 	public List<INodo> getChildren() {
 		List<INodo> hijos = new ArrayList<>();
@@ -30,7 +35,11 @@ public class SimboloExpresion extends Nodo implements TipoSubyacente{
 			hijos.add(a);
 			return hijos;
 		}
-		hijos.add(f);
+		if(f != null) {
+			hijos.add(f);
+			return hijos;
+		}
+		hijos.add(d);
 		hijos.add(new SimboloTerminal(sym.terminalNames[sym.PUNTOCOMA], Tipo.Token));
 		return hijos;
 	}
@@ -46,6 +55,8 @@ public class SimboloExpresion extends Nodo implements TipoSubyacente{
 			return this.a.getTipoSubyacente();
 		if(this.f != null)
 			return this.f.getTipoSubyacente();
+		if(this.d != null)
+			return this.d.getTipoSubyacente();
 		return null;
 	}
 	

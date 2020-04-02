@@ -68,15 +68,15 @@ TWHILE		=	"while"
 LLAVEIZQ	=	"{"
 LLAVEDER	=	"}"
 
+CORCHIZQ 	=	"["
+CORCHDER 	=	"]"
+
 IGUAL		=	"="
 PUNTOCOMA	=	";"
 COMA		=	","
 
 PARENIZQ	=	"("
 PARENDER	=	")"
-
-CORCHIZQ	=	"["
-CORCHDER	=	"]"
 
 OPSUMA		=	"+"|"-"
 OPPROD		=	"*"|"/"
@@ -107,15 +107,15 @@ VID			=	[A-Za-z][A-Za-z0-9_]*
 {LLAVEIZQ}		{return symbol(sym.LLAVEIZQ);}
 {LLAVEDER}		{return symbol(sym.LLAVEDER);}
 
+{CORCHIZQ}		{return symbol(sym.CORCHIZQ);}
+{CORCHDER}		{return symbol(sym.CORCHDER);}
+
 {IGUAL}			{return symbol(sym.IGUAL);}
 {PUNTOCOMA}		{return symbol(sym.PUNTOCOMA);}
 {COMA}			{return symbol(sym.COMA);}
 
 {PARENIZQ}		{return symbol(sym.PARENIZQ);}
 {PARENDER}		{return symbol(sym.PARENDER);}
-
-{CORCHIZQ}		{return symbol(sym.CORCHIZQ);}
-{CORCHDER}		{return symbol(sym.CORCHDER);}
 
 {OPSUMA}		{return symbol(sym.OPSUMA, this.yytext());}
 {OPPROD}		{return symbol(sym.OPPROD, this.yytext());}

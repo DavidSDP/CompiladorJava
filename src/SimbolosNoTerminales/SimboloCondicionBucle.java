@@ -22,4 +22,9 @@ public class SimboloCondicionBucle extends Nodo {
     public SimboloOperacion getOperacion() {
         return this.operacion;
     }
+
+    @Override
+    public String getName() {
+            return "SimboloCondicional";
+    }
 }

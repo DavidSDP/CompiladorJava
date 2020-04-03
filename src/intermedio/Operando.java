@@ -1,5 +1,7 @@
 package intermedio;
 
+import Procesador.Declaracion;
+
 public class Operando {
     protected ModoDireccionamiento modo;
 

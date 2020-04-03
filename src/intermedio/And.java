@@ -12,4 +12,9 @@ public class And extends InstruccionTresDirecciones {
         this.segundo = segundo;
         this.tercero = tercero;
     }  
+
+    @Override
+    public String toMachineCode() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

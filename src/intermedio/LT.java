@@ -1,15 +1,12 @@
 package intermedio;
 
-/**
-    Mirar comentario en la clase AND
-*/
-public class Or extends InstruccionTresDirecciones {
-    public Or(Operando primero, Operando segundo, Operando tercero) {
-        super(InstruccionMaquina.OR);
+public class LT extends InstruccionTresDirecciones {
+    public LT(Operando primero, Operando segundo, Operando resultado) {
+        super(InstruccionMaquina.LT);
         this.primero = primero;
         this.segundo = segundo;
-        this.tercero = tercero;
-    }  
+        this.tercero = resultado;
+    }
 
     @Override
     public String toMachineCode() {

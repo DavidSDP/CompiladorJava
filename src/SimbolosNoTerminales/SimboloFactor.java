@@ -109,7 +109,7 @@ public class SimboloFactor extends Nodo implements TipoSubyacente{
 		}else if(operacion != null) {
 			return operacion.getTipoSubyacente();
 		}
-		return null;
+		return decl.getTipo();
 	}
 	
 }

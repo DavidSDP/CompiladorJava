@@ -17,22 +17,13 @@ import java_cup.runtime.Symbol;
 public class Main {
 	public static void main(String[] args) {
 		Boolean errorGrave = false;
-		try {
-			
+		try {			
+
 			comienzaEjecucion();
-			
+
 			FileReader in = new FileReader(args[0]);
-			
+
 			ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
-                        
-                        // Creamos el directorio output. Probablemente nos interesaría
-                        // que fuera en el mismo directorio que el de la prueba
-                        // Para eso, coger la ruta de prueba, relativizar el output
-                        // con respecto a ese fichero ( tal vez 2 arriba )
-                        // y crear el directorio acorde a eso.
-                        File outputDir = new File(GlobalVariables.outputDir.toString());
-                        outputDir.mkdirs();
-                        
 
 			System.out.print("Cargando Scanner...");
 			Scanner scanner = new Scanner(symbolFactory, in);
@@ -66,6 +57,13 @@ public class Main {
 	}
 
 	private static void comienzaEjecucion() throws IOException, ErrorProcesador {
+                // Creamos el directorio output. Probablemente nos interesaría
+                // que fuera en el mismo directorio que el de la prueba
+                // Para eso, coger la ruta de prueba, relativizar el output
+                // con respecto a ese fichero ( tal vez 2 arriba )
+                // y crear el directorio acorde a eso.
+                File outputDir = new File(GlobalVariables.outputDir.toString());
+                outputDir.mkdirs();
 		FicheroTokens.abreFichero();
 		ArbolSintactico.abreFichero();
 		ErrorHandler.abreFichero();

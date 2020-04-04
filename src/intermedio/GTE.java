@@ -2,7 +2,7 @@ package intermedio;
 
 public class GTE extends InstruccionTresDirecciones {
     public GTE(Operando primero, Operando segundo, Operando resultado) {
-        super(InstruccionMaquina.GTE);
+        super(OperacionTresDirecciones.GTE);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = resultado;

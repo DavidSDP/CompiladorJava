@@ -9,7 +9,7 @@ package intermedio;
  *
  * @author jesus
  */
-public enum InstruccionMaquina {
+public enum OperacionTresDirecciones {
     COPIA,
     
     // Saltos
@@ -38,8 +38,5 @@ public enum InstruccionMaquina {
     // Operaciones logicas
     AND,
     OR,
-    
-    
-    
-    
+       
 }

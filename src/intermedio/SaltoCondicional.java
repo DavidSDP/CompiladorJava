@@ -11,7 +11,7 @@ public class SaltoCondicional extends InstruccionTresDirecciones {
         // TODO Este super debería pasar algo especifico de un salto condicional
         // De esta forma podremos vincular la comparación de igualdad de las 
         // variables que nos pasen para poder saltar a la etiqueta
-        super(InstruccionMaquina.AND);
+        super(OperacionTresDirecciones.AND);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = etiqueta;

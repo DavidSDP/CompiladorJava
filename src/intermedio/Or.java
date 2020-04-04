@@ -5,7 +5,7 @@ package intermedio;
 */
 public class Or extends InstruccionTresDirecciones {
     public Or(Operando primero, Operando segundo, Operando tercero) {
-        super(InstruccionMaquina.OR);
+        super(OperacionTresDirecciones.OR);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = tercero;

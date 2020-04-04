@@ -3,7 +3,7 @@ package intermedio;
 
 public class LTE extends InstruccionTresDirecciones {
     public LTE(Operando primero, Operando segundo, Operando resultado) {
-        super(InstruccionMaquina.LTE);
+        super(OperacionTresDirecciones.LTE);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = resultado;

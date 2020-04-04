@@ -18,10 +18,10 @@ interface MachineCodeSerializable {
  *. 
  */
 public abstract class InstruccionTresDirecciones implements MachineCodeSerializable{
-    protected InstruccionMaquina operacion;
+    protected OperacionTresDirecciones operacion;
     protected Operando primero, segundo, tercero;
     
-    public InstruccionTresDirecciones(InstruccionMaquina operacion) {
+    public InstruccionTresDirecciones(OperacionTresDirecciones operacion) {
         this.operacion = operacion;
     }
     

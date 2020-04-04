@@ -2,7 +2,7 @@ package intermedio;
 
 public class LT extends InstruccionTresDirecciones {
     public LT(Operando primero, Operando segundo, Operando resultado) {
-        super(InstruccionMaquina.LT);
+        super(OperacionTresDirecciones.LT);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = resultado;

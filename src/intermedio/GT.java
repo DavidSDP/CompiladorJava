@@ -2,7 +2,7 @@ package intermedio;
 
 public class GT extends InstruccionTresDirecciones {
     public GT(Operando primero, Operando segundo, Operando resultado) {
-        super(InstruccionMaquina.GT);
+        super(OperacionTresDirecciones.GT);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = resultado;

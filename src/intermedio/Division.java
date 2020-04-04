@@ -2,7 +2,7 @@ package intermedio;
 
 public class Division extends InstruccionTresDirecciones {
     public Division(Operando primero, Operando segundo, Operando tercero) {
-        super(InstruccionMaquina.DIVISION);
+        super(OperacionTresDirecciones.DIVISION);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = tercero;

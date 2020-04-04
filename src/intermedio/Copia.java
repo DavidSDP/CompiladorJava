@@ -19,7 +19,7 @@ package intermedio;
  */
 public class Copia extends InstruccionTresDirecciones {
     public Copia(Operando primero, Operando segundo) {
-        super(InstruccionMaquina.COPIA);
+        super(OperacionTresDirecciones.COPIA);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = null;

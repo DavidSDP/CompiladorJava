@@ -2,7 +2,7 @@ package intermedio;
 
 public class Producto extends InstruccionTresDirecciones {
     public Producto(Operando primero, Operando segundo, Operando tercero) {
-        super(InstruccionMaquina.PRODUCTO);
+        super(OperacionTresDirecciones.PRODUCTO);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = tercero;

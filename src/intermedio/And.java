@@ -7,7 +7,7 @@ package intermedio;
 */
 public class And extends InstruccionTresDirecciones {    
     public And(Operando primero, Operando segundo, Operando tercero) {
-        super(InstruccionMaquina.AND);
+        super(OperacionTresDirecciones.AND);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = tercero;

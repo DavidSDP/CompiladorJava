@@ -17,7 +17,7 @@ public class I3DUtils {
     //  P.E: Si una constante se inicializa con una operación, la operación genera un valor temporal
     //       que, si se tiene en cuenta en la tabla de simbolos, nos vendrá como un operando normal y corriente.
     //       De otra forma, la variable nos vendría como un entero, provocando que tuvieramos que diferenciar los casos.
-    public static InstruccionTresDirecciones crea(InstruccionMaquina instr, Operando source, Operando dest) {
+    public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Operando source, Operando dest) {
         InstruccionTresDirecciones c3d = null;
         switch(instr) {
             case COPIA:

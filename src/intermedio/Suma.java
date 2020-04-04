@@ -2,7 +2,7 @@ package intermedio;
 
 public class Suma extends InstruccionTresDirecciones {
     public Suma(Operando primero, Operando segundo, Operando tercero) {
-        super(InstruccionMaquina.SUMA);
+        super(OperacionTresDirecciones.SUMA);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = tercero;
@@ -20,9 +20,9 @@ public class Suma extends InstruccionTresDirecciones {
          * 2. Le sumamos el valor del segundo al registro
          * 3. Copiamos el valor del registro a la variable de destino
          */
-        sb.append("mv " + primero.toString() + ", D0 \n");
+        sb.append("move " + primero.toString() + ", D0 \n");
         sb.append("add " + segundo.toString() + ", D0 \n");
-        sb.append("mv D0, " + segundo.toString());
+        sb.append("move D0, " + tercero.toString());
         
         return sb.toString();
     }

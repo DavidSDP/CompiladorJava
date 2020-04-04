@@ -2,7 +2,7 @@ package intermedio;
 
 public class Resta extends InstruccionTresDirecciones {
     public Resta(Operando primero, Operando segundo, Operando tercero) {
-        super(InstruccionMaquina.RESTA);
+        super(OperacionTresDirecciones.RESTA);
         this.primero = primero;
         this.segundo = segundo;
         this.tercero = tercero;

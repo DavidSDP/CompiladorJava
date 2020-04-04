@@ -10,7 +10,7 @@ import SimbolosNoTerminales.SimboloArgDecl;
 import SimbolosNoTerminales.SimboloArgs;
 import SimbolosNoTerminales.SimboloArray;
 
-public class GlobalVariables{
+public class GlobalVariables {
 		
 		public static final String FICHERO_TOKENS = ".\\output\\FicheroTokens.txt";
 		public static final String FICHERO_ARBOL = ".\\output\\ArbolSintactico.dot";
@@ -64,12 +64,13 @@ public class GlobalVariables{
 		
 		public static void asignaArray(String id, String tipo, SimboloArray simboloArrayDef) throws ErrorSemantico{
 			Entorno top = entornoActual();
+                        // TODO Esto es raro, de momento lo dejo así, pero vamos diría que esto no tiene que estar así
 			top.getTablaIDs().put(id, new DeclaracionArray(new Identificador(id, id), Tipo.getTipo(tipo), simboloArrayDef));
 		}
 		
-		public static void asignaIDConstante(String id, String tipo) throws ErrorSemantico {
+		public static void asignaIDConstante(String id, String tipo, Object valor) throws ErrorSemantico {
 			Entorno top = entornoActual();
-			top.put(Tipo.getTipo(tipo), id, true);
+			top.putConstante(Tipo.getTipo(tipo), id, valor);
 		}
 		
 		public static void asignaFuncionID(String idFuncion, String tipo) throws ErrorSemantico {
@@ -100,11 +101,13 @@ public class GlobalVariables{
 			top.putClase(id);
 		}
 		
-		public static void compruebaID(String id) throws ErrorSemantico {
+		public static Declaracion compruebaID(String id) throws ErrorSemantico {
 			Entorno top = entornoActual();
 			Declaracion i = top.fullGet(id);
 			if(i == null)
 				throw new ErrorSemantico("El id "+id+" no es un sÃ­mbolo declarado en el entorno");
+                        
+                        return i;
 		}
 		
 		public static void compruebaIDArray(String id) throws ErrorSemantico {
@@ -117,7 +120,7 @@ public class GlobalVariables{
 		public static void compruebaAsignacionPermitida(String id) throws ErrorSemantico {
 			Entorno top = entornoActual();
 			Declaracion i = top.fullGet(id);
-			if(i.getEsConstante())
+			if(i instanceof DeclaracionConstante)
 				throw new ErrorSemantico("El valor del identificador "+id+" no puede ser modificado al tener el atributo FINAL");
 		}
 		

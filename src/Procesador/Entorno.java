@@ -61,18 +61,22 @@ public class Entorno {
 	////////*	IDENTIFICADORES		*////////
 	
 	// Introduce nuevo ID en el entorno actual
-	public void put(Tipo tipo, String s) throws ErrorSemantico {
+	public Declaracion put(Tipo tipo, String s) throws ErrorSemantico {
 		if(this.contains(s))
 			throw new ErrorSemantico("El identificador '"+s+"' se ha declarado por duplicado");
-		this.tablaIDs.put(s, new Declaracion(new Identificador(s, s), tipo));
+                Declaracion nuevaDeclaracion = new Declaracion(new Identificador(s, s), tipo);
+		this.tablaIDs.put(s, nuevaDeclaracion);
+                return nuevaDeclaracion;
 	}
 	
 	// Introduce nuevo ID constante en el entorno actual
-	public void put(Tipo tipo, String s, Boolean esConstante) throws ErrorSemantico {
+	public DeclaracionConstante putConstante(Tipo tipo, String s, Object valor) throws ErrorSemantico {
 		if(this.contains(s))
-			throw new ErrorSemantico("El identificador '"+s+"' se ha declarado por duplicado");
-		Declaracion nuevoIdentificador = new Declaracion(new Identificador(s, s), tipo, esConstante);
+			throw new ErrorSemantico("La constante '"+s+"' se ha declarado por duplicado");
+                
+                DeclaracionConstante nuevoIdentificador = new DeclaracionConstante(new Identificador(s, s), tipo, valor);
 		this.tablaIDs.put(s, nuevoIdentificador);
+                return nuevoIdentificador;
 	}
 	
 	// Devuelve true si el ID ha sido declarado en el entorno actual
@@ -156,7 +160,7 @@ public class Entorno {
 				Declaracion id = this.getTablaIDs().get(key);
 				sb.append("\n");
 				sb.append("\n");
-				if(id.getEsConstante()) {
+				if(id instanceof DeclaracionConstante) {
 					sb.append("CONSTANTE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");
 				}else {
 					sb.append("VARIABLE "+"ID: "+id.getId()+" , TIPO: "+id.getTipo()+"");

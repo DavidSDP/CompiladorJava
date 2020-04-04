@@ -6,20 +6,12 @@ import Checkers.Tipo;
 
 public class Declaracion {
 	
-	private Identificador identificador;
-	private Tipo tipo;
-	private Boolean esConstante;
+	protected Identificador identificador;
+	protected Tipo tipo;
 	
 	public Declaracion(Identificador identificador, Tipo tipo) {
 		this.identificador = identificador;
 		this.tipo = tipo;
-		this.esConstante = false;
-	}
-	
-	public Declaracion(Identificador identificador, Tipo tipo, Boolean esConstante) {
-		this.identificador = identificador;
-		this.tipo = tipo;
-		this.esConstante = esConstante;
 	}
 
 	public Identificador getId() {
@@ -51,9 +43,8 @@ public class Declaracion {
 	public int hashCode() {
 		return Objects.hash(identificador);
 	}
-
-	public Boolean getEsConstante() {
-		return esConstante;
-	}
 	
 }
+
+
+

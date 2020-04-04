@@ -113,7 +113,7 @@ public class EntornoClase extends Entorno{
 			while(iterator.hasNext()) {
 				String key = (String) iterator.next();
 				Declaracion id = this.getTablaIDs().get(key);
-				if(id.getEsConstante()) {
+				if(id instanceof DeclaracionConstante) {
 					sb.append("CONSTANTE "+"ID: "+id.getId().getId()+" , TIPO: "+id.getTipo()+"");
 				}else {
 					sb.append("VARIABLE "+"ID: "+id.getId().getId()+" , TIPO: "+id.getTipo()+"");

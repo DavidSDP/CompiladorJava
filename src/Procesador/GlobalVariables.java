@@ -9,13 +9,19 @@ import Errores.ErrorSemantico;
 import SimbolosNoTerminales.SimboloArgDecl;
 import SimbolosNoTerminales.SimboloArgs;
 import SimbolosNoTerminales.SimboloArray;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class GlobalVariables {
 		
-		public static final String FICHERO_TOKENS = ".\\output\\FicheroTokens.txt";
-		public static final String FICHERO_ARBOL = ".\\output\\ArbolSintactico.dot";
-		public static final String FICHERO_ERRORES = ".\\output\\Errores.txt";
-		public static final String FICHERO_ENTORNOS = ".\\output\\Entornos.txt";
+                // Cuidado! El path se resuelve aqui. Asi que si en algun momento
+                // se cambia el directorio de la ejecucion probablemente no sea correcto
+                // donde se estan guardando los ficheros
+                public static final Path outputDir = Paths.get("output");
+		public static final Path FICHERO_TOKENS = outputDir.resolve("FicheroTokens.txt");
+		public static final Path FICHERO_ARBOL = outputDir.resolve("ArbolSintactico.dot");
+		public static final Path FICHERO_ERRORES = outputDir.resolve("Errores.txt");
+		public static final Path FICHERO_ENTORNOS = outputDir.resolve("Entornos.txt");
 		
 		public static Boolean DEBUG_MODE = true;
 		public static Boolean hayErrores = false;

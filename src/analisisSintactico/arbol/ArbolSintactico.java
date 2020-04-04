@@ -45,7 +45,7 @@ public class ArbolSintactico {
 	
 	public static void abreFichero() throws ErrorProcesador, IOException {
 		try {
-			file = new File(GlobalVariables.FICHERO_ARBOL);
+			file = new File(GlobalVariables.FICHERO_ARBOL.toString());
 			fileWriter = new FileWriter(file);
 		} catch (IOException e) {
 			throw new ErrorProcesador("Se ha producido un error al abrir el fichero del árbol sintáctico");

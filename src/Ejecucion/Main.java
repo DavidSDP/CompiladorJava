@@ -10,6 +10,7 @@ import Procesador.GlobalVariables;
 import analisisLexico.Scanner;
 import analisisSintactico.parser;
 import analisisSintactico.arbol.ArbolSintactico;
+import java.io.File;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.Symbol;
 
@@ -23,6 +24,15 @@ public class Main {
 			FileReader in = new FileReader(args[0]);
 			
 			ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
+                        
+                        // Creamos el directorio output. Probablemente nos interesaría
+                        // que fuera en el mismo directorio que el de la prueba
+                        // Para eso, coger la ruta de prueba, relativizar el output
+                        // con respecto a ese fichero ( tal vez 2 arriba )
+                        // y crear el directorio acorde a eso.
+                        File outputDir = new File(GlobalVariables.outputDir.toString());
+                        outputDir.mkdirs();
+                        
 
 			System.out.print("Cargando Scanner...");
 			Scanner scanner = new Scanner(symbolFactory, in);

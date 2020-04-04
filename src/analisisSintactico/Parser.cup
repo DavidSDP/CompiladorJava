@@ -13,11 +13,14 @@ import java_cup.runtime.Symbol;
 import Procesador.Identificador;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import Procesador.Declaracion;
+import intermedio.I3DUtils;
+import intermedio.OperacionTresDirecciones;
+import intermedio.InstruccionTresDirecciones;
 
 parser code {:
 
 
-	/** Trata errores de tipo sintáctico **/
+  /** Trata errores de tipo sintÃ¡ctico **/
 	@Override
 	public void report_error(String message, Object info) {
 		if(info != null) {
@@ -144,7 +147,8 @@ declaracion ::= TVAR:t VID:i arrayAsig:a inicializacion:init
 			| TFINAL TVAR:t VID:i inicializacion:init	
 			{: 	
 				try{
-					GlobalVariables.asignaIDConstante(i,t);
+          // Declaracion decl = GlobalVariables.asignaIDConstante(i,t);
+          GlobalVariables.asignaIDConstante(i,t, init.getDeclaracionOperacion());
 					if(init.getSimboloOperacion()!=null)
 						TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getSimboloOperacion().getTipoSubyacente());
 					else
@@ -152,6 +156,9 @@ declaracion ::= TVAR:t VID:i arrayAsig:a inicializacion:init
 				}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 				}
+
+        // TODO Aqui se tendrÃ­a que hacer inicializacion -> src
+        InstruccionTresDirecciones c3d = I3DUtils.crea(OperacionTresDirecciones.COPIA, null, null);
 				RESULT = new SimboloDeclaracion(i, Tipo.getTipo(t), false, init);
 			:}
 			;
@@ -272,7 +279,7 @@ bucle ::= cond_bucle:cb LLAVEIZQ {: GlobalVariables.entraBloqueWhile(); :}
 					LLAVEDER {: RESULT = new SimboloBucle(cb, o); :}
 					;
 
-cond_bucle ::= M1 TWHILE PARENIZQ Operacion:o {:
+cond_bucle ::= TWHILE PARENIZQ M1 Operacion:o PARENDER {:
 								try{
 									TypeCheck.checkBoolean(o, true);
 								} catch(ErrorSemantico e) {
@@ -280,18 +287,24 @@ cond_bucle ::= M1 TWHILE PARENIZQ Operacion:o {:
 								}
 								RESULT = new SimboloCondicionBucle(o);
 							:}
-					  	PARENDER
+              
 ;
 
 M1 ::= {: /* TODO Generar etiqueta y asignarsela al resultado */ :} ;
 
-condicional     ::= cond_main_block:cmb condelse:e {: RESULT = new SimboloCondicional(cmb, e); :};
+// TODO 
+condicional     ::= cond_main_block:cmb condelse:e
+    {: 
+        RESULT = new SimboloCondicional(cmb, e);
+    :};
 
 cond_main_block ::= clausula_cond:cc LLAVEIZQ {: GlobalVariables.entraBloqueIf(); :}
 							  contenido:c {:
 									GlobalVariables.saleBloqueIf(); 
-									// TODO Aquí se generaria el c3@ de la etiqueta que tiene cc
-									// auto i3Direcciones = GlobalVariables.generarC3@(TipoInstr.COND_JUMP, cc.expresion, Valor.FALSO, cc.etiqueta);
+                  // TODO Generar etiqueta fin
+                  //  Etiquta etFin = GlobalVariables.generarEtiqueta();
+                  //  RESULT = new SimboloCondicionalBloquePrincipal(cc, c, etFin);
+                  // auto i3Direcciones = GlobalVariables.generarC3@(InstruccionMaquina.GOTO, cc.getEtiqueta());
 									RESULT = new SimboloCondicionalBloquePrincipal(cc, c);
 								:}
 								LLAVEDER;
@@ -303,11 +316,12 @@ clausula_cond   ::= TIF PARENIZQ Operacion:o PARENDER
 										} catch(ErrorSemantico e) {
 											ErrorHandler.reportaError(e);
 										} 
-									  // TODO Generar etiqueta y propagar dentro del SimboloClausulaCond
-									  //  auto et = GlobalVariables.generarEtiqueta();
+                    // TODO Generar etiqueta else y propagar dentro del SimboloClausulaCond
+                    //  Etiquta et = GlobalVariables.generarEtiqueta();
 										//  RESULT = new SimboloClausulaCond(o, et);
+                    // auto i3Direcciones = GlobalVariables.generarC3@(TipoInstr.COND_JUMP, cc.expresion, Valor.FALSO, cc.etiqueta);
 
-										// Ademas, aqui ya podemos generar la condición de salto al caso falso y
+                    // Ademas, aqui ya podemos generar la condiciÃ³n de salto al caso falso y
 										// Necesitaria generar una etiqueta e_test_fallido (por ejemplo) y
 										// propagarla para ponerla una vez se ha evaluado el cuerpo del main.
 										RESULT = new SimboloClausulaCondicion(o);
@@ -369,18 +383,36 @@ Operacion3 ::= factor:f 									{: RESULT = new SimboloOperacion(f); :}
 																RESULT = new SimboloOperacion(o,l,q); :}
 		;
 	
-factor ::= VID:i arrayAsig:a									{: try{
-																	GlobalVariables.compruebaID(i);
+factor ::= VID:i arrayAsig:a                  
+    {:
+        Declaracion decl = null;
+        try{
+            decl = GlobalVariables.compruebaID(i);
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
-																RESULT = new SimboloFactor(i, Tipo.Identificador);
+        RESULT = new SimboloFactor(decl, Tipo.Identificador);
+    :}
+    | VNUMERO:n                     
+    {:
+        RESULT = new SimboloFactor(n, Tipo.Integer);
+    :}
+    | VBOOLEANO:b                    
+    {: 
+        RESULT = new SimboloFactor(b, Tipo.Boolean); 
+    :}
+    | VSTRING:s                      
+    {: 
+        RESULT = new SimboloFactor(s, Tipo.String); 
+    :}
+    | funcionInvk:f                    
+    {: 
+        RESULT = new SimboloFactor(f); 
+    :}
+    | PARENIZQ Operacion:o PARENDER           
+    {: 
+        RESULT = new SimboloFactor(o); 
 															:}
-		| VNUMERO:n 										{: RESULT = new SimboloFactor(n, Tipo.Integer); :}
-		| VBOOLEANO:b										{: RESULT = new SimboloFactor(b, Tipo.Boolean); :}
-		| VSTRING:s											{: RESULT = new SimboloFactor(s, Tipo.String); :}
-		| funcionInvk:f										{: RESULT = new SimboloFactor(f); :}
-		| PARENIZQ Operacion:o PARENDER 					{: RESULT = new SimboloFactor(o); :}
 		;
 		
 params ::= Operacion:o nextParam:n							{: RESULT = new SimboloParams(o,n,true); :}

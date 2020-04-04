@@ -5,25 +5,28 @@ import java.util.List;
 
 import Checkers.Tipo;
 import Checkers.TipoOperador;
+import Procesador.Declaracion;
 import Procesador.TipoSubyacente;
 import analisisSintactico.arbol.INodo;
 import analisisSintactico.arbol.Nodo;
 import analisisSintactico.arbol.SimboloTerminal;
 
-public class SimboloOperacion extends Nodo implements TipoSubyacente{
+public class SimboloOperacion extends Nodo implements TipoSubyacente {
 
-	private SimboloOperacion operacion;
+	private SimboloOperacion operandoIzquierda;
+	private SimboloOperacion operandoDerecha;
 	private TipoOperador operador;
 	private String operadorString;
 	private SimboloFactor factor;
-	private SimboloOperacion operacionDerecha;
 	
 	private Boolean esOperacion = false;
 	private Boolean esFactor = false;
 	private Boolean esModoCompleto = false;
+        
+        private Declaracion declaracionResultado;
 	
 	public SimboloOperacion(SimboloOperacion o) {
-		this.operacion = o;
+		this.operandoIzquierda = o;
 		this.esOperacion = true;
 	}
 	
@@ -32,11 +35,11 @@ public class SimboloOperacion extends Nodo implements TipoSubyacente{
 		this.esFactor = true;
 	}
 	
-	public SimboloOperacion(SimboloOperacion o, String operadorString, SimboloOperacion operacionDerecha) {
-		this.operacion = o;
+	public SimboloOperacion(SimboloOperacion operandoIzquierda, String operadorString, SimboloOperacion operacionDerecha) {
 		this.operador = TipoOperador.getTipoOperador(operadorString);
+		this.operandoIzquierda = operandoIzquierda; 
+		this.operandoDerecha = operacionDerecha;
 		this.operadorString = operadorString;
-		this.operacionDerecha = operacionDerecha;
 		this.esModoCompleto = true;
 	}
 
@@ -44,16 +47,16 @@ public class SimboloOperacion extends Nodo implements TipoSubyacente{
 	public List<INodo> getChildren() {
 		List<INodo> hijos = new ArrayList<>();
 		if(this.esOperacion) {
-			hijos.add(operacion);
+			hijos.add(operandoIzquierda);
 			return hijos;
 		}
 		if(this.esFactor) {
 			hijos.add(factor);
 			return hijos;
 		}
-		hijos.add(operacion);
+		hijos.add(operandoIzquierda);
 		hijos.add(new SimboloTerminal(operadorString, Tipo.Token));
-		hijos.add(operacionDerecha);
+		hijos.add(operandoDerecha);
 		return hijos;
 	}
 
@@ -65,7 +68,7 @@ public class SimboloOperacion extends Nodo implements TipoSubyacente{
 	@Override
 	public Tipo getTipoSubyacente() {
 		if(this.esOperacion)
-			return this.operacion.getTipoSubyacente();
+			return this.operandoIzquierda.getTipoSubyacente();
 		if(this.esFactor)
 			return this.factor.getTipoSubyacente();
 		
@@ -87,12 +90,12 @@ public class SimboloOperacion extends Nodo implements TipoSubyacente{
 		}
 	}
 
-	public SimboloOperacion getOperacion() {
-		return operacion;
+	public SimboloOperacion getOperandoIzquierda() {
+		return operandoIzquierda;
 	}
 
-	public void setOperacion(SimboloOperacion operacion) {
-		this.operacion = operacion;
+	public void setOperandoIzquierda(SimboloOperacion operandoIzquierda) {
+		this.operandoIzquierda = operandoIzquierda;
 	}
 
 	public SimboloFactor getFactor() {
@@ -111,4 +114,9 @@ public class SimboloOperacion extends Nodo implements TipoSubyacente{
 		this.operador = operador;
 	}
 	
+        
+        public Declaracion getDeclaracion() {
+                return declaracionResultado;
+        }
+
 }

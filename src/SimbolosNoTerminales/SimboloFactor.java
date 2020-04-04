@@ -20,7 +20,12 @@ public class SimboloFactor extends Nodo implements TipoSubyacente{
 	private String booleano;
 	private SimboloFuncionInvk funcionInvk;
 	private SimboloOperacion operacion;
+        private Declaracion decl;
 
+        public SimboloFactor(Declaracion decl, Tipo tipo) {
+            this.decl = decl;
+        }
+        
 	public SimboloFactor(String s, Tipo tipo) {
 		switch(tipo) {
 			case Boolean:

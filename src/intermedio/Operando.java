@@ -18,6 +18,6 @@ public class Operando {
     @Override
     public String toString() {
         
-        return valor.getTipo() + " " + valor.getId() != null ? valor.getId().getNombre() : ""; 
+        return valor.toString(); 
     }
 }

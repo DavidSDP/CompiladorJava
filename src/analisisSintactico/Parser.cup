@@ -406,7 +406,7 @@ Operacion2 ::= Operacion3:o
 		{: 
 				SimboloOperacion operacion = new SimboloOperacion(o);
 				operacion.setDeclaracionResultado(o.getDeclaracionResultado());
-				RESULT = new SimboloOperacion(o); 
+				RESULT = operacion; 
 		:}
 		| Operacion:o COMPARADOR:c Operacion:q 
 		{: 

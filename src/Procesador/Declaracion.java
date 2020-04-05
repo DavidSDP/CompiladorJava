@@ -43,7 +43,11 @@ public class Declaracion {
 	public int hashCode() {
 		return Objects.hash(identificador);
 	}
-	
+
+        @Override
+        public String toString() {
+            return tipo.toString() + " " + identificador.toString();
+        }
 }
 
 

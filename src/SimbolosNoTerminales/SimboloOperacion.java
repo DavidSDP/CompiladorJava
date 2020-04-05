@@ -114,8 +114,11 @@ public class SimboloOperacion extends Nodo implements TipoSubyacente {
 		this.operador = operador;
 	}
 	
+        public void setDeclaracionResultado(Declaracion declaracionResultado) {
+                this.declaracionResultado = declaracionResultado;
+        }
         
-        public Declaracion getDeclaracion() {
+        public Declaracion getDeclaracionResultado() {
                 return declaracionResultado;
         }
 

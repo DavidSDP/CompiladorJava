@@ -1,5 +1,10 @@
 package analisisSintactico;
 
+// External dependencies
+import java_cup.runtime.Symbol;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+
+// Module dependencies
 import Checkers.Tipo;
 import Checkers.TipoOperador;
 import Checkers.TypeCheck;
@@ -8,11 +13,10 @@ import Errores.ErrorSemantico;
 import Errores.ErrorSintactico;
 import Procesador.GlobalVariables;
 import Procesador.EntornoClase;
-import SimbolosNoTerminales.*;
-import java_cup.runtime.Symbol;
-import Procesador.Identificador;
-import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import Procesador.Declaracion;
+import Procesador.DeclaracionConstante;
+import Procesador.Identificador;
+import SimbolosNoTerminales.*;
 import intermedio.I3DUtils;
 import intermedio.OperacionTresDirecciones;
 import intermedio.InstruccionTresDirecciones;
@@ -119,8 +123,14 @@ elemento ::= declaracion:d									{: RESULT = new SimboloElemento(d); :}
 			| clase:c										{: RESULT = new SimboloElemento(c); :}
 			;
 
-inicializacion ::= IGUAL Operacion:o PUNTOCOMA				{: RESULT = new SimboloInicializacion(o); :}
-			| PUNTOCOMA										{: RESULT = new SimboloInicializacion(); :}
+inicializacion ::= IGUAL Operacion:o PUNTOCOMA				
+			{: 
+					RESULT = new SimboloInicializacion(o);
+			:}
+			| PUNTOCOMA										
+			{: 
+					RESULT = new SimboloInicializacion(); 
+			:}
 			;
 
 declaracion ::= TVAR:t VID:i arrayAsig:a inicializacion:init 
@@ -145,20 +155,21 @@ declaracion ::= TVAR:t VID:i arrayAsig:a inicializacion:init
 			:}
 															
 			| TFINAL TVAR:t VID:i inicializacion:init	
-			{: 	
+			{: 
+				Declaracion decl = null;
 				try{
-          // Declaracion decl = GlobalVariables.asignaIDConstante(i,t);
-          GlobalVariables.asignaIDConstante(i,t, init.getDeclaracionOperacion());
+          decl = GlobalVariables.asignaIDConstante(i,t, init.getDeclaracionResultado());
+
 					if(init.getSimboloOperacion()!=null)
 						TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getSimboloOperacion().getTipoSubyacente());
 					else
 						TypeCheck.lanzaErrorConstanteNoInicializada(i, t);
+
+        I3DUtils.crea(OperacionTresDirecciones.COPIA, init.getDeclaracionResultado(), decl);
 				}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 				}
 
-        // TODO Aqui se tendría que hacer inicializacion -> src
-        InstruccionTresDirecciones c3d = I3DUtils.crea(OperacionTresDirecciones.COPIA, null, null);
 				RESULT = new SimboloDeclaracion(i, Tipo.getTipo(t), false, init);
 			:}
 			;
@@ -338,49 +349,107 @@ expresion ::= asignacion:a 									{: RESULT = new SimboloExpresion(a); :}
 			| funcionInvk:f PUNTOCOMA						{: RESULT = new SimboloExpresion(f); :}
 			;
 		
-Operacion ::= Operacion1:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion:o OPSUMA:s Operacion:q						{: 
-																try{
-																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
-																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
-																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-																RESULT = new SimboloOperacion(o,s,q); :}
+Operacion ::= Operacion1:o
+		{: 
+				SimboloOperacion operacion = new SimboloOperacion(o);
+				operacion.setDeclaracionResultado(o.getDeclaracionResultado());
+				RESULT = operacion; 
+				
+		:}
+		| Operacion:o OPSUMA:s Operacion:q
+		{: 
+				Declaracion declResultadoSuma = null;
+				try {
+					TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
+					TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
+					TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+
+					declResultadoSuma =  GlobalVariables.crearVariableTemporal(Tipo.Integer);
+					I3DUtils.crea(I3DUtils.getTipoOperacion(s), o.getDeclaracionResultado(), q.getDeclaracionResultado(), declResultadoSuma);
+				}catch(ErrorSemantico e){
+					ErrorHandler.reportaError(e);
+				}
+
+				SimboloOperacion resultado = new SimboloOperacion(o,s,q);
+				resultado.setDeclaracionResultado(declResultadoSuma);
+				RESULT = resultado; 
+		:}
 		;
 	
-Operacion1 ::= Operacion2:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion:o OPPROD:p Operacion:q					{: try{
-																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
-																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
-																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-																RESULT = new SimboloOperacion(o,p,q); :}
+Operacion1 ::= Operacion2:o
+		{:
+				SimboloOperacion operacion = new SimboloOperacion(o);
+				operacion.setDeclaracionResultado(o.getDeclaracionResultado());
+				RESULT = operacion; 
+		:}
+		| Operacion:o OPPROD:p Operacion:q
+		{: 
+				Declaracion declResultadoProd = null;
+				try{
+					TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
+					TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
+					TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+
+					declResultadoProd =  GlobalVariables.crearVariableTemporal(Tipo.Integer);
+					I3DUtils.crea(I3DUtils.getTipoOperacion(p), o.getDeclaracionResultado(), q.getDeclaracionResultado(), declResultadoProd);
+				} catch(ErrorSemantico e) {
+					ErrorHandler.reportaError(e);
+				}
+
+				SimboloOperacion resultado = new SimboloOperacion(o,p,q);
+				resultado.setDeclaracionResultado(declResultadoProd);
+				RESULT = resultado; 
+		:}
 		;
 		
-Operacion2 ::= Operacion3:o									{: RESULT = new SimboloOperacion(o); :}
-		| Operacion:o COMPARADOR:c Operacion:q 				{: try{
-																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
-																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
-																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-																RESULT = new SimboloOperacion(o,c,q); :}
+Operacion2 ::= Operacion3:o
+		{: 
+				SimboloOperacion operacion = new SimboloOperacion(o);
+				operacion.setDeclaracionResultado(o.getDeclaracionResultado());
+				RESULT = new SimboloOperacion(o); 
+		:}
+		| Operacion:o COMPARADOR:c Operacion:q 
+		{: 
+				Declaracion declResultado = null;
+				try{
+					TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
+					TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
+					TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+
+					declResultado =  GlobalVariables.crearVariableTemporal(Tipo.Boolean);
+					I3DUtils.crea(I3DUtils.getTipoOperacion(c), o.getDeclaracionResultado(), q.getDeclaracionResultado(), declResultado);
+				} catch(ErrorSemantico e) {
+					ErrorHandler.reportaError(e);
+				}
+				SimboloOperacion resultado = new SimboloOperacion(o,c,q);
+				resultado.setDeclaracionResultado(declResultado);
+				RESULT = resultado; 
+		:}
 		;
 		
-Operacion3 ::= factor:f 									{: RESULT = new SimboloOperacion(f); :}
-		| Operacion:o OPLOGICO:l Operacion:q					{: try{
-																	TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
-																	TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
-																	TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-																RESULT = new SimboloOperacion(o,l,q); :}
+Operacion3 ::= factor:f 
+		{:
+				SimboloOperacion operacion = new SimboloOperacion(f);
+				operacion.setDeclaracionResultado(f.getDeclaracionResultado());
+				RESULT = operacion; 
+		:}
+		| Operacion:o OPLOGICO:l Operacion:q 
+		{: 
+				Declaracion declResultado = null;
+				try{
+					TypeCheck.typesMatch(o.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
+					TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
+					TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
+
+					declResultado =  GlobalVariables.crearVariableTemporal(Tipo.Boolean);
+					I3DUtils.crea(I3DUtils.getTipoOperacion(l), o.getDeclaracionResultado(), q.getDeclaracionResultado(), declResultado);
+				} catch(ErrorSemantico e) {
+					ErrorHandler.reportaError(e);
+				}
+				SimboloOperacion resultado = new SimboloOperacion(o,l,q);
+				resultado.setDeclaracionResultado(declResultado);
+				RESULT = resultado; 
+		:}
 		;
 	
 factor ::= VID:i arrayAsig:a                  
@@ -388,30 +457,49 @@ factor ::= VID:i arrayAsig:a
         Declaracion decl = null;
         try{
             decl = GlobalVariables.compruebaID(i);
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-        RESULT = new SimboloFactor(decl, Tipo.Identificador);
+				}catch(ErrorSemantico e){
+						ErrorHandler.reportaError(e);
+				}
+				// TODO Aqui se ha quitado el parametro. Probablemente se debería
+				// pasar para pintar todo como toca en el arbol.
+        RESULT = new SimboloFactor(decl);
     :}
     | VNUMERO:n                     
     {:
-        RESULT = new SimboloFactor(n, Tipo.Integer);
+			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.Integer, n);
+				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.Integer);
+				I3DUtils.crea(OperacionTresDirecciones.COPIA, decl, varDecl);
+				// TODO Aqui se ha quitado el parametro que pasaba el número. Probablemente se debería
+				// pasar para pintar todo como toca en el arbol.
+        RESULT = new SimboloFactor(varDecl);
     :}
     | VBOOLEANO:b                    
     {: 
-        RESULT = new SimboloFactor(b, Tipo.Boolean); 
+			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.Boolean, b);
+				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.Boolean);
+				I3DUtils.crea(OperacionTresDirecciones.COPIA, decl, varDecl);				
+				// TODO Aqui se ha quitado el parametro. Probablemente se debería
+				// pasar para pintar todo como toca en el arbol.
+        RESULT = new SimboloFactor(varDecl);
     :}
     | VSTRING:s                      
     {: 
-        RESULT = new SimboloFactor(s, Tipo.String); 
+			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.String, s);
+				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.String);
+				I3DUtils.crea(OperacionTresDirecciones.COPIA, decl, varDecl);				
+				// TODO Aqui se ha quitado el parametro. Probablemente se debería
+				// pasar para pintar todo como toca en el arbol.
+        RESULT = new SimboloFactor(varDecl); 
     :}
     | funcionInvk:f                    
     {: 
-        RESULT = new SimboloFactor(f); 
+				// En este punto solo tenemos que propagar la declaración del retorno para poder tener en cuenta la variable
+				// en otras partes del codigo
+        RESULT = new SimboloFactor(f.getDeclaracion()); 
     :}
     | PARENIZQ Operacion:o PARENDER           
     {: 
-        RESULT = new SimboloFactor(o); 
+        RESULT = new SimboloFactor(o.getDeclaracionResultado()); 
 															:}
 		;
 		

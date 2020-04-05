@@ -8,12 +8,14 @@ import analisisSintactico.arbol.Nodo;
 public class SimboloInicializacion extends Nodo implements TipoSubyacente{
 	
 	private SimboloOperacion simboloOperacion;
+        private Declaracion declaracionResultado;
 	
-	public SimboloInicializacion() {
+	public SimboloInicializacion() {            
 	}
 	
 	public SimboloInicializacion(SimboloOperacion simboloOperacion) {
 		this.simboloOperacion = simboloOperacion;
+                this.declaracionResultado = simboloOperacion.getDeclaracionResultado();
 	}
 	
 	@Override
@@ -28,10 +30,7 @@ public class SimboloInicializacion extends Nodo implements TipoSubyacente{
 		return simboloOperacion;
 	}
 	
-        public Declaracion getDeclaracionOperacion() {
-                if (simboloOperacion != null)
-                    return simboloOperacion.getDeclaracion();
-                else 
-                    return null; 
-        }
+        public Declaracion getDeclaracionResultado() {
+                return declaracionResultado;
+        }        
 }

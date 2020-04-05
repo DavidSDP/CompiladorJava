@@ -10,6 +10,7 @@ import Procesador.GlobalVariables;
 import analisisLexico.Scanner;
 import analisisSintactico.parser;
 import analisisSintactico.arbol.ArbolSintactico;
+import intermedio.ProgramaIntermedio;
 import java.io.File;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.Symbol;
@@ -39,7 +40,13 @@ public class Main {
 			System.out.print("Generando árbol de derivación...");
 			ArbolSintactico.generar(topSymbol);
 			System.out.println(" se ha generado el árbol de derivación");
-			
+                        
+                        // TODO James Gosling se está acordando de toda tu familia 
+                        // en estos mismos instantes
+                        // Además, algún arquitecto de software acaba de morir en India
+                        if (!GlobalVariables.hayErrores) {
+                            FicheroIntermedio.escribirInstrucciones(ProgramaIntermedio.getInstance());
+                        }			
 		} catch (FileNotFoundException e) {
 			ErrorHandler.reportaError("El fichero de entrada '"+args[0]+"' no existe");
 			errorGrave = true;
@@ -50,9 +57,11 @@ public class Main {
 			ErrorHandler.reportaError(e);
 			errorGrave = true;
 		} catch (Exception e) {
-			ErrorHandler.reportaError(e.getLocalizedMessage());
+			e.printStackTrace();
+			ErrorHandler.reportaError(e.toString());
 			errorGrave = true;
-		}
+		}   
+                                
 		terminaEjecucion(errorGrave);
 	}
 
@@ -68,6 +77,7 @@ public class Main {
 		ArbolSintactico.abreFichero();
 		ErrorHandler.abreFichero();
 		FicheroEntornos.abreFichero();
+		FicheroIntermedio.abreFichero();
 		System.out.println("Ejecución Procesador de Lenguaje...");
 	}
 
@@ -92,6 +102,7 @@ public class Main {
 			ArbolSintactico.cierraFichero();
 			ErrorHandler.cierraFichero();
 			FicheroEntornos.cierraFichero();
+                        FicheroIntermedio.cierraFichero();
 		} catch (ErrorProcesador e) {
 			System.out.println(e.getMensaje());
 		}

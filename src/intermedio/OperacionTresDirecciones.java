@@ -34,6 +34,8 @@ public enum OperacionTresDirecciones {
     GTE,
     LT,
     LTE,
+    EQ,
+    NE,
     
     // Operaciones logicas
     AND,

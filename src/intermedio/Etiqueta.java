@@ -1,11 +1,19 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 package intermedio;
 
-public class Suma extends InstruccionTresDirecciones {
-    public Suma(Operando primero, Operando segundo, Operando tercero) {
-        super(OperacionTresDirecciones.SUMA);
+/**
+ *
+ * @author jesus
+ */
+public class Etiqueta extends InstruccionTresDirecciones {
+    public Etiqueta(Operando primero) {
+        super(OperacionTresDirecciones.ETIQUETA);
         this.primero = primero;
-        this.segundo = segundo;
-        this.tercero = tercero;
     }  
 
     @Override
@@ -17,12 +25,10 @@ public class Suma extends InstruccionTresDirecciones {
         
         /**
          * 1. Cargamos el valor del primer elemento en el registro
-         * 2. Le sumamos el valor del segundo al registro
+         * 2. Le div el valor del segundo al registro
          * 3. Copiamos el valor del registro a la variable de destino
          */
-        sb.append("MOVE " + primero.toString() + ", D0 \n");
-        sb.append("add " + segundo.toString() + ", D0 \n");
-        sb.append("MOVE D0, " + tercero.toString());
+        sb.append(primero.toString() + ": skip \n");
         
         return sb.toString();
     }

@@ -16,6 +16,7 @@ public class SimboloFuncionInvk extends Nodo implements TipoSubyacente{
 	
 	private String idFuncion;
 	private SimboloParams params;
+        private Declaracion declaracionRetorno;
 	
 	public SimboloFuncionInvk(String i, SimboloParams p) {
 		this.idFuncion = i;
@@ -43,5 +44,18 @@ public class SimboloFuncionInvk extends Nodo implements TipoSubyacente{
 		Declaracion identificadorFuncion = GlobalVariables.entornoActual().fullGetFuncion(idFuncion);
 		return identificadorFuncion.getTipo();
 	}
+        
+        /**
+         * TODO No estoy seguro de que las funciones se tengan que gestionar
+         * asi ya que realmente se interactua con la pila para obtener los
+         * parametros de la llamada.
+         * 
+         * Probablemente no se utilice de la misma forma que las variables
+         * locales
+         * @return 
+         */
+        public Declaracion getDeclaracion() {
+            return declaracionRetorno;
+        }
 	
 }

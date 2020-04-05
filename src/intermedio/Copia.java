@@ -22,7 +22,6 @@ public class Copia extends InstruccionTresDirecciones {
         super(OperacionTresDirecciones.COPIA);
         this.primero = primero;
         this.segundo = segundo;
-        this.tercero = null;
     }  
 
     @Override
@@ -32,6 +31,6 @@ public class Copia extends InstruccionTresDirecciones {
         String primeroStr = this.primero.toString();
         String segundoStr = this.segundo.toString();
         
-        return "mv" + primeroStr + segundoStr;
+        return "MOVE" + primeroStr + segundoStr;
     }
 }

@@ -9,6 +9,7 @@ import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
 
 public class Entorno {
+        protected static int nameSeq = 0;
 	
 	private Integer nivel;
 	
@@ -62,20 +63,28 @@ public class Entorno {
 	
 	// Introduce nuevo ID en el entorno actual
 	public Declaracion put(Tipo tipo, String s) throws ErrorSemantico {
-		if(this.contains(s))
-			throw new ErrorSemantico("El identificador '"+s+"' se ha declarado por duplicado");
-                Declaracion nuevaDeclaracion = new Declaracion(new Identificador(s, s), tipo);
-		this.tablaIDs.put(s, nuevaDeclaracion);
+                String name = s;
+                if (name == null)
+                    name = getTempName();
+                
+		if(this.contains(name))
+			throw new ErrorSemantico("El identificador '"+name+"' se ha declarado por duplicado");
+                Declaracion nuevaDeclaracion = new Declaracion(new Identificador(name, name), tipo);
+		this.tablaIDs.put(name, nuevaDeclaracion);
                 return nuevaDeclaracion;
 	}
 	
 	// Introduce nuevo ID constante en el entorno actual
 	public DeclaracionConstante putConstante(Tipo tipo, String s, Object valor) throws ErrorSemantico {
-		if(this.contains(s))
-			throw new ErrorSemantico("La constante '"+s+"' se ha declarado por duplicado");
+                String name = s;
+                if (name == null)
+                    name = getTempName();
                 
-                DeclaracionConstante nuevoIdentificador = new DeclaracionConstante(new Identificador(s, s), tipo, valor);
-		this.tablaIDs.put(s, nuevoIdentificador);
+		if(this.contains(name))
+			throw new ErrorSemantico("La constante '"+name+"' se ha declarado por duplicado");
+                
+                DeclaracionConstante nuevoIdentificador = new DeclaracionConstante(new Identificador(name, name), tipo, valor);
+		this.tablaIDs.put(name, nuevoIdentificador);
                 return nuevoIdentificador;
 	}
 	
@@ -210,4 +219,8 @@ public class Entorno {
 	public void setIdentificador(Declaracion identificador) {
 		this.identificador = identificador;
 	}
+        
+        private String getTempName() {
+            return "t" + nameSeq++;
+        }
 }

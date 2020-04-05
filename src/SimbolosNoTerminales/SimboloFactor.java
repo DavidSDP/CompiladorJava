@@ -22,7 +22,7 @@ public class SimboloFactor extends Nodo implements TipoSubyacente{
 	private SimboloOperacion operacion;
         private Declaracion decl;
 
-        public SimboloFactor(Declaracion decl, Tipo tipo) {
+        public SimboloFactor(Declaracion decl) {
             this.decl = decl;
         }
         
@@ -111,5 +111,9 @@ public class SimboloFactor extends Nodo implements TipoSubyacente{
 		}
 		return decl.getTipo();
 	}
+        
+        public Declaracion getDeclaracionResultado() {
+            return decl;
+        }
 	
 }

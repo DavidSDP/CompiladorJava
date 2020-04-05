@@ -9,4 +9,15 @@ public class Operando {
     // Asi que no es necesario diferenciar el tipo de valor que estamos manejando
     // en este momento
     protected  Declaracion valor;     
+    
+    public Operando(Declaracion valor) {
+        System.out.println(valor);
+        this.valor = valor;
+    }
+    
+    @Override
+    public String toString() {
+        
+        return valor.getTipo() + " " + valor.getId() != null ? valor.getId().getNombre() : ""; 
+    }
 }

@@ -20,9 +20,9 @@ public class Resta extends InstruccionTresDirecciones {
          * 2. Le restamos el valor del segundo al registro
          * 3. Copiamos el valor del registro a la variable de destino
          */
-        sb.append("mv " + primero.toString() + ", D0 \n");
+        sb.append("MOVE " + primero.toString() + ", D0 \n");
         sb.append("sub " + segundo.toString() + ", D0 \n");
-        sb.append("mv D0, " + segundo.toString());
+        sb.append("MOVE D0, " + segundo.toString());
         
         return sb.toString();
     }

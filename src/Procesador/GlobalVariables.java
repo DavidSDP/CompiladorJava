@@ -22,6 +22,7 @@ public class GlobalVariables {
 		public static final Path FICHERO_ARBOL = outputDir.resolve("ArbolSintactico.dot");
 		public static final Path FICHERO_ERRORES = outputDir.resolve("Errores.txt");
 		public static final Path FICHERO_ENTORNOS = outputDir.resolve("Entornos.txt");
+		public static final Path FICHERO_INTERMEDIO = outputDir.resolve("codigo_intermedio.txt");
 		
 		public static Boolean DEBUG_MODE = true;
 		public static Boolean hayErrores = false;
@@ -74,9 +75,9 @@ public class GlobalVariables {
 			top.getTablaIDs().put(id, new DeclaracionArray(new Identificador(id, id), Tipo.getTipo(tipo), simboloArrayDef));
 		}
 		
-		public static void asignaIDConstante(String id, String tipo, Object valor) throws ErrorSemantico {
+		public static DeclaracionConstante asignaIDConstante(String id, String tipo, Object valor) throws ErrorSemantico {
 			Entorno top = entornoActual();
-			top.putConstante(Tipo.getTipo(tipo), id, valor);
+			return top.putConstante(Tipo.getTipo(tipo), id, valor);
 		}
 		
 		public static void asignaFuncionID(String idFuncion, String tipo) throws ErrorSemantico {
@@ -211,5 +212,12 @@ public class GlobalVariables {
 		public static Integer getNodoIdentificadorUnico() {
 			return _idnodoIncremental++;
 		}
+                
+                public static DeclaracionConstante crearVariableTemporal(Tipo tipo, Object valor) throws ErrorSemantico {
+                        return entornoActual().putConstante(tipo, null, valor);
+                }
 		
+                public static Declaracion crearVariableTemporal(Tipo tipo) throws ErrorSemantico {
+                        return entornoActual().put(tipo, null);
+                }
 	}

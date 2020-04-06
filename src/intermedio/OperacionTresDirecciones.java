@@ -22,7 +22,8 @@ public enum OperacionTresDirecciones {
     // Operaciones relacionadas con funciones
     LLAMADA,
     PREAMBULO,
-    
+    RETORNO,
+
     // Operaciones aritmeticas
     SUMA,
     RESTA,

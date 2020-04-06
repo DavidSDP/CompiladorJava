@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Checkers.Tipo;
+import Procesador.Declaracion;
+import Procesador.DeclaracionFuncion;
 import Procesador.TipoSubyacente;
 import analisisSintactico.sym;
 import analisisSintactico.arbol.INodo;
@@ -16,12 +18,14 @@ public class SimboloFuncionDecl extends Nodo implements TipoSubyacente{
 	private Tipo tipo;
 	private SimboloArgs a;
 	private SimboloContenido c;
-	
-	public SimboloFuncionDecl(String i, Tipo t, SimboloArgs a, SimboloContenido c) {
-		this.id = i;
-		this.tipo = t;
+	private DeclaracionFuncion decl;
+
+	public SimboloFuncionDecl(DeclaracionFuncion decl, SimboloArgs a, SimboloContenido c) {
+		this.id = decl.getId().getId();
+		this.tipo = decl.getTipo();
 		this.a = a;
 		this.c = c;
+		this.decl = decl;
 	}
 	
 	@Override
@@ -48,6 +52,22 @@ public class SimboloFuncionDecl extends Nodo implements TipoSubyacente{
 	@Override
 	public Tipo getTipoSubyacente() {
 		return Tipo.Void;
+	}
+
+	public String getId() {
+		return this.id;
+	}
+
+	public void setArgs(SimboloArgs a) {
+		this.a = a;
+	}
+
+	public void setContenido(SimboloContenido c) {
+		this.c = c;
+	}
+
+	public DeclaracionFuncion getDeclaracion() {
+		return this.decl;
 	}
 	
 }

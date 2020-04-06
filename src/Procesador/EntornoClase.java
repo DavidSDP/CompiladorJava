@@ -27,10 +27,13 @@ public class EntornoClase extends Entorno{
 	////////*	IDENTIFICADORES DE FUNCIONES	*////////
 
 	// Introduce nuevo ID de Función en el entorno actual
-	public void putFuncion(Tipo tipo, String s) throws ErrorSemantico {
+	public DeclaracionFuncion putFuncion(Tipo tipo, String s, String etiqueta) throws ErrorSemantico {
 		if(this.containsFuncion(s))
 			throw new ErrorSemantico("El identificador de función '"+s+"' se ha declarado por duplicado");
-		this.tablaFunciones.put(s, new Declaracion(new Identificador(s, s), tipo));
+
+		DeclaracionFuncion decl = new DeclaracionFuncion(new Identificador(s, s), tipo, etiqueta);
+		this.tablaFunciones.put(s, decl);
+		return decl;
 	}
 	
 	// Devuelve true si el ID de Función ha sido declarado en el entorno actual

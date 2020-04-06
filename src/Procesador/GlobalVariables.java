@@ -83,14 +83,14 @@ public class GlobalVariables {
 			return top.putConstante(Tipo.getTipo(tipo), id, valor);
 		}
 		
-		public static void asignaFuncionID(String idFuncion, String tipo) throws ErrorSemantico {
-			EntornoClase top = (EntornoClase) entornoActual();
-			top.putFuncion(Tipo.getTipo(tipo), idFuncion);
+		public static DeclaracionFuncion asignaFuncionID(String idFuncion, String tipo) throws ErrorSemantico {
+			return asignaFuncionID(idFuncion, Tipo.getTipo(tipo));
 		}
 		
-		public static void asignaFuncionID(String idFuncion, Tipo tipo) throws ErrorSemantico {
+		public static DeclaracionFuncion asignaFuncionID(String idFuncion, Tipo tipo) throws ErrorSemantico {
 			EntornoClase top = (EntornoClase) entornoActual();
-			top.putFuncion(tipo, idFuncion);
+			String etiqueta = GlobalVariables.generarEtiqueta();
+			return top.putFuncion(tipo, idFuncion, etiqueta);
 		}
 		
 		// Llamar una vez dentro del entorno de la funciÃ³n

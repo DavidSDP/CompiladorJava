@@ -49,10 +49,13 @@ public class I3DUtils {
                 c3d = new Etiqueta(primero);
                 break;
             case LLAMADA:
-//                c3d = new Llamada(primero); // primero es el numero de procedimiento/funcion
+                c3d = new Llamada(primero); // primero es el numero de procedimiento/funcion
                 break;
             case PREAMBULO:
-//                c3d = new Preambulo(primero); // primero es el numero de procedimiento/funcion
+                c3d = new Preambulo(primero); // primero es el numero de procedimiento/funcion
+                break;
+            case RETORNO:
+                c3d = new Retorno(primero); // primero es el numero de procedimiento/funcion
                 break;
             case SUMA:
                 c3d = new Suma(primero, segundo, tercero);

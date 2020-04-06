@@ -112,7 +112,7 @@ public class Entorno {
 	}
 	
 	// Devuelve el ID  de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
-	public Declaracion fullGetFuncion(String s) {
+	public DeclaracionFuncion fullGetFuncion(String s) {
 		for(Entorno e = this; e != null; e = e.getEntornoAnterior()) {
 			if(e instanceof EntornoClase) {
 				if(((EntornoClase)e).containsFuncion(s)) {

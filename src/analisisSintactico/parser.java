@@ -833,14 +833,26 @@ class CUP$parser$actions {
 		int pright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloParams p = (SimboloParams)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		 
-																try{
-																	GlobalVariables.compruebaFuncionID(i);
-																	TypeCheck.parameterMatch(i,p);
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-																RESULT = new SimboloFuncionInvk(i,p);
-															
+			DeclaracionFuncion decl = null;
+			try{
+					decl = GlobalVariables.compruebaFuncionID(i);
+					TypeCheck.parameterMatch(i,p);
+			}catch(ErrorSemantico e){
+					ErrorHandler.reportaError(e);
+			}
+
+			// TODO No es aqui, pero ahora mismo no se estan pasando los parametros a la funcion
+			// probablemente esto tenga que hacerse en params.
+
+			// Generamos la llamada
+			I3DUtils.crea(OperacionTresDirecciones.LLAMADA, decl);
+			// TODO Esta variable temporal ahora mismo no sirve de nada, pero de alguna manera
+			// Tenemos que propagar el posible resultado (falta mirar el tema de los void)
+			// No estoy seguro de que el void se deba retornar como valor de variable
+			// intermedia :thinking:
+			Declaracion declRetorno = GlobalVariables.crearVariableTemporal(decl.getTipo());			
+			RESULT = new SimboloFuncionInvk(decl, declRetorno, i, p);
+	
               CUP$parser$result = parser.getSymbolFactory().newSymbol("funcionInvk",14, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

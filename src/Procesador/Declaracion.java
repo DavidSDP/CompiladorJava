@@ -44,8 +44,8 @@ public class Declaracion {
 		return Objects.hash(identificador);
 	}
 
-        @Override
-        public String toString() {
+	@Override
+	public String toString() {
             return tipo.toString() + " " + identificador.toString();
         }
 }

@@ -14,6 +14,7 @@ import Errores.ErrorSintactico;
 import Procesador.GlobalVariables;
 import Procesador.EntornoClase;
 import Procesador.Declaracion;
+import Procesador.DeclaracionFuncion;
 import Procesador.DeclaracionConstante;
 import Procesador.Identificador;
 import SimbolosNoTerminales.*;
@@ -70,6 +71,8 @@ non terminal	SimboloOperacion	Operacion2;
 non terminal	SimboloOperacion	Operacion3;
 non terminal  	SimboloFuncionInvk	funcionInvk;
 non terminal	SimboloFuncionDecl	funcionDecl;
+non terminal	SimboloFuncionDecl	funchead;
+non terminal	SimboloFuncionDecl	funcname;
 non terminal	SimboloArgs			args;
 non terminal	SimboloArgDecl		argDecl;
 non terminal	SimboloArgs			nextArg;
@@ -77,7 +80,7 @@ non terminal	SimboloContenido	contenido;
 non terminal	SimboloParams		params;
 non terminal	SimboloParams		nextParam;
 non terminal  SimboloCondicionBucle cond_bucle;
-non terminal  M1;
+non terminal  SimboloEtiqueta M1;
 non terminal  SimboloCondicionalBloquePrincipal cond_main_block;
 non terminal  SimboloClausulaCondicion clausula_cond;
 non terminal	SimboloArray 		arrayAsig;
@@ -216,50 +219,84 @@ arrayDef   ::= CORCHIZQ CORCHDER							{: RESULT = new SimboloArray(); :}
 		 	|												{: RESULT = null; :}
 			;
 
-funcionDecl ::= TVAR:t VID:i 								{: 	try{
-																	GlobalVariables.asignaFuncionID(i,t);
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-															:}
-				PARENIZQ									{: GlobalVariables.entraBloqueFuncion(new Declaracion(new Identificador(i, i), Tipo.getTipo(t)));
-																GlobalVariables.asignaEntornoFuncionID(i);
-															:}
-				args:a										{: GlobalVariables.asignaFuncionArgs(i,a);
-															:}
-				PARENDER LLAVEIZQ							{: :}
-				contenido:c									{: GlobalVariables.saleBloqueFuncion(false);
-															:}
-				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,Tipo.getTipo(t),a,c);
-															:}
-				|
-				TVOID:t VID:i 								{: 	try{
-																	GlobalVariables.asignaFuncionID(i,Tipo.Void);
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-															:}
-				PARENIZQ									{: GlobalVariables.entraBloqueFuncion(new Declaracion(new Identificador(i, i), Tipo.Void));
-																GlobalVariables.asignaEntornoFuncionID(i);
-															:}
-				args:a										{: GlobalVariables.asignaFuncionArgs(i,a);
-															:}
-				PARENDER LLAVEIZQ							{: :}
-				contenido:c									{: GlobalVariables.saleBloqueFuncion(false);
-															:}
-				LLAVEDER									{: RESULT = new SimboloFuncionDecl(i,Tipo.Void,a,c);
-															:}
-			;
-		
-funcionInvk ::= VID:i PARENIZQ params:p PARENDER			{: 
-																try{
-																	GlobalVariables.compruebaFuncionID(i);
-																	TypeCheck.parameterMatch(i,p);
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-																RESULT = new SimboloFuncionInvk(i,p);
-															:}
+funcionDecl ::= funchead:fh LLAVEIZQ contenido:c LLAVEDER
+  {:  
+      GlobalVariables.saleBloqueFuncion(false);
+
+			I3DUtils.crea(OperacionTresDirecciones.RETORNO, fh.getDeclaracion());
+      // Watch out! fh holds a SimboloFuncionDecl instance
+      fh.setContenido(c);
+      RESULT = fh; 
+  :}; 
+
+funchead ::= funcname:fn PARENIZQ args:a PARENDER 
+  {:  
+      GlobalVariables.asignaFuncionArgs(fn.getId(), a); 
+      // Propagate the args upwards
+      fn.setArgs(a);
+      RESULT = fn; 
+  :}; 
+
+funcname ::= TVAR:t VID:i 
+  {:  
+      DeclaracionFuncion decl = null;
+      try{
+          decl = GlobalVariables.asignaFuncionID(i, t); 
+      } catch(ErrorSemantico e) {
+          ErrorHandler.reportaError(e);
+      }   
+
+			// Genera lo necesario para poder dirigir las llamadas al procedimiento
+			I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiqueta());
+			I3DUtils.crea(OperacionTresDirecciones.PREAMBULO, decl);
+
+      GlobalVariables.entraBloqueFuncion(decl);
+      GlobalVariables.asignaEntornoFuncionID(i);
+      // Dummy construct to pass the information upwards
+      RESULT = new SimboloFuncionDecl(decl, null, null);
+  :}  
+          | TVOID VID:i
+  {:  
+      DeclaracionFuncion decl = null;
+      try{
+          decl = GlobalVariables.asignaFuncionID(i, Tipo.Void);
+      } catch(ErrorSemantico e) {
+          ErrorHandler.reportaError(e);
+      }
+   
+			// Genera lo necesario para poder dirigir las llamadas al procedimiento
+			I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiqueta());
+			I3DUtils.crea(OperacionTresDirecciones.PREAMBULO, decl);
+
+      GlobalVariables.entraBloqueFuncion(decl);
+      GlobalVariables.asignaEntornoFuncionID(i);
+      // Dummy construct to pass the information upwards
+      RESULT = new SimboloFuncionDecl(decl, null, null);
+  :}; 
+    
+
+funcionInvk ::= VID:i PARENIZQ params:p PARENDER			
+	{: 
+			DeclaracionFuncion decl = null;
+			try{
+					decl = GlobalVariables.compruebaFuncionID(i);
+					TypeCheck.parameterMatch(i,p);
+			}catch(ErrorSemantico e){
+					ErrorHandler.reportaError(e);
+			}
+
+			// TODO No es aqui, pero ahora mismo no se estan pasando los parametros a la funcion
+			// probablemente esto tenga que hacerse en params.
+
+			// Generamos la llamada
+			I3DUtils.crea(OperacionTresDirecciones.LLAMADA, decl);
+			// TODO Esta variable temporal ahora mismo no sirve de nada, pero de alguna manera
+			// Tenemos que propagar el posible resultado (falta mirar el tema de los void)
+			// No estoy seguro de que el void se deba retornar como valor de variable
+			// intermedia :thinking:
+			Declaracion declRetorno = GlobalVariables.crearVariableTemporal(decl.getTipo());			
+			RESULT = new SimboloFuncionInvk(decl, declRetorno, i, p);
+	:}
 		;
 		
 args ::= argDecl:a nextArg:n								{: 
@@ -303,24 +340,35 @@ contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e)
 			;
 		
 bucle ::= cond_bucle:cb LLAVEIZQ {: GlobalVariables.entraBloqueWhile(); :}
-					contenido:o  {: GlobalVariables.saleBloqueWhile(); :}
-					LLAVEDER {: RESULT = new SimboloBucle(cb, o); :}
-					;
+					contenido:o  LLAVEDER 
+		{: 
+				GlobalVariables.saleBloqueWhile(); 
+				I3DUtils.crea(OperacionTresDirecciones.GOTO, cb.getEtiquetaStart());
+				I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, cb.getEtiquetaFin());
+				RESULT = new SimboloBucle(cb, o);
+		:};
 
-cond_bucle ::= TWHILE PARENIZQ M1 Operacion:o PARENDER {:
-								try{
-									TypeCheck.checkBoolean(o, true);
-								} catch(ErrorSemantico e) {
-									ErrorHandler.reportaError(e);
-								}
-								RESULT = new SimboloCondicionBucle(o);
-							:}
-              
-;
+cond_bucle ::= TWHILE PARENIZQ M1:start Operacion:o PARENDER 
+		{:
+				try{
+						TypeCheck.checkBoolean(o, true);
+				} catch(ErrorSemantico e) {
+						ErrorHandler.reportaError(e);
+				}
+				String etFin = GlobalVariables.generarEtiqueta();
+				Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.Integer, 0);
+				// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
+				I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, etFin);
+				RESULT = new SimboloCondicionBucle(o, start.getEtiqueta(), etFin);
+		:};
 
-M1 ::= {: /* TODO Generar etiqueta y asignarsela al resultado */ :} ;
+M1 ::= 
+		{: 
+				String etStart = GlobalVariables.generarEtiqueta();
+				I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, etStart);
+				RESULT = new SimboloEtiqueta(etStart);
+		:};
 
-// TODO 
 condicional     ::= cond_main_block:cmb condelse:e
     {: 
 				I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, cmb.getEtiqueta());

@@ -1,5 +1,6 @@
 package intermedio;
 
+
 public class Llamada extends InstruccionTresDirecciones {
     public Llamada(Operando primero) {
         super(OperacionTresDirecciones.LLAMADA);

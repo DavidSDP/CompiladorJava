@@ -11,7 +11,7 @@ import Errores.ErrorSemantico;
 
 public class EntornoClase extends Entorno{
 	
-	private Hashtable<String, Declaracion> tablaFunciones;
+	private Hashtable<String, DeclaracionFuncion> tablaFunciones;
 	private Hashtable<String, Declaracion> tablaClases;
 	
 	// La tabla FuncionEntorno se declara en el mismo entorno donde la función ha sido declarada
@@ -42,7 +42,7 @@ public class EntornoClase extends Entorno{
 	}
 	
 	// Devuelve el ID de Función especificado en el entorno actual
-	public Declaracion getFuncion(String s) {
+	public DeclaracionFuncion getFuncion(String s) {
 		if(!this.containsFuncion(s)) {
 			return null;
 		}

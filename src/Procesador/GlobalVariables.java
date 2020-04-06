@@ -26,6 +26,8 @@ public class GlobalVariables {
 		
 		public static Boolean DEBUG_MODE = true;
 		public static Boolean hayErrores = false;
+                
+                private static Integer SecuenciaIdEtiqueta = 0;
 		
 		private static Integer _idnodoIncremental = 0;
 		private static Integer CONTADOR = 1;
@@ -59,20 +61,21 @@ public class GlobalVariables {
 			saleBloqueFuncion(true);
 		}
 
-		public static void asignaID(String id, String tipo) throws ErrorSemantico {
-			Entorno top = entornoActual();
-			top.put(Tipo.getTipo(tipo), id);
+		public static Declaracion asignaID(String id, String tipo) throws ErrorSemantico {
+                        return asignaID(id, Tipo.getTipo(tipo));
 		}
 		
-		public static void asignaID(String id, Tipo tipo) throws ErrorSemantico {
+		public static Declaracion asignaID(String id, Tipo tipo) throws ErrorSemantico {
 			Entorno top = entornoActual();
-			top.put(tipo, id);
+			return top.put(tipo, id);
 		}
 		
-		public static void asignaArray(String id, String tipo, SimboloArray simboloArrayDef) throws ErrorSemantico{
+		public static Declaracion asignaArray(String id, String tipo, SimboloArray simboloArrayDef) throws ErrorSemantico{                    
 			Entorno top = entornoActual();
+                        DeclaracionArray declArray = new DeclaracionArray(new Identificador(id, id), Tipo.getTipo(tipo), simboloArrayDef);
                         // TODO Esto es raro, de momento lo dejo así, pero vamos diría que esto no tiene que estar así
-			top.getTablaIDs().put(id, new DeclaracionArray(new Identificador(id, id), Tipo.getTipo(tipo), simboloArrayDef));
+			top.getTablaIDs().put(id, declArray);
+                        return declArray;
 		}
 		
 		public static DeclaracionConstante asignaIDConstante(String id, String tipo, Object valor) throws ErrorSemantico {
@@ -219,5 +222,9 @@ public class GlobalVariables {
 		
                 public static Declaracion crearVariableTemporal(Tipo tipo) throws ErrorSemantico {
                         return entornoActual().put(tipo, null);
+                }
+                
+                public static String generarEtiqueta() {
+                    return "e" + SecuenciaIdEtiqueta++;
                 }
 	}

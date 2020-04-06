@@ -136,21 +136,33 @@ inicializacion ::= IGUAL Operacion:o PUNTOCOMA
 declaracion ::= TVAR:t VID:i arrayAsig:a inicializacion:init 
 			{:  
 				Boolean esArray = (a != null);
+				Declaracion declResultado = null;
 				try{
-					if(esArray)
-						GlobalVariables.asignaArray(i,t,a);
-					else
-						GlobalVariables.asignaID(i,t);
+					if(esArray) {
+						// Declaracion de un array
+						declResultado = GlobalVariables.asignaArray(i,t,a);
+						if(init.getSimboloOperacion()!=null) {
+							TypeCheck.lanzaErrorArrayNoInicializable();
+
+							// TODO ¿Como se inicializa un array utilizando c3@?
+							// Sabiendo el offset del tipo podrias generar una copia a: @ + idx * sizeTipo ( son vectores unidimensionales )
+							// Sin embargo esto obligaría a generar un nuevo tipo de Operando que nos permita redireccionar memoria.
+							I3DUtils.crea(OperacionTresDirecciones.COPIA, init.getDeclaracionResultado(), declResultado);						
+						}						
+					} else {
+						// Declaracion simple
+						declResultado = GlobalVariables.asignaID(i,t);
+						if(init.getSimboloOperacion()!=null) {
+							TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getSimboloOperacion().getTipoSubyacente());
+							I3DUtils.crea(OperacionTresDirecciones.COPIA, init.getDeclaracionResultado(), declResultado);						
+						}
+					}
 						
-					if(esArray && (init.getSimboloOperacion() != null))
-						TypeCheck.lanzaErrorArrayNoInicializable();
-						
-					if(init.getSimboloOperacion()!=null)
-						TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getSimboloOperacion().getTipoSubyacente());
-				
 				}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 				}
+				// Ojo! Aqui no es necesario propagar la declaracion ya no hay nadie que pueda usarlo en reducciones
+				// posteriores. Así que declResultado muere aqui.
 				RESULT = new SimboloDeclaracion(i,Tipo.getTipo(t),esArray,init);
 			:}
 															
@@ -165,7 +177,7 @@ declaracion ::= TVAR:t VID:i arrayAsig:a inicializacion:init
 					else
 						TypeCheck.lanzaErrorConstanteNoInicializada(i, t);
 
-        I3DUtils.crea(OperacionTresDirecciones.COPIA, init.getDeclaracionResultado(), decl);
+        	I3DUtils.crea(OperacionTresDirecciones.COPIA, init.getDeclaracionResultado(), decl);
 				}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 				}
@@ -180,14 +192,19 @@ asignacion ::= VID:i arrayAsig:a IGUAL Operacion:o PUNTOCOMA
 					if(a != null){
 						GlobalVariables.compruebaIDArray(i);
 						TypeCheck.typesMatchAsignacionArray(i, o.getTipoSubyacente());
+						// TODO Falta implementar la generacion de codigo para los arrays
 					}else{
-						GlobalVariables.compruebaID(i);
+						Declaracion decl = GlobalVariables.compruebaID(i);
 						GlobalVariables.compruebaAsignacionPermitida(i);
-						TypeCheck.typesMatchAsignacion(GlobalVariables.entornoActual().fullGet(i).getId().getId(), GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());
+						TypeCheck.typesMatchAsignacion(GlobalVariables.entornoActual().fullGet(i).getId().getId(), GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());						
+					
+        		I3DUtils.crea(OperacionTresDirecciones.COPIA, o.getDeclaracionResultado(), decl);
 					}
 				}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 				}
+				// Ojo! Aqui no es necesario propagar la declaracion ya no hay nadie que pueda usarlo en reducciones
+				// posteriores. Así que declResultado muere aqui
 				RESULT = new SimboloAsignacion(i,o);
 			:}
 			;
@@ -306,37 +323,37 @@ M1 ::= {: /* TODO Generar etiqueta y asignarsela al resultado */ :} ;
 // TODO 
 condicional     ::= cond_main_block:cmb condelse:e
     {: 
+				I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, cmb.getEtiqueta());
         RESULT = new SimboloCondicional(cmb, e);
     :};
 
 cond_main_block ::= clausula_cond:cc LLAVEIZQ {: GlobalVariables.entraBloqueIf(); :}
 							  contenido:c {:
 									GlobalVariables.saleBloqueIf(); 
-                  // TODO Generar etiqueta fin
-                  //  Etiquta etFin = GlobalVariables.generarEtiqueta();
-                  //  RESULT = new SimboloCondicionalBloquePrincipal(cc, c, etFin);
-                  // auto i3Direcciones = GlobalVariables.generarC3@(InstruccionMaquina.GOTO, cc.getEtiqueta());
-									RESULT = new SimboloCondicionalBloquePrincipal(cc, c);
+									
+                  String etFin = GlobalVariables.generarEtiqueta();
+									I3DUtils.crea(OperacionTresDirecciones.GOTO, etFin);
+									I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, cc.getEtiqueta());
+									RESULT = new SimboloCondicionalBloquePrincipal(cc, c, etFin);
 								:}
 								LLAVEDER;
 
 clausula_cond   ::= TIF PARENIZQ Operacion:o PARENDER 
-									{:
-										try {
-											TypeCheck.checkBoolean(o, false);
-										} catch(ErrorSemantico e) {
-											ErrorHandler.reportaError(e);
-										} 
-                    // TODO Generar etiqueta else y propagar dentro del SimboloClausulaCond
-                    //  Etiquta et = GlobalVariables.generarEtiqueta();
-										//  RESULT = new SimboloClausulaCond(o, et);
-                    // auto i3Direcciones = GlobalVariables.generarC3@(TipoInstr.COND_JUMP, cc.expresion, Valor.FALSO, cc.etiqueta);
-
-                    // Ademas, aqui ya podemos generar la condición de salto al caso falso y
-										// Necesitaria generar una etiqueta e_test_fallido (por ejemplo) y
-										// propagarla para ponerla una vez se ha evaluado el cuerpo del main.
-										RESULT = new SimboloClausulaCondicion(o);
-									:};
+			{:
+					try {
+						TypeCheck.checkBoolean(o, false);
+					} catch(ErrorSemantico e) {
+						ErrorHandler.reportaError(e);
+					} 
+  	      String et = GlobalVariables.generarEtiqueta();
+					// TODO Forma hacky de hacer que el valor constante False esté en el codigo.
+					// Además el valor false y true deberían estar codificados en algun lado para reusarlo
+					// en el codigo
+					Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.Integer, 0);
+					// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
+					I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, et);
+					RESULT = new SimboloClausulaCondicion(o, et);
+			:};
 			
 condelse ::= TELSE LLAVEIZQ 								{: GlobalVariables.entraBloqueElse(); :}
 				contenido:e 								{: GlobalVariables.saleBloqueElse(); :}
@@ -500,7 +517,7 @@ factor ::= VID:i arrayAsig:a
     | PARENIZQ Operacion:o PARENDER           
     {: 
         RESULT = new SimboloFactor(o.getDeclaracionResultado()); 
-															:}
+		:}
 		;
 		
 params ::= Operacion:o nextParam:n							{: RESULT = new SimboloParams(o,n,true); :}

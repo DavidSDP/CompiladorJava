@@ -3,7 +3,7 @@ package Procesador;
 import Checkers.Tipo;
 import SimbolosNoTerminales.SimboloArray;
 
-public class DeclaracionArray extends Declaracion{
+public class DeclaracionArray extends Declaracion {
 	
 	private SimboloArray simboloArray;
 	private Tipo tipoDato;

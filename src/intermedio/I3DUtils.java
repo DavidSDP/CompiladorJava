@@ -11,6 +11,12 @@ public class I3DUtils {
         return crea(instr, sourceOperator, destOperator, null);
     }
     
+    // Solo es utils para generar etiquetas y saltos incondicionales
+    public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, String etiqueta) {
+        Operando primerOperando = new OperandoEtiqueta(etiqueta);
+        return crea(instr, primerOperando, null, null);
+    }
+    
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Declaracion primero) {
         Operando primerOperando = new Operando(primero);
         return crea(instr, primerOperando, null, null);
@@ -23,12 +29,13 @@ public class I3DUtils {
         return crea(instr, primerOperando, segundoOperando, tercerOperando);
     }
     
-    // TODO Ver como generamos las variables temporales.
-    //  Dependiendo de como se generen ( si se registran en la tabla de simbolos o no)
-    //  Podremos unificar el tema del uso de variables y constantes.
-    //  P.E: Si una constante se inicializa con una operación, la operación genera un valor temporal
-    //       que, si se tiene en cuenta en la tabla de simbolos, nos vendrá como un operando normal y corriente.
-    //       De otra forma, la variable nos vendría como un entero, provocando que tuvieramos que diferenciar los casos.
+    public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Declaracion primero, Declaracion segundo, String etiqueta) {
+        Operando primerOperando = new Operando(primero);
+        Operando segundoOperando = new Operando(segundo);
+        Operando tercerOperando = new OperandoEtiqueta(etiqueta);
+        return crea(instr, primerOperando, segundoOperando, tercerOperando);
+    }
+    
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Operando primero, Operando segundo, Operando tercero) {
         InstruccionTresDirecciones c3d = null;
         switch(instr) {
@@ -77,6 +84,14 @@ public class I3DUtils {
             case OR:
                 c3d = new Or(primero, segundo, tercero);
                 break;
+            case EQ:
+                c3d = new EQ(primero, segundo, tercero);
+                break;
+            case NE:
+                c3d = new NE(primero, segundo, tercero);
+                break;
+            default:
+                throw new AssertionError(instr.name());
         }
         
         ProgramaIntermedio.getInstance().addInstruccion(c3d);
@@ -127,5 +142,6 @@ public class I3DUtils {
         }
         return op;
     }
+    
     
 }

@@ -17,8 +17,14 @@ public enum OperacionTresDirecciones {
     
     // Creacion de etiquetas
     ETIQUETA,
-    
-    
+
+    // Creacion de etiquetas
+    CARGAR_INDIRECCION,
+    GUARDAR_INDIRECCION,
+
+    // Carga de parametros para funciones. Solo tenemos parametros simples por ahora.
+    PARAM,
+
     // Operaciones relacionadas con funciones
     LLAMADA,
     PREAMBULO,

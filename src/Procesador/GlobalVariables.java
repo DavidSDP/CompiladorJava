@@ -121,11 +121,12 @@ public class GlobalVariables {
         return i;
     }
 
-    public static void compruebaIDArray(String id) throws ErrorSemantico {
+    public static DeclaracionArray compruebaIDArray(String id) throws ErrorSemantico {
         Entorno top = entornoActual();
         Declaracion d = top.fullGet(id);
         if (!(d instanceof DeclaracionArray))
             throw new ErrorSemantico("El id " + id + " no es un símbolo de array declarado en el entorno");
+        return (DeclaracionArray)d;
     }
 
     public static void compruebaAsignacionPermitida(String id) throws ErrorSemantico {

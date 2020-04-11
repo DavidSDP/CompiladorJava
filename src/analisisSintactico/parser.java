@@ -18,6 +18,7 @@ import Procesador.EntornoClase;
 import Procesador.Declaracion;
 import Procesador.DeclaracionFuncion;
 import Procesador.DeclaracionConstante;
+import Procesador.DeclaracionArray;
 import Procesador.Identificador;
 import SimbolosNoTerminales.*;
 import intermedio.I3DUtils;
@@ -133,7 +134,7 @@ public class parser extends java_cup.runtime.lr_parser {
     "\uffc8\025\uffc8\026\uffc8\030\uffc8\031\uffc8\001\002\000\020" +
     "\017\uffc6\020\uffc6\022\uffc6\025\uffc6\026\uffc6\030\uffc6\031" +
     "\uffc6\001\002\000\020\017\uffcc\020\uffcc\022\uffcc\025\071" +
-    "\026\070\030\uffcc\031\uffcc\001\002\000\020\017\uffca\020" +
+    "\026\070\030\uffcc\031\065\001\002\000\020\017\uffca\020" +
     "\uffca\022\uffca\025\071\026\070\030\uffca\031\uffca\001\002" +
     "\000\014\022\077\025\071\026\070\030\066\031\065\001" +
     "\002\000\020\017\uffc0\020\uffc0\022\uffc0\025\uffc0\026\uffc0" +
@@ -586,10 +587,13 @@ class CUP$parser$actions {
 						if(init.getSimboloOperacion()!=null) {
 							TypeCheck.lanzaErrorArrayNoInicializable();
 
-							// TODO ¿Como se inicializa un array utilizando c3@?
-							// Sabiendo el offset del tipo podrias generar una copia a: @ + idx * sizeTipo ( son vectores unidimensionales )
-							// Sin embargo esto obligaría a generar un nuevo tipo de Operando que nos permita redireccionar memoria.
-							I3DUtils.crea(OperacionTresDirecciones.COPIA, init.getDeclaracionResultado(), declResultado);						
+						// Nota: Si quisieramos gestionar los vectores de forma dinamica, en este punto solo tendriamos
+						// que asignar una variable que contuviese el puntero al heap.
+						// Por simplificar las cosas, de momento dejamos esto de forma estatica
+						// y por tanto no hace falta que hagamos nada. Ya que el array solo es una variable de elementos
+						// contiguos. La variable ya se ha definido aqui y el espacio de memoria ya esta reservado para
+						// las operaciones porque se tiene en cuenta a la hora de asignar desplazamiento en la tabla
+						// de simbolos
 						}						
 					} else {
 						// Declaracion simple
@@ -661,10 +665,19 @@ class CUP$parser$actions {
 		 
 				try{
 					if(a != null){
-						GlobalVariables.compruebaIDArray(i);
+						DeclaracionArray decl = GlobalVariables.compruebaIDArray(i);
 						TypeCheck.typesMatchAsignacionArray(i, o.getTipoSubyacente());
-						// TODO Falta implementar la generacion de codigo para los arrays
-					}else{
+						// Y aqui va otro hack! :D
+						// Cuando tenemos un elemento que es un array, para poder gestionar la indireccion
+						// de forma adecuada en el c3@ tenemos que crear una constante intermedia que mantenga
+						// la información del indice :+1:
+						DeclaracionConstante indice = GlobalVariables.crearVariableTemporal(Tipo.Integer, a.getNumero());
+						// Para copiar un elemento dentro de un array tenemos que asignar un valor
+						// en una posicion concreta.
+						// Dicha posicion es: tamTipo * idx. Pero como las instrucciones operan sobre variables
+						// tenemos que inventarnos
+        		I3DUtils.crea(OperacionTresDirecciones.GUARDAR_INDIRECCION, o.getDeclaracionResultado(), decl, indice);						
+					} else {
 						Declaracion decl = GlobalVariables.compruebaID(i);
 						GlobalVariables.compruebaAsignacionPermitida(i);
 						TypeCheck.typesMatchAsignacion(GlobalVariables.entornoActual().fullGet(i).getId().getId(), GlobalVariables.entornoActual().fullGet(i).getTipo(), o.getTipoSubyacente());						
@@ -1478,12 +1491,35 @@ class CUP$parser$actions {
         Declaracion decl = null;
         try{
             decl = GlobalVariables.compruebaID(i);
+						boolean isDeclaracionArray = decl instanceof DeclaracionArray;
+
+						if (a != null && !isDeclaracionArray) {
+								// Estamos intentando dereferenciar una variables simple!
+								throw new ErrorSemantico("Se ha intentado dereferenciar la variable simple: " + i);
+						}
+
+
+						if (!isDeclaracionArray) {
+								// Esto ya es una variable o una constante declarada en nuestra tabla de simbolos
+								// asi que no es necesario crear una variable temporal
+								RESULT = new SimboloFactor(decl);
+						} else if (a == null) {
+								// TODO Esto no esta implementado. ¿Como debemos gestionarlo?
+								// Si usaramos memoria dinamica ( heap ) esto seria tan sencillo
+								// como asignar un valor a otro.
+						} else {
+								DeclaracionArray declArray = (DeclaracionArray) decl;
+								Declaracion variable = GlobalVariables.crearVariableTemporal(declArray.getTipoDato());
+								DeclaracionConstante indice = GlobalVariables.crearVariableTemporal(Tipo.Integer, a.getNumero());
+								// Estamos accediendo a un array
+								I3DUtils.crea(OperacionTresDirecciones.CARGAR_INDIRECCION, declArray, indice, variable);
+								RESULT = new SimboloFactor(declArray, a.getNumero());
+						}
 				}catch(ErrorSemantico e){
 						ErrorHandler.reportaError(e);
 				}
 				// TODO Aqui se ha quitado el parametro. Probablemente se debería
 				// pasar para pintar todo como toca en el arbol.
-        RESULT = new SimboloFactor(decl);
     
               CUP$parser$result = parser.getSymbolFactory().newSymbol("factor",9, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1586,7 +1622,14 @@ class CUP$parser$actions {
 		int nleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int nright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloParams n = (SimboloParams)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new SimboloParams(o,n,true); 
+		 
+				// Generamos las instrucciones para empilar cada uno de los parametros.
+				// TODO A pesar de que en la teoria pone que se deben generar en el
+				// mismo orden en que se encuentran, me da no deberia ser asi
+				// ya que el primer parametro es el que esta mas cerca de la cima de la pila
+				I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				RESULT = new SimboloParams(o,n,true); 
+		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("params",22, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1610,7 +1653,10 @@ class CUP$parser$actions {
 		int nleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int nright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloParams n = (SimboloParams)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new SimboloParams(o,n,false); 
+		 
+				I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				RESULT = new SimboloParams(o,n,false); 
+		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("nextParam",23, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

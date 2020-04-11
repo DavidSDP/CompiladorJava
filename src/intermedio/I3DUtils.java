@@ -37,7 +37,7 @@ public class I3DUtils {
     }
     
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Operando primero, Operando segundo, Operando tercero) {
-        InstruccionTresDirecciones c3d = null;
+        InstruccionTresDirecciones c3d;
         switch(instr) {
             case COPIA:
                 c3d = new Copia(primero, segundo);
@@ -47,6 +47,15 @@ public class I3DUtils {
                 break;
             case ETIQUETA:
                 c3d = new Etiqueta(primero);
+                break;
+            case CARGAR_INDIRECCION:
+                c3d = new CargarIndireccion(primero, segundo, tercero);
+                break;
+            case GUARDAR_INDIRECCION:
+                c3d = new GuardarIndireccion(primero, segundo, tercero);
+                break;
+            case PARAM:
+                c3d = new Param(primero);
                 break;
             case LLAMADA:
                 c3d = new Llamada(primero); // primero es el numero de procedimiento/funcion
@@ -102,7 +111,7 @@ public class I3DUtils {
     }
     
     public static OperacionTresDirecciones getTipoOperacion(String simboloOperacion) throws Exception {
-        OperacionTresDirecciones op = null;
+        OperacionTresDirecciones op;
         switch(simboloOperacion) {
             case "<":
                 op = OperacionTresDirecciones.LT;
@@ -132,7 +141,7 @@ public class I3DUtils {
                 op = OperacionTresDirecciones.RESTA;
                 break;
             case "/": 
-                op = OperacionTresDirecciones.LT;
+                op = OperacionTresDirecciones.DIVISION;
                 break;
             case "==":
                 op = OperacionTresDirecciones.EQ;

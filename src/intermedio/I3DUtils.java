@@ -1,13 +1,21 @@
 package intermedio;
 
 import Procesador.Declaracion;
+import Procesador.Entorno;
+import Procesador.GlobalVariables;
 
 
 public class I3DUtils {
-    
+
+    // Usado por los retornos de procedimiento ( return void )
+    public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr) {
+        return crearInstruccion(instr, null, null, null);
+    }
+
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Declaracion source, Declaracion dest) {
-        Operando sourceOperator = new Operando(source);
-        Operando destOperator = new Operando(dest);
+        Entorno entorno = GlobalVariables.entornoActual();
+        Operando sourceOperator = new Operando(source, entorno.getProfundidad());
+        Operando destOperator = new Operando(dest, entorno.getProfundidad());
         return crea(instr, sourceOperator, destOperator, null);
     }
     
@@ -16,32 +24,42 @@ public class I3DUtils {
         Operando primerOperando = new OperandoEtiqueta(etiqueta);
         return crea(instr, primerOperando, null, null);
     }
-    
+
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Declaracion primero) {
-        Operando primerOperando = new Operando(primero);
+        Entorno entorno = GlobalVariables.entornoActual();
+        Operando primerOperando = new Operando(primero, entorno.getProfundidad());
         return crea(instr, primerOperando, null, null);
     }
     
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Declaracion primero, Declaracion segundo, Declaracion tercero) {
-        Operando primerOperando = new Operando(primero);
-        Operando segundoOperando = new Operando(segundo);
-        Operando tercerOperando = new Operando(tercero);
+        Entorno entorno = GlobalVariables.entornoActual();
+        Operando primerOperando = new Operando(primero, entorno.getProfundidad());
+        Operando segundoOperando = new Operando(segundo, entorno.getProfundidad());
+        // Probablemente aqui no necesitemos saber la profundidad, sin embargo, para mantener el codigo homogeneo
+        // pasamos tambien la profundidad
+        Operando tercerOperando = new Operando(tercero, entorno.getProfundidad());
         return crea(instr, primerOperando, segundoOperando, tercerOperando);
     }
     
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Declaracion primero, Declaracion segundo, String etiqueta) {
-        Operando primerOperando = new Operando(primero);
-        Operando segundoOperando = new Operando(segundo);
+        Entorno entorno = GlobalVariables.entornoActual();
+        Operando primerOperando = new Operando(primero, entorno.getProfundidad());
+        Operando segundoOperando = new Operando(segundo, entorno.getProfundidad());
+        // Las etiquetas no tienen entorno. Asi que no se le pone nada de nivel de profundidad
         Operando tercerOperando = new OperandoEtiqueta(etiqueta);
         return crea(instr, primerOperando, segundoOperando, tercerOperando);
     }
     
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Operando primero, Operando segundo, Operando tercero) {
+        return crearInstruccion(instr, primero, segundo, tercero);
+    }
+
+    private static InstruccionTresDirecciones crearInstruccion(OperacionTresDirecciones instr, Operando primero, Operando segundo, Operando tercero) {
         InstruccionTresDirecciones c3d;
         switch(instr) {
             case COPIA:
                 c3d = new Copia(primero, segundo);
-                break;                
+                break;
             case GOTO:
                 c3d = new Goto(primero);
                 break;
@@ -64,7 +82,7 @@ public class I3DUtils {
                 c3d = new Preambulo(primero); // primero es el numero de procedimiento/funcion
                 break;
             case RETORNO:
-                c3d = new Retorno(primero); // primero es el numero de procedimiento/funcion
+                c3d = new Retorno(primero, segundo); // primero es el numero de procedimiento/funcion
                 break;
             case SUMA:
                 c3d = new Suma(primero, segundo, tercero);
@@ -105,11 +123,11 @@ public class I3DUtils {
             default:
                 throw new AssertionError(instr.name());
         }
-        
+
         ProgramaIntermedio.getInstance().addInstruccion(c3d);
         return c3d;
     }
-    
+
     public static OperacionTresDirecciones getTipoOperacion(String simboloOperacion) throws Exception {
         OperacionTresDirecciones op;
         switch(simboloOperacion) {

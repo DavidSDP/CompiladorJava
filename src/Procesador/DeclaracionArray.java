@@ -1,16 +1,17 @@
 package Procesador;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
+import Errores.ErrorSemantico;
 import SimbolosNoTerminales.SimboloArray;
 
 public class DeclaracionArray extends Declaracion {
 	
 	private SimboloArray simboloArray;
-	private Tipo tipoDato;
+	private TipoObject tipoDato;
 	
-	public DeclaracionArray(Identificador identificador, Tipo tipoDato, SimboloArray simboloArray) {
-		// TODO Falta pasarle el desplazamiento a esta cosa
-		super(identificador, Tipo.Array);
+	public DeclaracionArray(Identificador identificador, TipoObject tipoDato, SimboloArray simboloArray) {
+		super(identificador, Tipo.getTipoSafe(Tipo.Array.name().toLowerCase()));
 		this.setSimboloArray(simboloArray);
 		this.setTipoDato(tipoDato);
 	}
@@ -23,11 +24,11 @@ public class DeclaracionArray extends Declaracion {
 		this.simboloArray = simboloArray;
 	}
 
-	public Tipo getTipoDato() {
+	public TipoObject getTipoDato() {
 		return tipoDato;
 	}
 
-	public void setTipoDato(Tipo tipoDato) {
+	public void setTipoDato(TipoObject tipoDato) {
 		this.tipoDato = tipoDato;
 	}
 
@@ -43,7 +44,7 @@ public class DeclaracionArray extends Declaracion {
 		} else {
 			// Esto debería ser tamaño del tipo * numero de elementos
 			// Por ahora como valor dummy dejo 2 ( 1 no que el lint se queja joder )
-			return 2 * this.simboloArray.getNumero();
+			return tipoDato.getSize() * this.simboloArray.getNumero();
 		}
 	}
 }

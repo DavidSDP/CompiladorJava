@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Procesador.DeclaracionFuncion;
 import Procesador.GlobalVariables;
 import Procesador.Declaracion;
@@ -49,7 +50,7 @@ public class SimboloFuncionInvk extends Nodo implements TipoSubyacente {
     }
 
     @Override
-    public Tipo getTipoSubyacente() {
+    public TipoObject getTipoSubyacente() {
         DeclaracionFuncion identificadorFuncion = GlobalVariables.entornoActual().fullGetFuncion(idFuncion);
         return identificadorFuncion.getTipo();
     }

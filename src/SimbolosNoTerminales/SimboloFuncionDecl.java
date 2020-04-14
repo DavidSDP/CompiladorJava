@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Procesador.Declaracion;
 import Procesador.DeclaracionFuncion;
 import Procesador.TipoSubyacente;
@@ -15,7 +16,7 @@ import analisisSintactico.arbol.SimboloTerminal;
 public class SimboloFuncionDecl extends Nodo implements TipoSubyacente{
 	
 	private String id;
-	private Tipo tipo;
+	private TipoObject tipo;
 	private SimboloArgs a;
 	private SimboloContenido c;
 	private DeclaracionFuncion decl;
@@ -31,7 +32,7 @@ public class SimboloFuncionDecl extends Nodo implements TipoSubyacente{
 	@Override
 	public List<INodo> getChildren() {
 		List<INodo> hijos = new ArrayList<>();
-		hijos.add(new SimboloTerminal(tipo.name(), Tipo.Identificador));
+		hijos.add(new SimboloTerminal(tipo.toString(), Tipo.Identificador));
 		hijos.add(new SimboloTerminal(id, Tipo.Identificador));
 		hijos.add(new SimboloTerminal(sym.terminalNames[sym.PARENIZQ], Tipo.Token));
 		if(a != null)
@@ -50,8 +51,8 @@ public class SimboloFuncionDecl extends Nodo implements TipoSubyacente{
 	}
 
 	@Override
-	public Tipo getTipoSubyacente() {
-		return Tipo.Void;
+	public TipoObject getTipoSubyacente() {
+		return Tipo.getTipoSafe(Tipo.Void);
 	}
 
 	public String getId() {

@@ -3,24 +3,34 @@ package Procesador;
 import java.util.Objects;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 
 public class Declaracion {
 
     protected Identificador identificador;
-    protected Tipo tipo;
-    protected int desplazamiento;
+    protected TipoObject tipo;
+    protected int profundidadDeclaracion;
 
-    public Declaracion(Identificador identificador, Tipo tipo) {
-    	// TODO Esto probablemente es una aberracion de la naturaleza.
-		//      Pero lo mantenemos hasta que se hayan migrado todas
-		//      las creaciones de declaraciones
-        this(identificador, tipo, 0);
+    // Entorno donde ha sido declarada la variable.
+    protected Entorno entorno;
+
+    /**
+     * Las declaraciones de funciones y clases no necesitan ni profunidad de declaracion
+     * ni desplazamiento en la memoria ( no se gestionan asi )
+     * @param identificador
+     * @param tipo
+     */
+    public Declaracion(Identificador identificador, TipoObject tipo) {
+        this.identificador = identificador;
+        this.tipo = tipo;
+        // No necesita profundidad
+        this.profundidadDeclaracion = -1;
     }
 
-	public Declaracion(Identificador identificador, Tipo tipo, int desplazamiento) {
+    public Declaracion(Identificador identificador, TipoObject tipo, int profundidad) {
 		this.identificador = identificador;
 		this.tipo = tipo;
-		this.desplazamiento = desplazamiento;
+		this.profundidadDeclaracion = profundidad;
 	}
 
     public Identificador getId() {
@@ -31,11 +41,11 @@ public class Declaracion {
         this.identificador = id;
     }
 
-    public Tipo getTipo() {
+    public TipoObject getTipo() {
         return tipo;
     }
 
-    public void setTipo(Tipo tipo) {
+    public void setTipo(TipoObject tipo) {
         this.tipo = tipo;
     }
 
@@ -59,42 +69,28 @@ public class Declaracion {
 
     @Override
     public String toString() {
-        return tipo.toString() + " " + identificador.toString();
+        StringBuilder sb = new StringBuilder();
+        if (profundidadDeclaracion > -1) {
+            sb.append("PrD: ").append(profundidadDeclaracion).append(" ");
+        }
+        sb.append(tipo.toString()).append(" ").append(identificador.toString());
+        return sb.toString();
     }
 
     public int getOcupacion() {
-        /*
-         * Hipoteticamente aqui deberiamos poder calcular la ocupacion de la variable de la siguiente
-         * manera:
-         * 	 - tipo.getMemorySize()
-         * 	En caso de los arrays sería :
-         * 	 - numElementos * tipo.getMemorySize()
-         */
-        return 0;
+        return this.tipo.getSize();
     }
 
-	/**
-	 * El desplazamiento del elemento actual es:
-	 * 		Base pointer + sumatorio_tamano_variables_anteriores
-	 *
-	 * Por comodidad dicho sumatorio se calcula en el entorno en el momento
-	 * de declarar una variable y se le pasa a la variable en cuestion
-	 *
-	 * TODO Toda esta explicación puede ser del todo incorrecta.
-	 * 		Revisitar esta parte cuando se haya implementado la optimizacion
-	 * 		ya que la eliminacion de variable se puede cargar htodo el calculo
-	 * 		Posibles fixes:
-	 * 			- Mantener una lista enlazada de declaraciones y generar el
-	 * 			  desplazamiento al final
-	 * 			- Generar codigo maquina para calcular el desplazamiento en
-	 * 			  runtime. Ahora mismo no se como lo haria ....
-	 *
-	 * P.D: la h de htodo no es un error, es que si no no me colorea bien el todo :)
-	 *
-	 * @return El desplazamiento necesario en memoria para referenciar esta variable
-	 */
 	public int getDesplazamiento() {
-        return this.desplazamiento;
+        return this.entorno.getDesplazamiento(this);
+    }
+
+    public int getProfundidadDeclaracion() {
+	    return this.profundidadDeclaracion;
+    }
+
+    public void setEntorno(Entorno entorno) {
+        this.entorno = entorno;
     }
 }
 

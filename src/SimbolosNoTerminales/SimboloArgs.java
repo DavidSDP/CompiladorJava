@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Procesador.TipoSubyacente;
 import analisisSintactico.sym;
 import analisisSintactico.arbol.INodo;
@@ -12,7 +13,7 @@ import analisisSintactico.arbol.SimboloTerminal;
 
 public class SimboloArgs extends Nodo implements TipoSubyacente {
 	
-	private Tipo tipo;
+	private TipoObject tipo;
 	private String id;
 	private SimboloArgs nextArg;
 	private Boolean esPrimeraProduccion;
@@ -24,11 +25,11 @@ public class SimboloArgs extends Nodo implements TipoSubyacente {
 		this.esPrimeraProduccion = esPrimeraProduccion;
 	}
 
-	public Tipo getTipo() {
+	public TipoObject getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(Tipo tipo) {
+	public void setTipo(TipoObject tipo) {
 		this.tipo = tipo;
 	}
 
@@ -49,8 +50,8 @@ public class SimboloArgs extends Nodo implements TipoSubyacente {
 	}
 
 	@Override
-	public Tipo getTipoSubyacente() {
-		return Tipo.Void;
+	public TipoObject getTipoSubyacente() {
+		return Tipo.getTipoSafe(Tipo.Void);
 	}
 
 	@Override
@@ -60,7 +61,7 @@ public class SimboloArgs extends Nodo implements TipoSubyacente {
 		if(!esPrimeraProduccion)
 			hijos.add(new SimboloTerminal(sym.terminalNames[sym.COMA], Tipo.Token));
 		
-		hijos.add(new SimboloTerminal(tipo.name(), Tipo.Identificador));
+		hijos.add(new SimboloTerminal(tipo.toString(), Tipo.Identificador));
 		hijos.add(new SimboloTerminal(id, Tipo.Identificador));
 		if(nextArg != null)
 			hijos.add(nextArg);

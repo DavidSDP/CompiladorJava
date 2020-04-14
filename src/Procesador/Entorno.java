@@ -1,14 +1,17 @@
 package Procesador;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
 
 public class Entorno {
+
     protected static int nameSeq = 0;
 
     private Integer nivel;
@@ -16,37 +19,35 @@ public class Entorno {
     private Declaracion identificador;
 
     private Hashtable<String, Declaracion> tablaIDs;
-    // Mantiene el desplazamiento acumulado de todas las variables.
-    // De esta forma cuando se crea una nueva variable, podemos asignarle el
-    // desplazamiento sin necesidad de recalcularlo todo
-    private int desplazamientoAcumulado;
+    private ArrayList<Declaracion> ids;
 
-    private Entorno entornoAnterior;
+    private Entorno entornoPadre;
     private Integer _identificador_entorno;
 
-    public Entorno(Entorno entornoAnterior, Tipo tipo) {
-        if (entornoAnterior == null) {
+    public Entorno(Entorno entornoPadre, TipoObject tipo) {
+        if (entornoPadre == null) {
             this.setNivel(0);
         } else {
-            this.setNivel(entornoAnterior.getNivel() + 1);
+            this.setNivel(entornoPadre.getNivel() + 1);
         }
         this.set_identificador_entorno(GlobalVariables.getIdentificador());
-        this.identificador = new Declaracion(new Identificador(tipo.name(), tipo.name()), tipo);
+        this.identificador = new Declaracion(new Identificador(tipo.toString(), tipo.toString()), tipo);
         this.tablaIDs = new Hashtable<>();
-        this.entornoAnterior = entornoAnterior;
+        this.ids = new ArrayList<>();
+        this.entornoPadre = entornoPadre;
     }
 
-    public Entorno(Entorno entornoAnterior, Declaracion identificador) {
-        if (entornoAnterior == null) {
+    public Entorno(Entorno entornoPadre, Declaracion identificador) {
+        if (entornoPadre == null) {
             this.setNivel(0);
         } else {
-            this.setNivel(entornoAnterior.getNivel() + 1);
+            this.setNivel(entornoPadre.getNivel() + 1);
         }
         this.set_identificador_entorno(GlobalVariables.getIdentificador());
         this.identificador = identificador;
         this.tablaIDs = new Hashtable<>();
-        this.entornoAnterior = entornoAnterior;
-        this.desplazamientoAcumulado = 0;
+        this.ids = new ArrayList<>();
+        this.entornoPadre = entornoPadre;
     }
 
     public Declaracion getIdentificadorFuncionRetorno() {
@@ -61,13 +62,13 @@ public class Entorno {
             return null;
         if (entorno instanceof EntornoFuncion)
             return entorno;
-        return getEntornoFuncionSuperior(entorno.getEntornoAnterior());
+        return getEntornoFuncionSuperior(entorno.getEntornoPadre());
     }
 
     ////////*	IDENTIFICADORES		*////////
 
     // Introduce nuevo ID en el entorno actual
-    public Declaracion put(Tipo tipo, String s) throws ErrorSemantico {
+    public Declaracion put(TipoObject tipo, String s) throws ErrorSemantico {
         String name = s;
         if (name == null)
             name = getTempName();
@@ -75,15 +76,16 @@ public class Entorno {
         if (this.contains(name))
             throw new ErrorSemantico("El identificador '" + name + "' se ha declarado por duplicado");
 
-        Declaracion nuevaDeclaracion = new Declaracion(new Identificador(name, name), tipo, this.desplazamientoAcumulado);
+
+        Declaracion nuevaDeclaracion = new Declaracion(new Identificador(name, name), tipo, this.getProfundidad());
+        nuevaDeclaracion.setEntorno(this);
         this.tablaIDs.put(name, nuevaDeclaracion);
-        // El nuevo desplazamiento de la siguiente variable es el acumulado mas el tamano de la variable anterior.
-        this.desplazamientoAcumulado += nuevaDeclaracion.getOcupacion();
+        this.ids.add(nuevaDeclaracion);
         return nuevaDeclaracion;
     }
 
     // Introduce nuevo ID constante en el entorno actual
-    public DeclaracionConstante putConstante(Tipo tipo, String s, Object valor) throws ErrorSemantico {
+    public DeclaracionConstante putConstante(TipoObject tipo, String s, Object valor) throws ErrorSemantico {
         String name = s;
         if (name == null)
             name = getTempName();
@@ -91,9 +93,10 @@ public class Entorno {
         if (this.contains(name))
             throw new ErrorSemantico("La constante '" + name + "' se ha declarado por duplicado");
 
-        DeclaracionConstante nuevoIdentificador = new DeclaracionConstante(new Identificador(name, name), tipo, valor, this.desplazamientoAcumulado);
+        DeclaracionConstante nuevoIdentificador = new DeclaracionConstante(new Identificador(name, name), tipo, valor, this.getProfundidad());
+        nuevoIdentificador.setEntorno(this);
         this.tablaIDs.put(name, nuevoIdentificador);
-        this.desplazamientoAcumulado = nuevoIdentificador.getOcupacion();
+        this.ids.add(nuevoIdentificador);
         return nuevoIdentificador;
     }
 
@@ -112,7 +115,7 @@ public class Entorno {
 
     // Devuelve el ID declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
     public Declaracion fullGet(String s) {
-        for (Entorno e = this; e != null; e = e.getEntornoAnterior()) {
+        for (Entorno e = this; e != null; e = e.getEntornoPadre()) {
             if (e.contains(s)) {
                 return e.get(s);
             }
@@ -122,7 +125,7 @@ public class Entorno {
 
     // Devuelve el ID  de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
     public DeclaracionFuncion fullGetFuncion(String s) {
-        for (Entorno e = this; e != null; e = e.getEntornoAnterior()) {
+        for (Entorno e = this; e != null; e = e.getEntornoPadre()) {
             if (e instanceof EntornoClase) {
                 if (((EntornoClase) e).containsFuncion(s)) {
                     return ((EntornoClase) e).getFuncion(s);
@@ -134,7 +137,7 @@ public class Entorno {
 
     // Devuelve el Entorno de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
     public EntornoFuncion fullGetFuncionEntorno(String s) {
-        for (Entorno e = this; e != null; e = e.getEntornoAnterior()) {
+        for (Entorno e = this; e != null; e = e.getEntornoPadre()) {
             if (e instanceof EntornoClase) {
                 if (((EntornoClase) e).containsFuncion(s)) {
                     return ((EntornoClase) e).getFuncionEntorno(s);
@@ -146,7 +149,7 @@ public class Entorno {
 
     // Devuelve el ID de Clase declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
     public Declaracion fullGetClase(String s) {
-        for (Entorno e = this; e != null; e = e.getEntornoAnterior()) {
+        for (Entorno e = this; e != null; e = e.getEntornoPadre()) {
             if (((EntornoClase) e).containsClase(s)) {
                 return ((EntornoClase) e).getClase(s);
             }
@@ -197,8 +200,8 @@ public class Entorno {
         return this.nivel;
     }
 
-    public Entorno getEntornoAnterior() {
-        return entornoAnterior;
+    public Entorno getEntornoPadre() {
+        return entornoPadre;
     }
 
     public Hashtable<String, Declaracion> getTablaIDs() {
@@ -229,7 +232,26 @@ public class Entorno {
         this.identificador = identificador;
     }
 
+    /**
+     * Los bucles y los condicionales ( son los que usan este tipo de entorno ) no generan un
+     * aumento de profundidad en los bloques de activacion.
+     * Es por eso que la profundidad viene dictada por el entorno padre.
+     */
+    public int getProfundidad() {
+        return this.entornoPadre.getProfundidad();
+    }
+
     private String getTempName() {
         return "t" + nameSeq++;
     }
+
+    public int getDesplazamiento(Declaracion decl) {
+        int elementIndex = this.ids.indexOf(decl);
+        int desplazamiento = 0;
+        for (int index = 0; index < elementIndex; index++) {
+            desplazamiento += this.ids.get(index).getOcupacion();
+        }
+        return desplazamiento;
+    }
+
 }

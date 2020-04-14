@@ -22,15 +22,22 @@ public class Copia extends InstruccionTresDirecciones {
         super(OperacionTresDirecciones.COPIA);
         this.primero = primero;
         this.segundo = segundo;
-    }  
+    }
 
     @Override
     public String toMachineCode() {
-        // Cada toString de un operando (alomejor debería ser un toMachineCode también)
-        // debería encargarse de traducir el operador dependiendo del modo de direccionamiento! :+1:
-        String primeroStr = this.primero.toString();
-        String segundoStr = this.segundo.toString();
-        
-        return "MOVE" + primeroStr + segundoStr;
+        StringBuilder sb = new StringBuilder();
+
+
+        // Código específico del 68K. No acabo de ver como abstraerlo. Probablemente esto debería se una clase abstracta
+        // Y lo que se debería instanciar es una clase que implementara el toMachineCode de forma específica.
+        // Dicho esto, de momento se queda asi
+
+        sb.append(putActivationBlockAddressInRegister(this.primero))
+                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
+                .append(putActivationBlockAddressInRegister(this.segundo))
+                .append("\tmove D0, ").append(this.segundo.getValor().getDesplazamiento()).append("(A6)\n");
+
+        return sb.toString();
     }
 }

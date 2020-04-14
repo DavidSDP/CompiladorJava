@@ -17,6 +17,6 @@ public class Goto extends InstruccionTresDirecciones {
 
     @Override
     public String toMachineCode() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "\tbra " + this.primero.toString() + "\n";
     }
 }

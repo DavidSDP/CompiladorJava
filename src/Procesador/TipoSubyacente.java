@@ -1,7 +1,7 @@
 package Procesador;
 
-import Checkers.Tipo;
+import Checkers.TipoObject;
 
 public interface TipoSubyacente {
-	Tipo getTipoSubyacente();
+	TipoObject getTipoSubyacente();
 }

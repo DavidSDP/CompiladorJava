@@ -1,6 +1,7 @@
 package SimbolosNoTerminales;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Procesador.TipoSubyacente;
 import analisisSintactico.arbol.Nodo;
 public class SimboloArray extends Nodo implements TipoSubyacente{
@@ -16,8 +17,8 @@ public class SimboloArray extends Nodo implements TipoSubyacente{
 	}
 	
 	@Override
-	public Tipo getTipoSubyacente() {
-		return Tipo.Array;
+	public TipoObject getTipoSubyacente() {
+		return Tipo.getTipoSafe(Tipo.Array);
 	}
 	
 	public Integer getNumero() {

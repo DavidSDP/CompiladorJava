@@ -6,10 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
 
-public class EntornoClase extends Entorno{
+public class EntornoClase extends Entorno {
 	
 	private Hashtable<String, DeclaracionFuncion> tablaFunciones;
 	private Hashtable<String, Declaracion> tablaClases;
@@ -17,17 +18,27 @@ public class EntornoClase extends Entorno{
 	// La tabla FuncionEntorno se declara en el mismo entorno donde la función ha sido declarada
 	private Hashtable<String, EntornoFuncion> tablaFuncionEntorno;
 
+	private int profundidad;
+
 	public EntornoClase(Entorno entornoAnterior, Declaracion identificador) {
 		super(entornoAnterior, identificador);
 		this.tablaFunciones = new Hashtable<>();
 		this.tablaClases = new Hashtable<>();
 		this.tablaFuncionEntorno = new Hashtable<>();
+
+		// Notese que este es el único punto donde se puede crear un entorno sin entorno padre.
+		// Tal como esta montada la gramatica, las funciones no pueden estar fuera de las clases.
+		if (entornoAnterior == null) {
+			this.profundidad = 0;
+		} else {
+			this.profundidad = entornoAnterior.getProfundidad() + 1;
+		}
 	}
 	
 	////////*	IDENTIFICADORES DE FUNCIONES	*////////
 
 	// Introduce nuevo ID de Función en el entorno actual
-	public DeclaracionFuncion putFuncion(Tipo tipo, String s, String etiqueta) throws ErrorSemantico {
+	public DeclaracionFuncion putFuncion(TipoObject tipo, String s, String etiqueta) throws ErrorSemantico {
 		if(this.containsFuncion(s))
 			throw new ErrorSemantico("El identificador de función '"+s+"' se ha declarado por duplicado");
 
@@ -76,7 +87,7 @@ public class EntornoClase extends Entorno{
 	public void putClase(String s) throws ErrorSemantico {
 		if(this.contains(s))
 			throw new ErrorSemantico("El identificador de clase '"+s+"' se ha declarado por duplicado");
-		this.tablaClases.put(s, new Declaracion(new Identificador(s, s), Tipo.Class));
+		this.tablaClases.put(s, new Declaracion(new Identificador(s, s), Tipo.getTipo(Tipo.Class.name().toLowerCase())));
 	}
 	
 	// Devuelve true si el ID de Clase ha sido declarado en el entorno actual
@@ -91,7 +102,12 @@ public class EntornoClase extends Entorno{
 		}
 		return this.tablaClases.get(s);
 	}
-	
+
+	@Override
+	public int getProfundidad() {
+		return this.profundidad;
+	}
+
 	/* Dibujando el Entorno */
 	
 	public void printEntorno() throws IOException {

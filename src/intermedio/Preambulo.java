@@ -8,6 +8,8 @@ public class Preambulo extends InstruccionTresDirecciones {
 
     @Override
     public String toMachineCode() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO Mover el StackPointer el numero de poisiciones adecuado
+        // para alojar todas las variables locales de la funcion
+        return "; Missing preambulo\n";
     }
 }

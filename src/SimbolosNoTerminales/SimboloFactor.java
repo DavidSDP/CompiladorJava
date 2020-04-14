@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Procesador.DeclaracionArray;
 import Procesador.GlobalVariables;
 import Procesador.Declaracion;
@@ -106,18 +107,18 @@ public class SimboloFactor extends Nodo implements TipoSubyacente {
     }
 
     @Override
-    public Tipo getTipoSubyacente() {
+    public TipoObject getTipoSubyacente() {
         if (id != null) {
             Declaracion identificador = GlobalVariables.entornoActual().fullGet(id);
             if (identificador != null) {
                 return identificador.getTipo();
             }
         } else if (string != null) {
-            return Tipo.String;
+            return Tipo.getTipoSafe(Tipo.String);
         } else if (numero != null) {
-            return Tipo.Integer;
+            return Tipo.getTipoSafe(Tipo.Integer);
         } else if (booleano != null) {
-            return Tipo.Boolean;
+            return Tipo.getTipoSafe(Tipo.Boolean);
         } else if (funcionInvk != null) {
             return funcionInvk.getTipoSubyacente();
         } else if (operacion != null) {

@@ -19,12 +19,17 @@ public class OperandoEtiqueta extends Operando {
         // Probablemente esto debería estar en un OperandoVariable o algo así
         // que nos permita meter utilizar etiquetas, variables, constantes y 
         // literales
-        super(null);
+        super(null, 0);
         this.etiqueta = etiqueta;
     }
     
     @Override
     public String toString() {        
         return etiqueta; 
+    }
+
+    @Override
+    public String toMachineCode() {
+        return etiqueta + ":  ;skip ;)\n";
     }
 }

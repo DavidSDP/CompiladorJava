@@ -429,7 +429,7 @@ class CUP$parser$actions {
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
- GlobalVariables.entraBloqueClase(new Declaracion(new Identificador(i, i), Tipo.Class));
+ GlobalVariables.entraBloqueClase(new Declaracion(new Identificador(i, i), Tipo.getTipoSafe(Tipo.Class)));
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$2",34, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -609,7 +609,7 @@ class CUP$parser$actions {
 				}
 				// Ojo! Aqui no es necesario propagar la declaracion ya no hay nadie que pueda usarlo en reducciones
 				// posteriores. Así que declResultado muere aqui.
-				RESULT = new SimboloDeclaracion(i,Tipo.getTipo(t),esArray,init);
+				RESULT = new SimboloDeclaracion(i,Tipo.getTipoSafe(t),esArray,init);
 			
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracion",31, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -643,7 +643,7 @@ class CUP$parser$actions {
 					ErrorHandler.reportaError(e);
 				}
 
-				RESULT = new SimboloDeclaracion(i, Tipo.getTipo(t), false, init);
+				RESULT = new SimboloDeclaracion(i, Tipo.getTipoSafe(t), false, init);
 			
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracion",31, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -671,7 +671,7 @@ class CUP$parser$actions {
 						// Cuando tenemos un elemento que es un array, para poder gestionar la indireccion
 						// de forma adecuada en el c3@ tenemos que crear una constante intermedia que mantenga
 						// la información del indice :+1:
-						DeclaracionConstante indice = GlobalVariables.crearVariableTemporal(Tipo.Integer, a.getNumero());
+						DeclaracionConstante indice = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), a.getNumero());
 						// Para copiar un elemento dentro de un array tenemos que asignar un valor
 						// en una posicion concreta.
 						// Dicha posicion es: tamTipo * idx. Pero como las instrucciones operan sobre variables
@@ -746,8 +746,9 @@ class CUP$parser$actions {
 		SimboloContenido c = (SimboloContenido)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		  
       GlobalVariables.saleBloqueFuncion(false);
-
-			I3DUtils.crea(OperacionTresDirecciones.RETORNO, fh.getDeclaracion());
+			// Ojo! Este return garantiza que las funciones
+			// que no devuelven nada ( return void ) vuelven
+			I3DUtils.crea(OperacionTresDirecciones.RETORNO);
       // Watch out! fh holds a SimboloFuncionDecl instance
       fh.setContenido(c);
       RESULT = fh; 
@@ -796,6 +797,9 @@ class CUP$parser$actions {
 
 			// Genera lo necesario para poder dirigir las llamadas al procedimiento
 			I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiqueta());
+			// Probablemente en este caso no es importante pero el nivel de profundidad
+			// asociado al preambulo esta en el bloque de activacion superior
+			// debido a que se crea aqui
 			I3DUtils.crea(OperacionTresDirecciones.PREAMBULO, decl);
 
       GlobalVariables.entraBloqueFuncion(decl);
@@ -817,7 +821,7 @@ class CUP$parser$actions {
 		  
       DeclaracionFuncion decl = null;
       try{
-          decl = GlobalVariables.asignaFuncionID(i, Tipo.Void);
+          decl = GlobalVariables.asignaFuncionID(i, Tipo.getTipo(Tipo.Void));
       } catch(ErrorSemantico e) {
           ErrorHandler.reportaError(e);
       }
@@ -947,7 +951,7 @@ class CUP$parser$actions {
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
-																RESULT = new SimboloArgDecl(i,Tipo.getTipo(t),a);
+																RESULT = new SimboloArgDecl(i,Tipo.getTipoSafe(t),a);
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("argDecl",19, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1011,12 +1015,16 @@ class CUP$parser$actions {
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 try{
-																TypeCheck.returnTypeMatch(o);
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-																RESULT = new SimboloContenido(c,r,o); 
+		 
+					try{
+							TypeCheck.returnTypeMatch(o);
+					} catch(ErrorSemantico e) {
+							ErrorHandler.reportaError(e);
+					}
+					
+					I3DUtils.crea(OperacionTresDirecciones.RETORNO, o.getDeclaracionResultado());
+					RESULT = new SimboloContenido(c,r,o); 
+			
               CUP$parser$result = parser.getSymbolFactory().newSymbol("contenido",21, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1081,7 +1089,7 @@ class CUP$parser$actions {
 						ErrorHandler.reportaError(e);
 				}
 				String etFin = GlobalVariables.generarEtiqueta();
-				Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.Integer, 0);
+				Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), 0);
 				// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
 				I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, etFin);
 				RESULT = new SimboloCondicionBucle(o, start.getEtiqueta(), etFin);
@@ -1189,7 +1197,7 @@ class CUP$parser$actions {
 					// TODO Forma hacky de hacer que el valor constante False esté en el codigo.
 					// Además el valor false y true deberían estar codificados en algun lado para reusarlo
 					// en el codigo
-					Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.Integer, 0);
+					Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), 0);
 					// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
 					I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, et);
 					RESULT = new SimboloClausulaCondicion(o, et);
@@ -1315,7 +1323,7 @@ class CUP$parser$actions {
 					TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(s));
 					TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
 
-					declResultadoSuma =  GlobalVariables.crearVariableTemporal(Tipo.Integer);
+					declResultadoSuma =  GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer));
 					I3DUtils.crea(I3DUtils.getTipoOperacion(s), o.getDeclaracionResultado(), q.getDeclaracionResultado(), declResultadoSuma);
 				}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
@@ -1365,7 +1373,7 @@ class CUP$parser$actions {
 					TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(p));
 					TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
 
-					declResultadoProd =  GlobalVariables.crearVariableTemporal(Tipo.Integer);
+					declResultadoProd =  GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer));
 					I3DUtils.crea(I3DUtils.getTipoOperacion(p), o.getDeclaracionResultado(), q.getDeclaracionResultado(), declResultadoProd);
 				} catch(ErrorSemantico e) {
 					ErrorHandler.reportaError(e);
@@ -1415,7 +1423,7 @@ class CUP$parser$actions {
 					TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(c));
 					TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
 
-					declResultado =  GlobalVariables.crearVariableTemporal(Tipo.Boolean);
+					declResultado =  GlobalVariables.crearVariableTemporal(Tipo.getTipo(Tipo.Boolean));
 					I3DUtils.crea(I3DUtils.getTipoOperacion(c), o.getDeclaracionResultado(), q.getDeclaracionResultado(), declResultado);
 				} catch(ErrorSemantico e) {
 					ErrorHandler.reportaError(e);
@@ -1464,7 +1472,7 @@ class CUP$parser$actions {
 					TypeCheck.typesMatch(q.getTipoSubyacente(), TipoOperador.getTipoOperador(l));
 					TypeCheck.typesMatch(o.getTipoSubyacente(), q.getTipoSubyacente());
 
-					declResultado =  GlobalVariables.crearVariableTemporal(Tipo.Boolean);
+					declResultado =  GlobalVariables.crearVariableTemporal(Tipo.getTipo(Tipo.Boolean));
 					I3DUtils.crea(I3DUtils.getTipoOperacion(l), o.getDeclaracionResultado(), q.getDeclaracionResultado(), declResultado);
 				} catch(ErrorSemantico e) {
 					ErrorHandler.reportaError(e);
@@ -1501,7 +1509,7 @@ class CUP$parser$actions {
 
 						if (!isDeclaracionArray) {
 								// Esto ya es una variable o una constante declarada en nuestra tabla de simbolos
-								// asi que no es necesario crear una variable temporal
+								// asi que no es necesario crear una variable tempral
 								RESULT = new SimboloFactor(decl);
 						} else if (a == null) {
 								// TODO Esto no esta implementado. ¿Como debemos gestionarlo?
@@ -1510,7 +1518,7 @@ class CUP$parser$actions {
 						} else {
 								DeclaracionArray declArray = (DeclaracionArray) decl;
 								Declaracion variable = GlobalVariables.crearVariableTemporal(declArray.getTipoDato());
-								DeclaracionConstante indice = GlobalVariables.crearVariableTemporal(Tipo.Integer, a.getNumero());
+								DeclaracionConstante indice = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), a.getNumero());
 								// Estamos accediendo a un array
 								I3DUtils.crea(OperacionTresDirecciones.CARGAR_INDIRECCION, declArray, indice, variable);
 								RESULT = new SimboloFactor(declArray, a.getNumero());
@@ -1533,8 +1541,8 @@ class CUP$parser$actions {
 		int nright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String n = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.Integer, n);
-				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.Integer);
+			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), n);
+				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer));
 				I3DUtils.crea(OperacionTresDirecciones.COPIA, decl, varDecl);
 				// TODO Aqui se ha quitado el parametro que pasaba el número. Probablemente se debería
 				// pasar para pintar todo como toca en el arbol.
@@ -1552,8 +1560,8 @@ class CUP$parser$actions {
 		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String b = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 
-			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.Boolean, b);
-				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.Boolean);
+			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Boolean), b);
+				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Boolean));
 				I3DUtils.crea(OperacionTresDirecciones.COPIA, decl, varDecl);				
 				// TODO Aqui se ha quitado el parametro. Probablemente se debería
 				// pasar para pintar todo como toca en el arbol.
@@ -1571,8 +1579,8 @@ class CUP$parser$actions {
 		int sright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String s = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 
-			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.String, s);
-				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.String);
+			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.String), s);
+				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.String));
 				I3DUtils.crea(OperacionTresDirecciones.COPIA, decl, varDecl);				
 				// TODO Aqui se ha quitado el parametro. Probablemente se debería
 				// pasar para pintar todo como toca en el arbol.

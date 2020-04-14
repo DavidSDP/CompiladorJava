@@ -5,6 +5,7 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Errores.ErrorSemantico;
 import SimbolosNoTerminales.SimboloArgDecl;
 import SimbolosNoTerminales.SimboloArgs;
@@ -24,6 +25,8 @@ public class GlobalVariables {
     public static final Path FICHERO_ERRORES = outputDir.resolve("Errores.txt");
     public static final Path FICHERO_ENTORNOS = outputDir.resolve("Entornos.txt");
     public static final Path FICHERO_INTERMEDIO = outputDir.resolve("codigo_intermedio.txt");
+    public static final Path FICHERO_MAQUINA = outputDir.resolve("codigo_maquina.txt");
+    public static final Path FICHERO_MAQUINA_OPT = outputDir.resolve("codigo_maquina_opt.txt");
 
     public static Boolean DEBUG_MODE = true;
     public static Boolean hayErrores = false;
@@ -43,13 +46,13 @@ public class GlobalVariables {
     }
 
     public static void declaraBuiltInFunctions(EntornoClase raiz) throws ErrorSemantico, IOException {
-        asignaBuiltInFuncionID("read", Tipo.String, null);
-        asignaBuiltInFuncionID("write", Tipo.Void, new SimboloArgs(new SimboloArgDecl("input", Tipo.String, null), null, true));
-        asignaBuiltInFuncionID("integerToString", Tipo.String, new SimboloArgs(new SimboloArgDecl("numero", Tipo.Integer, null), null, true));
-        asignaBuiltInFuncionID("stringToInteger", Tipo.Integer, new SimboloArgs(new SimboloArgDecl("string", Tipo.String, null), null, true));
+        asignaBuiltInFuncionID("read", Tipo.getTipo(Tipo.String), null);
+        asignaBuiltInFuncionID("write", Tipo.getTipo(Tipo.Void), new SimboloArgs(new SimboloArgDecl("input", Tipo.getTipo(Tipo.String), null), null, true));
+        asignaBuiltInFuncionID("integerToString", Tipo.getTipo(Tipo.String), new SimboloArgs(new SimboloArgDecl("numero", Tipo.getTipo(Tipo.Integer), null), null, true));
+        asignaBuiltInFuncionID("stringToInteger", Tipo.getTipo(Tipo.Integer), new SimboloArgs(new SimboloArgDecl("string", Tipo.getTipo(Tipo.String), null), null, true));
     }
 
-    private static void asignaBuiltInFuncionID(String idFuncion, Tipo tipoRetorno, SimboloArgs args) throws ErrorSemantico, IOException {
+    private static void asignaBuiltInFuncionID(String idFuncion, TipoObject tipoRetorno, SimboloArgs args) throws ErrorSemantico, IOException {
         asignaFuncionID(idFuncion, tipoRetorno);
         entraBloqueFuncion(new Declaracion(new Identificador(idFuncion, idFuncion), tipoRetorno));
         asignaEntornoFuncionID(idFuncion);
@@ -66,7 +69,7 @@ public class GlobalVariables {
         return asignaID(id, Tipo.getTipo(tipo));
     }
 
-    public static Declaracion asignaID(String id, Tipo tipo) throws ErrorSemantico {
+    public static Declaracion asignaID(String id, TipoObject tipo) throws ErrorSemantico {
         Entorno top = entornoActual();
         return top.put(tipo, id);
     }
@@ -74,6 +77,7 @@ public class GlobalVariables {
     public static Declaracion asignaArray(String id, String tipo, SimboloArray simboloArrayDef) throws ErrorSemantico {
         Entorno top = entornoActual();
         DeclaracionArray declArray = new DeclaracionArray(new Identificador(id, id), Tipo.getTipo(tipo), simboloArrayDef);
+        declArray.setEntorno(top);
         // TODO Esto es raro, de momento lo dejo así, pero vamos diría que esto no tiene que estar así
         top.getTablaIDs().put(id, declArray);
         return declArray;
@@ -88,7 +92,7 @@ public class GlobalVariables {
         return asignaFuncionID(idFuncion, Tipo.getTipo(tipo));
     }
 
-    public static DeclaracionFuncion asignaFuncionID(String idFuncion, Tipo tipo) throws ErrorSemantico {
+    public static DeclaracionFuncion asignaFuncionID(String idFuncion, TipoObject tipo) throws ErrorSemantico {
         EntornoClase top = (EntornoClase) entornoActual();
         String etiqueta = GlobalVariables.generarEtiqueta();
         return top.putFuncion(tipo, idFuncion, etiqueta);
@@ -97,7 +101,7 @@ public class GlobalVariables {
     // Llamar una vez dentro del entorno de la funciÃ³n
     public static void asignaEntornoFuncionID(String idFuncion) throws ErrorSemantico {
         EntornoFuncion top = (EntornoFuncion) entornoActual();
-        ((EntornoClase) top.getEntornoAnterior()).putFuncionEntorno(idFuncion, top);
+        ((EntornoClase) top.getEntornoPadre()).putFuncionEntorno(idFuncion, top);
     }
 
     public static void asignaFuncionArgs(String idFuncion, SimboloArgs args) throws ErrorSemantico {
@@ -158,7 +162,7 @@ public class GlobalVariables {
     }
 
     public static void entraBloqueIf() {
-        Entorno e = new Entorno(entornoActual(), Tipo.IF);
+        Entorno e = new Entorno(entornoActual(), Tipo.getTipoSafe(Tipo.IF));
         pilaEntornos.push(e);
     }
 
@@ -170,7 +174,7 @@ public class GlobalVariables {
     }
 
     public static void entraBloqueElse() {
-        Entorno e = new Entorno(entornoActual(), Tipo.ELSE);
+        Entorno e = new Entorno(entornoActual(), Tipo.getTipoSafe(Tipo.ELSE));
         pilaEntornos.push(e);
     }
 
@@ -182,7 +186,7 @@ public class GlobalVariables {
     }
 
     public static void entraBloqueWhile() {
-        Entorno e = new Entorno(entornoActual(), Tipo.WHILE);
+        Entorno e = new Entorno(entornoActual(), Tipo.getTipoSafe(Tipo.WHILE));
         pilaEntornos.push(e);
     }
 
@@ -220,11 +224,11 @@ public class GlobalVariables {
         return _idnodoIncremental++;
     }
 
-    public static DeclaracionConstante crearVariableTemporal(Tipo tipo, Object valor) throws ErrorSemantico {
+    public static DeclaracionConstante crearVariableTemporal(TipoObject tipo, Object valor) throws ErrorSemantico {
         return entornoActual().putConstante(tipo, null, valor);
     }
 
-    public static Declaracion crearVariableTemporal(Tipo tipo) throws ErrorSemantico {
+    public static Declaracion crearVariableTemporal(TipoObject tipo) throws ErrorSemantico {
         return entornoActual().put(tipo, null);
     }
 

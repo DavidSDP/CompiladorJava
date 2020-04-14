@@ -8,21 +8,27 @@ import java.util.List;
 import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
 
-public class EntornoFuncion extends Entorno{
+public class EntornoFuncion extends Entorno {
 	
 	// Se guardan los Identificadores que son argumentos del Entorno (Sólo funciones)
 	private List<String> listaArgumentos;
 
+	// Esta variable se utiliza para poder calcular el número de saltos en el access link
+	// Cada uso de una variable está vinculada a dos profundidades.
+	// La profundidad a la que ha sido declarada y la profundidad a la que se usa.
+	private int profundidad;
+
 	public EntornoFuncion(EntornoClase entornoAnterior, Declaracion identificador) {
 		super(entornoAnterior, identificador);
 		this.setListaArgumentos(new ArrayList<>());
+		this.profundidad = entornoAnterior.getProfundidad() + 1;
 	}
 	
 	////////*	IDENTIFICADORES DE FUNCIONES/ARGUMENTOS		*////////
 	
 	// Especifica los argumentos de la función
 	public void putFuncionArgs(String funcionID, String argumentoID) throws ErrorSemantico {
-		if(!((EntornoClase)this.getEntornoAnterior()).containsFuncion(funcionID))
+		if(!((EntornoClase)this.getEntornoPadre()).containsFuncion(funcionID))
 			throw new ErrorSemantico("La función con identificador: '"+funcionID+"' no ha sido declarada en la tabla de funciones del entorno");
 		
 		if(!this.contains(argumentoID))
@@ -115,4 +121,8 @@ public class EntornoFuncion extends Entorno{
 		this.listaArgumentos = listaArgumentos;
 	}
 
+	@Override
+	public int getProfundidad() {
+		return this.profundidad;
+	}
 }

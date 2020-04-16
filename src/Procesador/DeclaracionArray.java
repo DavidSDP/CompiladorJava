@@ -6,23 +6,21 @@ import Errores.ErrorSemantico;
 import SimbolosNoTerminales.SimboloArray;
 
 public class DeclaracionArray extends Declaracion {
-	
-	private SimboloArray simboloArray;
+
+	private int size;
 	private TipoObject tipoDato;
-	
-	public DeclaracionArray(Identificador identificador, TipoObject tipoDato, SimboloArray simboloArray) {
+
+	public DeclaracionArray(Identificador identificador, TipoObject tipoDato) {
+		super(identificador, tipoDato);
+		this.size = -1;
+	}
+
+	public DeclaracionArray(Identificador identificador, TipoObject tipoDato, int size) {
 		super(identificador, Tipo.getTipoSafe(Tipo.Array.name().toLowerCase()));
-		this.setSimboloArray(simboloArray);
+		this.size = size;
 		this.setTipoDato(tipoDato);
 	}
 
-	public SimboloArray getSimboloArray() {
-		return simboloArray;
-	}
-
-	public void setSimboloArray(SimboloArray simboloArray) {
-		this.simboloArray = simboloArray;
-	}
 
 	public TipoObject getTipoDato() {
 		return tipoDato;
@@ -33,18 +31,18 @@ public class DeclaracionArray extends Declaracion {
 	}
 
 	public int getLongitudArray() {
-		return this.simboloArray.getNumero();
+		return this.size;
 	}
 
 	@Override
 	public int getOcupacion() {
-		if (this.simboloArray.getNumero() == null) {
+		if (this.size == -1) {
 			System.out.println("Se ha intentado acceder a la ocupacion de un array sin tamaño");
 			return -1;
 		} else {
 			// Esto debería ser tamaño del tipo * numero de elementos
 			// Por ahora como valor dummy dejo 2 ( 1 no que el lint se queja joder )
-			return tipoDato.getSize() * this.simboloArray.getNumero();
+			return tipoDato.getSize() * size;
 		}
 	}
 }

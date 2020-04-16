@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import Checkers.Tipo;
 import Checkers.TipoObject;
 import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
@@ -19,22 +20,15 @@ public class Entorno {
     private Declaracion identificador;
 
     private Hashtable<String, Declaracion> tablaIDs;
-    private ArrayList<Declaracion> ids;
+    protected ArrayList<Declaracion> ids;
 
     private Entorno entornoPadre;
+    protected ArrayList<Entorno> entornosHijo;
+
     private Integer _identificador_entorno;
 
     public Entorno(Entorno entornoPadre, TipoObject tipo) {
-        if (entornoPadre == null) {
-            this.setNivel(0);
-        } else {
-            this.setNivel(entornoPadre.getNivel() + 1);
-        }
-        this.set_identificador_entorno(GlobalVariables.getIdentificador());
-        this.identificador = new Declaracion(new Identificador(tipo.toString(), tipo.toString()), tipo);
-        this.tablaIDs = new Hashtable<>();
-        this.ids = new ArrayList<>();
-        this.entornoPadre = entornoPadre;
+        this(entornoPadre, new Declaracion(new Identificador(tipo.toString(), tipo.toString()), tipo));
     }
 
     public Entorno(Entorno entornoPadre, Declaracion identificador) {
@@ -48,6 +42,12 @@ public class Entorno {
         this.tablaIDs = new Hashtable<>();
         this.ids = new ArrayList<>();
         this.entornoPadre = entornoPadre;
+        this.entornosHijo = new ArrayList<>();
+
+        // Si de verdad tenemos un entorno padre, nos vinculamos al padre. Creando asi una estructura arborea.
+        if (this.entornoPadre != null) {
+            this.entornoPadre.registraEntornoHijo(this);
+        }
     }
 
     public Declaracion getIdentificadorFuncionRetorno() {
@@ -102,6 +102,18 @@ public class Entorno {
         this.tablaIDs.put(name, nuevaDeclaracion);
         this.ids.add(nuevaDeclaracion);
         return nuevaDeclaracion;
+    }
+
+    public DeclaracionArray putArray(String id, String tipo, Integer size) throws ErrorSemantico {
+        if (this.containsSoloPropioEntorno(id))
+            throw new ErrorSemantico("El identificador '" + id + "' se ha declarado por duplicado");
+
+
+        DeclaracionArray declArray = new DeclaracionArray(new Identificador(id, id), Tipo.getTipo(tipo), size);
+        declArray.setEntorno(this);
+        this.tablaIDs.put(id, declArray);
+        this.ids.add(declArray);
+        return declArray;
     }
 
     // Introduce nuevo ID constante en el entorno actual
@@ -277,4 +289,28 @@ public class Entorno {
         return desplazamiento;
     }
 
+    /*
+    * Tal como esta declarado el entorno para los bucles y los condicionales se declaran
+    * sus variable en los scopes independientes.
+    * Esto deberia cambiar para que los entornos funcion fueran los que contuvieran las declaraciones de dichas variables
+     */
+    public int getTamanoTotalVariables() {
+        int tamano = 0;
+
+        for (Declaracion decl : ids) {
+            tamano += decl.getOcupacion();
+        }
+
+        // Llegado el caso, si se modificaran los entornos para declarar todo el tema de identificadores
+        // dentro de condicionales y bucles y se hiciera a nivel de función, podríamos eliminar esta recursividad
+        // ya que todas las variables se comprobarían a nivel de EntornoFuncion.
+        for (Entorno hijo: entornosHijo) {
+            tamano += hijo.getTamanoTotalVariables();
+        }
+        return tamano;
+    }
+
+    protected void registraEntornoHijo(Entorno hijo) {
+        this.entornosHijo.add(hijo);
+    }
 }

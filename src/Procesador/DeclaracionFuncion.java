@@ -6,6 +6,8 @@ import Checkers.TipoObject;
 public class DeclaracionFuncion extends Declaracion {
 
     private String etiqueta;
+    // Entorno vinculado a esta funcion
+    private EntornoFuncion entornoDependiente;
 
     public DeclaracionFuncion(Identificador identificador, TipoObject tipo, String etiqueta) {
         super(identificador, tipo);
@@ -19,5 +21,13 @@ public class DeclaracionFuncion extends Declaracion {
     @Override
     public String toString() {
         return tipo.toString() + " " + identificador.toString() + "(" + this.etiqueta + ")";
+    }
+
+    public void setEntornoDependiente(EntornoFuncion entorno) {
+        this.entornoDependiente = entorno;
+    }
+
+    public int getTamanoMemoriaNecesaria() {
+        return entornoDependiente.getTamanoTotalVariables();
     }
 }

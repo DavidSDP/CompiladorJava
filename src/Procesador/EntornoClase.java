@@ -11,6 +11,7 @@ import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
 
 public class EntornoClase extends Entorno {
+	private static int classSequence = 0;
 	
 	private Hashtable<String, DeclaracionFuncion> tablaFunciones;
 	private Hashtable<String, Declaracion> tablaClases;
@@ -84,10 +85,14 @@ public class EntornoClase extends Entorno {
 	////////*	IDENTIFICADORES	DE CLASES	*////////
 	
 	// Introduce nuevo ID de Clase en el entorno actual
-	public void putClase(String s) throws ErrorSemantico {
+	public DeclaracionClase putClase(String s) throws ErrorSemantico {
 		if(this.containsSoloPropioEntorno(s))
 			throw new ErrorSemantico("El identificador de clase '"+s+"' se ha declarado por duplicado");
-		this.tablaClases.put(s, new Declaracion(new Identificador(s, s), Tipo.getTipo(Tipo.Class.name().toLowerCase())));
+		DeclaracionClase decl = new DeclaracionClase(new Identificador(s, s), Tipo.getTipo(Tipo.Class.name().toLowerCase()));
+		decl.setEtiquetaDeclaraciones(generateClassLabel());
+		decl.setEtiquetaPostInicializacion(generateClassLabel());
+		this.tablaClases.put(s, decl);
+		return decl;
 	}
 	
 	// Devuelve true si el ID de Clase ha sido declarado en el entorno actual
@@ -204,4 +209,22 @@ public class EntornoClase extends Entorno {
 		FicheroEntornos.almacenaEntorno(sb.toString());
 	}
 
+	protected String generateClassLabel() {
+		return "c" + ++classSequence;
+	}
+
+	/**
+	 * La memoria necesaria para una clase es solo la acumlacion
+	 * del tamano de las variables.
+	 *
+	 * Las funciones no utilizan ningun sistema que necesite almacenar la memoria en runtime ( vtable )
+	 *
+	 */
+	public int getTamanoMemoriaNecesaria() {
+		int tamano = 0;
+		for (Declaracion decl: ids) {
+			tamano += decl.getOcupacion();
+		}
+		return tamano;
+	}
 }

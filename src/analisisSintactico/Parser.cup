@@ -16,6 +16,7 @@ import Procesador.EntornoClase;
 import Procesador.Declaracion;
 import Procesador.DeclaracionFuncion;
 import Procesador.DeclaracionConstante;
+import Procesador.DeclaracionClase;
 import Procesador.DeclaracionArray;
 import Procesador.Identificador;
 import SimbolosNoTerminales.*;
@@ -49,7 +50,7 @@ parser code {:
 
  :}
 
-terminal    String			TCLASS, TVAR, TFINAL, TRETURN, TVOID, TIF, TWHILE, TELSE, LLAVEIZQ, LLAVEDER;
+terminal    String			TCLASS, TVAR, TFINAL, TRETURN, TVOID, TIF, TWHILE, TELSE, LLAVEIZQ, LLAVEDER, FUNCTION;
 terminal    String			IGUAL, PUNTOCOMA, COMA, PARENIZQ, PARENDER, CORCHIZQ, CORCHDER;
 terminal	String			COMPARADOR, OPLOGICO, VBOOLEANO, OPSUMA, OPPROD;
 terminal	String			VSTRING;
@@ -62,8 +63,9 @@ non terminal	SimboloCondElse		condelse;
 non terminal	SimboloExpresion	expresion;
 non terminal	SimboloPrograma		programa;
 non terminal	SimboloClase		clase;
+non terminal	SimboloClase		clase_primera_parte;
+non terminal	DeclaracionClase		clase_firma;
 non terminal	SimboloCuerpo		cuerpo;
-non terminal	SimboloElemento		elemento;
 non terminal	SimboloAsignacion	asignacion;
 non terminal  	SimboloFactor		factor;
 non terminal	SimboloOperacion	Operacion;
@@ -88,6 +90,7 @@ non terminal	SimboloArray 		arrayAsig;
 non terminal	SimboloArray 		arrayDef;
 non terminal	SimboloInicializacion inicializacion;
 non terminal 	SimboloDeclaracion	declaracion;
+non terminal 	SimboloDeclaraciones	declaraciones;
 
 precedence left OPSUMA;
 precedence left OPPROD;
@@ -104,29 +107,55 @@ programa ::=  												{: GlobalVariables.entraBloqueClase(null);
 															:}
 			;
 			
-clase	::=	TCLASS:t VID:i 									{: try{
-																GlobalVariables.asignaClaseID(i);
-																}catch(ErrorSemantico e){
-																	ErrorHandler.reportaError(e);
-																}
-															:}
-			LLAVEIZQ 										{: GlobalVariables.entraBloqueClase(new Declaracion(new Identificador(i, i), Tipo.getTipoSafe(Tipo.Class)));
-															:}
-			declaraciones:decls								{: :}
-			cuerpo:c										{: GlobalVariables.saleBloqueClase();
-																
-															:}
-			LLAVEDER										{: RESULT = new SimboloClase(i,c);
-															:}
+clase	::=	clase_primera_parte:cpp cuerpo:c	LLAVEDER
+			{: 
+					SimboloClase simbolo = cpp;
+					simbolo.setCuerpo(c);
+					
+					// Implementamos una pseuda llamada a la inizialicacion de variables de la clase
+					I3DUtils.crea(OperacionTresDirecciones.GOTO, simbolo.getEtiquetaDeclaraciones());
+					I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, simbolo.getEtiquetaPostInicializacion());
+					
+					try {
+							// Implementamos la llamada al main ( Todavia no esta forzado, pero deberia existir un main sin args)
+							DeclaracionFuncion decl = GlobalVariables.getMainFunction();
+							I3DUtils.crea(OperacionTresDirecciones.LLAMADA, decl);
+					} catch(ErrorSemantico e) {
+							ErrorHandler.reportaError(e);
+					}
+					GlobalVariables.saleBloqueClase();
+
+					RESULT = simbolo;
+			:}
 			;
-			
+
+clase_primera_parte ::= clase_firma:cf declaraciones:decls
+			{:
+					I3DUtils.crea(OperacionTresDirecciones.GOTO, cf.getEtiquetaPostInicializacion());
+					RESULT = new SimboloClase(cf, decls);
+			:};
+
+clase_firma ::= TCLASS VID:i LLAVEIZQ
+			{:
+					DeclaracionClase decl = null;
+					try {
+							decl = GlobalVariables.asignaClaseID(i);
+							I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiquetaDeclaraciones());
+							GlobalVariables.entraBloqueClase(decl);
+					} catch(ErrorSemantico e) {
+							ErrorHandler.reportaError(e);
+					}
+
+					RESULT = decl;
+			:};
+
 cuerpo ::= cuerpo:c funcionDecl:f 							{: RESULT = new SimboloCuerpo(c,f); :}
 			|												{: RESULT = null; :}
 			;
 
-declaraciones ::= declaraciones:decls declaracion:d
+declaraciones ::= declaracion:d declaraciones:decls
 			{:
-				RESULT = new SimboloDeclaraciones(decls, d);
+				RESULT = new SimboloDeclaraciones(d, decls);
 			:}
 			|
 			{:
@@ -258,7 +287,7 @@ funchead ::= funcname:fn PARENIZQ args:a PARENDER
       RESULT = fn; 
   :}; 
 
-funcname ::= TVAR:t VID:i 
+funcname ::= FUNCTION TVAR:t VID:i 
   {:  
       DeclaracionFuncion decl = null;
       try{
@@ -267,6 +296,10 @@ funcname ::= TVAR:t VID:i
           ErrorHandler.reportaError(e);
       }   
 
+			// Mismas consideraciones que en la siguiente produccion
+      GlobalVariables.entraBloqueFuncion(decl);
+      GlobalVariables.asignaEntornoFuncionID(i);
+
 			// Genera lo necesario para poder dirigir las llamadas al procedimiento
 			I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiqueta());
 			// Probablemente en este caso no es importante pero el nivel de profundidad
@@ -274,12 +307,10 @@ funcname ::= TVAR:t VID:i
 			// debido a que se crea aqui
 			I3DUtils.crea(OperacionTresDirecciones.PREAMBULO, decl);
 
-      GlobalVariables.entraBloqueFuncion(decl);
-      GlobalVariables.asignaEntornoFuncionID(i);
       // Dummy construct to pass the information upwards
       RESULT = new SimboloFuncionDecl(decl, null, null);
   :}  
-          | TVOID VID:i
+          | FUNCTION TVOID VID:i
   {:  
       DeclaracionFuncion decl = null;
       try{
@@ -287,13 +318,18 @@ funcname ::= TVAR:t VID:i
       } catch(ErrorSemantico e) {
           ErrorHandler.reportaError(e);
       }
+			
+			// Probablemente el entra bloque deberia estar en otro lado. Pero por ahora
+			// no me pienso preocupar mas. Ahora mismo el problema que podriamos
+			// observar es que no deja redeclarar los parametros de las funciones
+			// Esto funciona asi en java. Ahora mismo lo dejo tal cual.
+      GlobalVariables.entraBloqueFuncion(decl);
+      GlobalVariables.asignaEntornoFuncionID(i);
    
 			// Genera lo necesario para poder dirigir las llamadas al procedimiento
 			I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiqueta());
 			I3DUtils.crea(OperacionTresDirecciones.PREAMBULO, decl);
 
-      GlobalVariables.entraBloqueFuncion(decl);
-      GlobalVariables.asignaEntornoFuncionID(i);
       // Dummy construct to pass the information upwards
       RESULT = new SimboloFuncionDecl(decl, null, null);
   :}; 

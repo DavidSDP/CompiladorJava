@@ -126,4 +126,16 @@ public class EntornoFuncion extends Entorno {
 		FicheroEntornos.almacenaEntorno(sb.toString());
 	}
 
+	public int getTamanoMemoriaNecesaria() {
+		int tamano = 0;
+
+		for (Declaracion decl : ids)
+			tamano += decl.getOcupacion();
+
+		for (Entorno hijo: entornosHijo)
+			tamano += hijo.getTamanoTotalVariables();
+
+		return tamano;
+	}
+
 }

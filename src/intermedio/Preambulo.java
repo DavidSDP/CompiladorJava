@@ -1,5 +1,7 @@
 package intermedio;
 
+import Procesador.DeclaracionFuncion;
+
 public class Preambulo extends InstruccionTresDirecciones {
     public Preambulo(Operando primero) {
         super(OperacionTresDirecciones.PREAMBULO);
@@ -8,8 +10,13 @@ public class Preambulo extends InstruccionTresDirecciones {
 
     @Override
     public String toMachineCode() {
-        // TODO Mover el StackPointer el numero de poisiciones adecuado
-        // para alojar todas las variables locales de la funcion
-        return "; Missing preambulo\n";
+        StringBuilder sb = new StringBuilder();
+        DeclaracionFuncion declaracionFuncion = (DeclaracionFuncion)this.primero.getValor();
+        int memoria = declaracionFuncion.getTamanoMemoriaNecesaria();
+        sb.append("\tmove.w STACK_TOP, A5\n")
+                .append("\tadd.w #").append(memoria).append(", A5\n")
+                .append("\tadd.w A5, STACK_TOP\n");
+
+        return sb.toString();
     }
 }

@@ -65,6 +65,8 @@ TIF			= 	"if"
 TELSE		= 	"else"
 TWHILE		=	"while"
 
+FUNCTION		=	"function"
+
 LLAVEIZQ	=	"{"
 LLAVEDER	=	"}"
 
@@ -103,6 +105,8 @@ VID			=	[A-Za-z][A-Za-z0-9_]*
 {TELSE}			{return symbol(sym.TELSE);}
 
 {TWHILE}		{return symbol(sym.TWHILE);}
+
+{FUNCTION}		{return symbol(sym.FUNCTION);}
 
 {LLAVEIZQ}		{return symbol(sym.LLAVEIZQ);}
 {LLAVEDER}		{return symbol(sym.LLAVEDER);}

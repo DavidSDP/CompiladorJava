@@ -53,8 +53,9 @@ public class GlobalVariables {
     }
 
     private static void asignaBuiltInFuncionID(String idFuncion, TipoObject tipoRetorno, SimboloArgs args) throws ErrorSemantico, IOException {
-        asignaFuncionID(idFuncion, tipoRetorno);
-        entraBloqueFuncion(new Declaracion(new Identificador(idFuncion, idFuncion), tipoRetorno));
+        DeclaracionFuncion declaracion = asignaFuncionID(idFuncion, tipoRetorno);
+        entraBloqueFuncion(declaracion);
+
         asignaEntornoFuncionID(idFuncion);
         if (args != null) {
             for (SimboloArgs a = args; a != null; a = a.getNextArg()) {
@@ -74,13 +75,9 @@ public class GlobalVariables {
         return top.put(tipo, id);
     }
 
-    public static Declaracion asignaArray(String id, String tipo, SimboloArray simboloArrayDef) throws ErrorSemantico {
+    public static DeclaracionArray asignaArray(String id, String tipo, SimboloArray simboloArrayDef) throws ErrorSemantico {
         Entorno top = entornoActual();
-        DeclaracionArray declArray = new DeclaracionArray(new Identificador(id, id), Tipo.getTipo(tipo), simboloArrayDef);
-        declArray.setEntorno(top);
-        // TODO Esto es raro, de momento lo dejo así, pero vamos diría que esto no tiene que estar así
-        top.getTablaIDs().put(id, declArray);
-        return declArray;
+        return top.putArray(id, tipo, simboloArrayDef.getNumero());
     }
 
     public static DeclaracionConstante asignaIDConstante(String id, String tipo, Object valor) throws ErrorSemantico {
@@ -111,9 +108,9 @@ public class GlobalVariables {
         }
     }
 
-    public static void asignaClaseID(String id) throws ErrorSemantico {
+    public static DeclaracionClase asignaClaseID(String id) throws ErrorSemantico {
         EntornoClase top = (EntornoClase) entornoActual();
-        top.putClase(id);
+        return top.putClase(id);
     }
 
     public static Declaracion compruebaID(String id) throws ErrorSemantico {
@@ -207,6 +204,8 @@ public class GlobalVariables {
     public static void entraBloqueFuncion(Declaracion identificadorFuncion) {
         EntornoFuncion e = new EntornoFuncion((EntornoClase) entornoActual(), identificadorFuncion);
         pilaEntornos.push(e);
+        DeclaracionFuncion declaracionFuncion = (DeclaracionFuncion)identificadorFuncion;
+        declaracionFuncion.setEntornoDependiente(e);
     }
 
     public static void saleBloqueFuncion(Boolean isBuiltIn) throws IOException {
@@ -234,5 +233,13 @@ public class GlobalVariables {
 
     public static String generarEtiqueta() {
         return "e" + SecuenciaIdEtiqueta++;
+    }
+
+    public static DeclaracionFuncion getMainFunction() throws ErrorSemantico {
+        EntornoClase entorno = (EntornoClase)entornoActual();
+        DeclaracionFuncion declaracionMain = entorno.getFuncion("main");
+
+        if(declaracionMain == null) throw new ErrorSemantico("Falta la funcion de entrada: main");
+        return declaracionMain;
     }
 }

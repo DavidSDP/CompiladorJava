@@ -12,11 +12,11 @@ import analisisSintactico.arbol.Nodo;
 public class SimboloCuerpo extends Nodo implements TipoSubyacente {
 	
 	private SimboloCuerpo cuerpo;
-	private SimboloElemento elemento;
+	private SimboloFuncionDecl funcion;
 	
-	public SimboloCuerpo(SimboloCuerpo c, SimboloElemento e) {
+	public SimboloCuerpo(SimboloCuerpo c, SimboloFuncionDecl e) {
 		this.cuerpo = c;
-		this.elemento = e;
+		this.funcion = e;
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class SimboloCuerpo extends Nodo implements TipoSubyacente {
 		List<INodo> hijos = new ArrayList<>();
 		if(cuerpo != null)
 			hijos.add(cuerpo);
-		if(elemento != null)
-			hijos.add(elemento);
+		if(funcion != null)
+			hijos.add(funcion);
 		return hijos;
 	}
 

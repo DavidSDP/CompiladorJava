@@ -31,7 +31,7 @@ public class EntornoFuncion extends Entorno {
 		if(!((EntornoClase)this.getEntornoPadre()).containsFuncion(funcionID))
 			throw new ErrorSemantico("La función con identificador: '"+funcionID+"' no ha sido declarada en la tabla de funciones del entorno");
 		
-		if(!this.contains(argumentoID))
+		if(!this.containsSoloPropioEntorno(argumentoID))
 			throw new ErrorSemantico("El identificador: '"+argumentoID+"' no ha sido declarado en la tabla de identificadores del entorno");
 		
 		if(this.getListaArgumentos().contains(argumentoID))
@@ -50,6 +50,19 @@ public class EntornoFuncion extends Entorno {
 	// Devuelve la lista de Argumentos para la función especificada. Mismo entorno.
 	public List<String> getArgs() {
 		return this.getListaArgumentos();
+	}
+	
+	public List<String> getListaArgumentos() {
+		return listaArgumentos;
+	}
+
+	public void setListaArgumentos(List<String> listaArgumentos) {
+		this.listaArgumentos = listaArgumentos;
+	}
+
+	@Override
+	public int getProfundidad() {
+		return this.profundidad;
 	}
 	
 	/* Dibujando el Entorno */
@@ -113,16 +126,4 @@ public class EntornoFuncion extends Entorno {
 		FicheroEntornos.almacenaEntorno(sb.toString());
 	}
 
-	public List<String> getListaArgumentos() {
-		return listaArgumentos;
-	}
-
-	public void setListaArgumentos(List<String> listaArgumentos) {
-		this.listaArgumentos = listaArgumentos;
-	}
-
-	@Override
-	public int getProfundidad() {
-		return this.profundidad;
-	}
 }

@@ -112,6 +112,7 @@ clase	::=	TCLASS:t VID:i 									{: try{
 															:}
 			LLAVEIZQ 										{: GlobalVariables.entraBloqueClase(new Declaracion(new Identificador(i, i), Tipo.getTipoSafe(Tipo.Class)));
 															:}
+			declaraciones:decls								{: :}
 			cuerpo:c										{: GlobalVariables.saleBloqueClase();
 																
 															:}
@@ -119,13 +120,18 @@ clase	::=	TCLASS:t VID:i 									{: try{
 															:}
 			;
 			
-cuerpo ::= cuerpo:c elemento:e 								{: RESULT = new SimboloCuerpo(c,e); :}
+cuerpo ::= cuerpo:c funcionDecl:f 							{: RESULT = new SimboloCuerpo(c,f); :}
 			|												{: RESULT = null; :}
 			;
-			
-elemento ::= declaracion:d									{: RESULT = new SimboloElemento(d); :}
-			| funcionDecl:f									{: RESULT = new SimboloElemento(f); :}
-			| clase:c										{: RESULT = new SimboloElemento(c); :}
+
+declaraciones ::= declaraciones:decls declaracion:d
+			{:
+				RESULT = new SimboloDeclaraciones(decls, d);
+			:}
+			|
+			{:
+				RESULT = null;
+			:}
 			;
 
 inicializacion ::= IGUAL Operacion:o PUNTOCOMA				

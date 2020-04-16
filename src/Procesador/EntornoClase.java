@@ -85,7 +85,7 @@ public class EntornoClase extends Entorno {
 	
 	// Introduce nuevo ID de Clase en el entorno actual
 	public void putClase(String s) throws ErrorSemantico {
-		if(this.contains(s))
+		if(this.containsSoloPropioEntorno(s))
 			throw new ErrorSemantico("El identificador de clase '"+s+"' se ha declarado por duplicado");
 		this.tablaClases.put(s, new Declaracion(new Identificador(s, s), Tipo.getTipo(Tipo.Class.name().toLowerCase())));
 	}

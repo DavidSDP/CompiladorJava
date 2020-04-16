@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
-import Checkers.Tipo;
 import Checkers.TipoObject;
 import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
@@ -66,14 +66,34 @@ public class Entorno {
     }
 
     ////////*	IDENTIFICADORES		*////////
+    
+    public Boolean containsSoloPropioEntorno(String name) {
+    	return this.tablaIDs.containsKey(name);
+    }
 
+    // Devuelve true si el ID ha sido declarado en el entorno actual
+    public Boolean containsHastaFuncionPadre(String s) {
+    	List<Entorno> listaEntornos = this.fullGetEntornos();
+    	Iterator<Entorno> iterator = listaEntornos.iterator();
+    	Boolean found = false;
+    	Boolean encontradaFuncionPadre = false;
+    	while(iterator.hasNext() && !found && encontradaFuncionPadre) {
+    		Entorno entorno = iterator.next();
+    		if(entorno instanceof EntornoFuncion)
+    			encontradaFuncionPadre = true;
+    		if(entorno.containsSoloPropioEntorno(s))
+    			found = true;
+    	}
+    	return found;
+    }
+    
     // Introduce nuevo ID en el entorno actual
     public Declaracion put(TipoObject tipo, String s) throws ErrorSemantico {
         String name = s;
         if (name == null)
             name = getTempName();
 
-        if (this.contains(name))
+        if (this.containsSoloPropioEntorno(name))
             throw new ErrorSemantico("El identificador '" + name + "' se ha declarado por duplicado");
 
 
@@ -90,7 +110,7 @@ public class Entorno {
         if (name == null)
             name = getTempName();
 
-        if (this.contains(name))
+        if (this.containsSoloPropioEntorno(name))
             throw new ErrorSemantico("La constante '" + name + "' se ha declarado por duplicado");
 
         DeclaracionConstante nuevoIdentificador = new DeclaracionConstante(new Identificador(name, name), tipo, valor, this.getProfundidad());
@@ -100,14 +120,9 @@ public class Entorno {
         return nuevoIdentificador;
     }
 
-    // Devuelve true si el ID ha sido declarado en el entorno actual
-    public Boolean contains(String s) {
-        return this.tablaIDs.containsKey(s);
-    }
-
     // Devuelve el ID especificado en el entorno actual
     public Declaracion get(String s) {
-        if (!this.contains(s)) {
+        if (!this.containsSoloPropioEntorno(s)) {
             return null;
         }
         return this.tablaIDs.get(s);
@@ -116,11 +131,19 @@ public class Entorno {
     // Devuelve el ID declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
     public Declaracion fullGet(String s) {
         for (Entorno e = this; e != null; e = e.getEntornoPadre()) {
-            if (e.contains(s)) {
+            if (e.containsSoloPropioEntorno(s)) {
                 return e.get(s);
             }
         }
         return null;
+    }
+
+    public List<Entorno> fullGetEntornos() {
+    	List<Entorno> listaEntornos = new ArrayList<>();
+        for (Entorno e = this; e != null; e = e.getEntornoPadre()) {
+        	listaEntornos.add(e);
+        }
+        return listaEntornos;
     }
 
     // Devuelve el ID  de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado

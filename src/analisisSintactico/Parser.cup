@@ -117,9 +117,11 @@ clase	::=	clase_primera_parte:cpp cuerpo:c	LLAVEDER
 					I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, simbolo.getEtiquetaPostInicializacion());
 					
 					try {
-							// Implementamos la llamada al main ( Todavia no esta forzado, pero deberia existir un main sin args)
+							// Implementamos la llamada al main 
 							DeclaracionFuncion decl = GlobalVariables.getMainFunction();
-							I3DUtils.crea(OperacionTresDirecciones.LLAMADA, decl);
+							I3DUtils.crea(OperacionTresDirecciones.ENTRY_POINT, decl);
+							// No hay funcion invocadora ya que esto es el main.
+							I3DUtils.crea(OperacionTresDirecciones.LLAMADA, decl, null);
 					} catch(ErrorSemantico e) {
 							ErrorHandler.reportaError(e);
 					}
@@ -273,7 +275,7 @@ funcionDecl ::= funchead:fh LLAVEIZQ contenido:c LLAVEDER
       GlobalVariables.saleBloqueFuncion(false);
 			// Ojo! Este return garantiza que las funciones
 			// que no devuelven nada ( return void ) vuelven
-			I3DUtils.crea(OperacionTresDirecciones.RETORNO);
+			I3DUtils.crea(OperacionTresDirecciones.RETORNO, fh.getDeclaracion());
       // Watch out! fh holds a SimboloFuncionDecl instance
       fh.setContenido(c);
       RESULT = fh; 
@@ -337,19 +339,20 @@ funcname ::= FUNCTION TVAR:t VID:i
 
 funcionInvk ::= VID:i PARENIZQ params:p PARENDER			
 	{: 
-			DeclaracionFuncion decl = null;
+			DeclaracionFuncion funcionInvocada = null;
+			DeclaracionFuncion funcionInvocadora = null;
 			try{
-					decl = GlobalVariables.compruebaFuncionID(i);
+					funcionInvocada = GlobalVariables.compruebaFuncionID(i);
 					TypeCheck.parameterMatch(i,p);
+
+					EntornoFuncion entorno = (EntornoFuncion)GlobalVariables.entornoActual();
+					funcionInvocadora = (DeclaracionFuncion)entorno.getIdentificador();
 			}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 			}
 
-			// TODO No es aqui, pero ahora mismo no se estan pasando los parametros a la funcion
-			// probablemente esto tenga que hacerse en params.
-
 			// Generamos la llamada
-			I3DUtils.crea(OperacionTresDirecciones.LLAMADA, decl);
+			I3DUtils.crea(OperacionTresDirecciones.LLAMADA, funcionInvocada, funcionInvocadora);
 			// TODO Esta variable temporal ahora mismo no sirve de nada, pero de alguna manera
 			// Tenemos que propagar el posible resultado (falta mirar el tema de los void)
 			// No estoy seguro de que el void se deba retornar como valor de variable
@@ -397,8 +400,8 @@ contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e)
 					} catch(ErrorSemantico e) {
 							ErrorHandler.reportaError(e);
 					}
-					
-					I3DUtils.crea(OperacionTresDirecciones.RETORNO, o.getDeclaracionResultado());
+					DeclaracionFuncion declaracion = (DeclaracionFuncion) GlobalVariables.entornoActual().getIdentificador();
+					I3DUtils.crea(OperacionTresDirecciones.RETORNO, declaracion, o.getDeclaracionResultado());
 					RESULT = new SimboloContenido(c,r,o); 
 			:}
 			| 	{: RESULT = null; :}

@@ -52,7 +52,7 @@ public class Llamada extends InstruccionTresDirecciones {
 
         // TODO Es necesario saber si la funcion tiene retorno o no para poder reservar el espacio oportuno
         //  aun no esta hecho.
-        
+
         sb.append("\tbsr update_bp\n") // Actualiza BP y Access link
                 .append("\tbsr ").append(callee.getEtiqueta()).append("\n")
                 // TODO Handle return

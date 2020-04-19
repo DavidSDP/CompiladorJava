@@ -3,23 +3,6 @@ package Procesador;
 import Checkers.Tipo;
 import Checkers.TipoObject;
 
-// 0
-class A {
-    // 1
-    public String getStringA() {
-        // 2
-        return "Hola";
-    }
-
-    // 1
-    class B {
-        // 2
-        public String getString() {
-            return getStringA();
-        }
-    }
-}
-
 public class DeclaracionFuncion extends Declaracion {
 
     private String etiqueta;

@@ -6,7 +6,7 @@ public class Param extends InstruccionTresDirecciones {
     public Param(Operando primero) {
         super(OperacionTresDirecciones.PARAM);
         this.primero = primero;
-    }  
+    }
 
     @Override
     public String toMachineCode() {

@@ -37,9 +37,15 @@ public abstract class InstruccionTresDirecciones implements MachineCodeSerializa
     }
 
     /**
-     *
      * Utilidad para generar el código relacionado con la busqueda de las variables a traves de los
      * bloques de activación
+     *
+     * Esto NO esta bien hecho. Ahora mismo escalamos por los diferentes bloques de activación
+     * que son los inmediatamente superiores en el orden de llamada. Pero esto no refleja
+     * los ambitos de ejecución.
+     *
+     * Para arreglarlo, realmente se tiene que escalar por los access links que realmente contienen
+     * el puntero al entorno contenedor ( no tiene porque ser el bloque de activacion anterior )
      */
     public static String putActivationBlockAddressInRegister(Operando operando) {
         StringBuilder sb = new StringBuilder();
@@ -56,6 +62,8 @@ public abstract class InstruccionTresDirecciones implements MachineCodeSerializa
             sb.append("\tmove.w BP, A6\n");
         }
 
-        return sb.toString();
+        // Sumamos 1 a la direccion de BP debido a que BP apunta al antiguo BP y necesitamos
+        // saltarnos esa palabra de memoria para situarnos encima de las variables locales.
+        return sb.append("\tadd.w #1, A6\n").toString();
     }
 }

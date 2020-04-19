@@ -21,18 +21,18 @@ public class EntornoClase extends Entorno {
 
 	private int profundidad;
 
-	public EntornoClase(Entorno entornoAnterior, Declaracion identificador) {
-		super(entornoAnterior, identificador);
+	public EntornoClase(Entorno entornoPadre, Declaracion identificador) {
+		super(entornoPadre, identificador);
 		this.tablaFunciones = new Hashtable<>();
 		this.tablaClases = new Hashtable<>();
 		this.tablaFuncionEntorno = new Hashtable<>();
 
 		// Notese que este es el único punto donde se puede crear un entorno sin entorno padre.
 		// Tal como esta montada la gramatica, las funciones no pueden estar fuera de las clases.
-		if (entornoAnterior == null) {
+		if (entornoPadre == null) {
 			this.profundidad = 0;
 		} else {
-			this.profundidad = entornoAnterior.getProfundidad() + 1;
+			this.profundidad = entornoPadre.getProfundidad() + 1;
 		}
 	}
 	

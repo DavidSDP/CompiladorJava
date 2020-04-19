@@ -9,18 +9,23 @@ public enum TipoOperador {
 	
 	public static TipoOperador getTipoOperador(String operador) {
 		switch(operador) {
-			case "+": return TipoOperador.AritmeticoSuma;
-			case "-": return TipoOperador.AritmeticoSuma;
-			case "*": return TipoOperador.AritmeticoProducto;
-			case "/": return TipoOperador.AritmeticoProducto;
-			case "&&": return TipoOperador.Logico;
-			case "||": return TipoOperador.Logico;
-			case "==": return TipoOperador.ComparadorLogico;
-			case ">=": return TipoOperador.Comparador;
-			case "<=": return TipoOperador.Comparador;
-			case "!=": return TipoOperador.ComparadorLogico;
-			case ">": return TipoOperador.Comparador;
-			case "<": return TipoOperador.Comparador;
+			case "+":
+			case "-":
+				return TipoOperador.AritmeticoSuma;
+			case "*":
+			case "/":
+				return TipoOperador.AritmeticoProducto;
+			case "&&":
+			case "||":
+				return TipoOperador.Logico;
+			case "==":
+			case "!=":
+				return TipoOperador.ComparadorLogico;
+			case ">=":
+			case "<=":
+			case ">":
+			case "<":
+				return TipoOperador.Comparador;
 			default:
 				return null;
 		}

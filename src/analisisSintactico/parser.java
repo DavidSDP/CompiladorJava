@@ -734,7 +734,7 @@ class CUP$parser$actions {
       GlobalVariables.saleBloqueFuncion(false);
 			// Ojo! Este return garantiza que las funciones
 			// que no devuelven nada ( return void ) vuelven
-			I3DUtils.crea(OperacionTresDirecciones.RETORNO);
+			I3DUtils.crea(OperacionTresDirecciones.RETORNO, fh.getDeclaracion());
       // Watch out! fh holds a SimboloFuncionDecl instance
       fh.setContenido(c);
       RESULT = fh; 
@@ -1014,8 +1014,8 @@ class CUP$parser$actions {
 					} catch(ErrorSemantico e) {
 							ErrorHandler.reportaError(e);
 					}
-					
-					I3DUtils.crea(OperacionTresDirecciones.RETORNO, o.getDeclaracionResultado());
+					DeclaracionFuncion declaracion = (DeclaracionFuncion) GlobalVariables.entornoActual().getIdentificador();
+					I3DUtils.crea(OperacionTresDirecciones.RETORNO, declaracion, o.getDeclaracionResultado());
 					RESULT = new SimboloContenido(c,r,o); 
 			
               CUP$parser$result = parser.getSymbolFactory().newSymbol("contenido",22, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

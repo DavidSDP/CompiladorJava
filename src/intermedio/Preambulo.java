@@ -15,7 +15,7 @@ public class Preambulo extends InstruccionTresDirecciones {
         int memoria = declaracionFuncion.getTamanoMemoriaNecesaria();
         sb.append("\tmove.w STACK_TOP, A5\n")
                 .append("\tadd.w #").append(memoria).append(", A5\n")
-                .append("\tadd.w A5, STACK_TOP\n");
+                .append("\tmove.w A5, STACK_TOP\n");
 
         return sb.toString();
     }

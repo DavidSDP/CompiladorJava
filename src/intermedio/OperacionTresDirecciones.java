@@ -47,5 +47,9 @@ public enum OperacionTresDirecciones {
     // Operaciones logicas
     AND,
     OR,
-       
+
+    // Instruccion especial usada para inicializar
+    // htodo lo que tiene que ver con el inicio de la ejecución
+    ENTRY_POINT,
+
 }

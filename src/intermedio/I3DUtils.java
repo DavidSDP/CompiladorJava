@@ -76,7 +76,7 @@ public class I3DUtils {
                 c3d = new Param(primero);
                 break;
             case LLAMADA:
-                c3d = new Llamada(primero); // primero es el numero de procedimiento/funcion
+                c3d = new Llamada(primero, segundo);
                 break;
             case PREAMBULO:
                 c3d = new Preambulo(primero); // primero es el numero de procedimiento/funcion
@@ -119,6 +119,9 @@ public class I3DUtils {
                 break;
             case NE:
                 c3d = new NE(primero, segundo, tercero);
+                break;
+            case ENTRY_POINT:
+                c3d = new EntryPoint(primero, segundo);
                 break;
             default:
                 throw new AssertionError(instr.name());

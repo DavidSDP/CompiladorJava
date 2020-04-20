@@ -15,7 +15,7 @@ public class EQ extends InstruccionTresDirecciones {
                 .append(putActivationBlockAddressInRegister(this.segundo))
                 .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
                 .append("\tcmp D0, D1\n")
-                .append("\tbeq ").append(this.tercero.toString());
+                .append("\tbeq ").append(this.tercero.toString()).append("\n");
 
         return sb.toString();
     }

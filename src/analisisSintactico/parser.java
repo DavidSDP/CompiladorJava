@@ -15,6 +15,7 @@ import Errores.ErrorSemantico;
 import Errores.ErrorSintactico;
 import Procesador.GlobalVariables;
 import Procesador.EntornoClase;
+import Procesador.EntornoFuncion;
 import Procesador.Declaracion;
 import Procesador.DeclaracionFuncion;
 import Procesador.DeclaracionConstante;
@@ -415,9 +416,9 @@ class CUP$parser$actions {
 					I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, simbolo.getEtiquetaPostInicializacion());
 					
 					try {
-							// Implementamos la llamada al main ( Todavia no esta forzado, pero deberia existir un main sin args)
+							// Implementamos la llamada al main 
 							DeclaracionFuncion decl = GlobalVariables.getMainFunction();
-							I3DUtils.crea(OperacionTresDirecciones.LLAMADA, decl);
+							I3DUtils.crea(OperacionTresDirecciones.ENTRY_POINT, decl);
 					} catch(ErrorSemantico e) {
 							ErrorHandler.reportaError(e);
 					}
@@ -843,25 +844,26 @@ class CUP$parser$actions {
 		int pright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloParams p = (SimboloParams)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		 
-			DeclaracionFuncion decl = null;
+			DeclaracionFuncion funcionInvocada = null;
+			DeclaracionFuncion funcionInvocadora = null;
 			try{
-					decl = GlobalVariables.compruebaFuncionID(i);
+					funcionInvocada = GlobalVariables.compruebaFuncionID(i);
 					TypeCheck.parameterMatch(i,p);
+
+					EntornoFuncion entorno = (EntornoFuncion)GlobalVariables.entornoFuncionActual();
+					funcionInvocadora = (DeclaracionFuncion)entorno.getIdentificador();
 			}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 			}
 
-			// TODO No es aqui, pero ahora mismo no se estan pasando los parametros a la funcion
-			// probablemente esto tenga que hacerse en params.
-
 			// Generamos la llamada
-			I3DUtils.crea(OperacionTresDirecciones.LLAMADA, decl);
+			I3DUtils.crea(OperacionTresDirecciones.LLAMADA, funcionInvocada, funcionInvocadora);
 			// TODO Esta variable temporal ahora mismo no sirve de nada, pero de alguna manera
 			// Tenemos que propagar el posible resultado (falta mirar el tema de los void)
 			// No estoy seguro de que el void se deba retornar como valor de variable
 			// intermedia :thinking:
-			Declaracion declRetorno = GlobalVariables.crearVariableTemporal(decl.getTipo());			
-			RESULT = new SimboloFuncionInvk(decl, declRetorno, i, p);
+			Declaracion declRetorno = GlobalVariables.crearVariableTemporal(funcionInvocada.getTipo());			
+			RESULT = new SimboloFuncionInvk(funcionInvocada, declRetorno, i, p);
 	
               CUP$parser$result = parser.getSymbolFactory().newSymbol("funcionInvk",15, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }

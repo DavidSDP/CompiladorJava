@@ -121,8 +121,6 @@ clase	::=	clase_primera_parte:cpp cuerpo:c	LLAVEDER
 							// Implementamos la llamada al main 
 							DeclaracionFuncion decl = GlobalVariables.getMainFunction();
 							I3DUtils.crea(OperacionTresDirecciones.ENTRY_POINT, decl);
-							// No hay funcion invocadora ya que esto es el main.
-							I3DUtils.crea(OperacionTresDirecciones.LLAMADA, decl, null);
 					} catch(ErrorSemantico e) {
 							ErrorHandler.reportaError(e);
 					}
@@ -346,7 +344,7 @@ funcionInvk ::= VID:i PARENIZQ params:p PARENDER
 					funcionInvocada = GlobalVariables.compruebaFuncionID(i);
 					TypeCheck.parameterMatch(i,p);
 
-					EntornoFuncion entorno = (EntornoFuncion)GlobalVariables.entornoActual();
+					EntornoFuncion entorno = (EntornoFuncion)GlobalVariables.entornoFuncionActual();
 					funcionInvocadora = (DeclaracionFuncion)entorno.getIdentificador();
 			}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);

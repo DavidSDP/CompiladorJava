@@ -51,18 +51,16 @@ public class Entorno {
     }
 
     public Declaracion getIdentificadorFuncionRetorno() {
-        EntornoFuncion entornoFuncionSuperior = (EntornoFuncion) getEntornoFuncionSuperior(this);
+        EntornoFuncion entornoFuncionSuperior = (EntornoFuncion) getEntornoFuncionSuperior();
         if (entornoFuncionSuperior == null)
             return null;
         return entornoFuncionSuperior.getIdentificador();
     }
 
-    private static Entorno getEntornoFuncionSuperior(Entorno entorno) {
-        if (entorno == null)
-            return null;
-        if (entorno instanceof EntornoFuncion)
-            return entorno;
-        return getEntornoFuncionSuperior(entorno.getEntornoPadre());
+    public Entorno getEntornoFuncionSuperior() {
+        if (this instanceof EntornoFuncion)
+            return this;
+        return this.getEntornoPadre().getEntornoFuncionSuperior();
     }
 
     ////////*	IDENTIFICADORES		*////////

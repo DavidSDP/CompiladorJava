@@ -45,6 +45,16 @@ public class GlobalVariables {
         }
     }
 
+    public static Entorno entornoFuncionActual() {
+        Entorno entorno;
+        try {
+            entorno = pilaEntornos.peek();
+            return entorno.getEntornoFuncionSuperior();
+        } catch (EmptyStackException e) {
+            return null;
+        }
+    }
+
     public static void declaraBuiltInFunctions(EntornoClase raiz) throws ErrorSemantico, IOException {
         asignaBuiltInFuncionID("read", Tipo.getTipo(Tipo.String), null);
         asignaBuiltInFuncionID("write", Tipo.getTipo(Tipo.Void), new SimboloArgs(new SimboloArgDecl("input", Tipo.getTipo(Tipo.String), null), null, true));

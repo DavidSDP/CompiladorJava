@@ -24,7 +24,8 @@ public class EntryPoint extends Llamada {
          */
         StringBuilder sb = new StringBuilder();
         sb.append("\tmove.w #STACK_TOP, A6\n")
-                .append("\tadd.w #4, A6\n") // En el simulador del 68K por defecto está puesta la memoria a 0
+                // Movemos el puntero encima de lo que sera el nuevo BP
+                .append("\tadd.w #2, A6\n")
                 .append("\tmove.w A6, STACK_TOP\n")
                 .append("\tmove.w STACK_TOP, BP\n");
 

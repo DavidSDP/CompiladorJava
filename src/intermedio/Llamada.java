@@ -18,9 +18,9 @@ public class Llamada extends InstruccionTresDirecciones {
         StringBuilder sb = new StringBuilder();
         DeclaracionFuncion callee = (DeclaracionFuncion)this.primero.getValor();
 
+        sb.append("\tmove.w #STACK_TOP, A6\n");
         if (callee.getTamanoRetorno() > 0) {
-            sb.append("\tmove.w #STACK_TOP, A6\n")
-                    .append("\tadd.w #").append(callee.getTamanoRetorno()).append(", \n");
+            sb.append("\tadd.w #").append(callee.getTamanoRetorno()).append(", A6\n");
         }
 
         if (this.segundo != null) {
@@ -50,14 +50,15 @@ public class Llamada extends InstruccionTresDirecciones {
 
         } else {
             // Si no hay caller estamos gestionando el main y se tiene que hacer de forma diferente:
-            sb.append("\tmove.w #STACK_TOP, A6\n")
-                    .append("\tadd.w #2, A6\n")
-                    // Actualiza el access link y el stack top
+            // Saltamos el BP actual
+            sb.append("\tadd.w #2, A6\n")
+                    // y actualiza el access link y el stack top
                     .append("\tmove.w #BP, (A6)\n")
                     .append("\tmove.w A6, STACK_TOP\n");
         }
         sb.append("\tbsr update_bp\n") // Actualiza BP y Access link
                 .append("\tbsr ").append(callee.getEtiqueta()).append("\n")
+                .append("\tbsr restore_bp\n")
                 // Esto funciona si los supuestos parametros han añadido el backup de la cima de la pila
                 // Una alternativa es guardar el listado de declaraciones de los parametros de las funciones en la
                 // declaracion de la funcion para poder calcular el offset de las variables para poder eliminarlas de la pila

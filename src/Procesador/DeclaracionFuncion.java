@@ -35,4 +35,8 @@ public class DeclaracionFuncion extends Declaracion {
         assert entornoDependiente != null && otra.entornoDependiente != null;
         return entornoDependiente.getProfundidad() == otra.entornoDependiente.getProfundidad();
     }
+
+    public int getTamanoRetorno() {
+        return tipo.getSize();
+    }
 }

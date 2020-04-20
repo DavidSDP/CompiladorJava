@@ -13,6 +13,7 @@ import Errores.ErrorSemantico;
 import Errores.ErrorSintactico;
 import Procesador.GlobalVariables;
 import Procesador.EntornoClase;
+import Procesador.EntornoFuncion;
 import Procesador.Declaracion;
 import Procesador.DeclaracionFuncion;
 import Procesador.DeclaracionConstante;
@@ -357,8 +358,8 @@ funcionInvk ::= VID:i PARENIZQ params:p PARENDER
 			// Tenemos que propagar el posible resultado (falta mirar el tema de los void)
 			// No estoy seguro de que el void se deba retornar como valor de variable
 			// intermedia :thinking:
-			Declaracion declRetorno = GlobalVariables.crearVariableTemporal(decl.getTipo());			
-			RESULT = new SimboloFuncionInvk(decl, declRetorno, i, p);
+			Declaracion declRetorno = GlobalVariables.crearVariableTemporal(funcionInvocada.getTipo());			
+			RESULT = new SimboloFuncionInvk(funcionInvocada, declRetorno, i, p);
 	:}
 		;
 		

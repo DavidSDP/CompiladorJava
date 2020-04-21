@@ -5,6 +5,7 @@ class ClasePrincipal {
 	function void print(int i){}
 	
 	function void main(){
+		boolean z = true;
 		int c[100];
 		c[1] = 10;
 		c[2] = 0;

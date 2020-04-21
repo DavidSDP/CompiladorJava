@@ -22,5 +22,8 @@ public class DeclaracionConstante extends Declaracion {
         return tipo.toString() + " " + valor.toString();
     }
 
+    public Object getValor() {
+        return valor;
+    }
 
 }

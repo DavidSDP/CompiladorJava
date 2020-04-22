@@ -92,6 +92,22 @@ VNUMERO		=	0|[1-9][0-9]*
 
 VID			=	[A-Za-z][A-Za-z0-9_]*
 
+
+LineTerminator = \r|\n|\r\n
+InputCharacter = [^\r\n]
+
+
+/* comments */
+Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
+
+
+TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
+// Comment can be the last line of the file, without line terminator.
+EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}?
+DocumentationComment = "/**" {CommentContent} "*"+ "/"
+CommentContent       = ( [^*] | \*+ [^/*] )*
+
+
 %%
 
 {ESPACIO}		{/* nada que hacer */}
@@ -133,5 +149,7 @@ VID			=	[A-Za-z][A-Za-z0-9_]*
 {VSTRING}		{return symbol(sym.VSTRING, this.yytext());}
 {VNUMERO}		{return symbol(sym.VNUMERO, this.yytext());}
 {VID}			{return symbol(sym.VID, this.yytext());}
+
+{Comment} { /* ignore */ }
 
 [^]				{ ErrorHandler.reportaError(new ErrorLexico(this.yytext(), this.yyline, this.yycolumn)); }

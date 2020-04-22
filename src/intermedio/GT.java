@@ -10,10 +10,10 @@ public class GT extends InstruccionTresDirecciones {
 
     public String generateBranch() {
         StringBuilder sb = new StringBuilder();
-        sb.append(putActivationBlockAddressInRegister(this.primero))
-                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
-                .append(putActivationBlockAddressInRegister(this.segundo))
-                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
+
+        sb.append(super.toMachineCode());
+        sb.append(this.primero.load("D0"))
+                .append(this.segundo.load("D1"))
                 .append("\tcmp D0, D1\n")
                 .append("\tbgt ").append(this.tercero.toString());
 
@@ -22,15 +22,24 @@ public class GT extends InstruccionTresDirecciones {
 
     public String generateOperation() {
         StringBuilder sb = new StringBuilder();
-        sb.append(putActivationBlockAddressInRegister(this.primero))
-                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
-                .append(putActivationBlockAddressInRegister(this.segundo))
-                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
+
+        sb.append(super.toMachineCode());
+        sb.append(this.primero.load("D0"))
+                .append(this.segundo.load("D1"))
                 .append("\tcmp D0, D1\n")
                 .append("\tsgt D1 \n")
                 .append("\tand #1, D1\n")
-                .append(putActivationBlockAddressInRegister(this.tercero))
-                .append("\tmove D1, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
+                .append(this.tercero.save("D1"));
+
+//        sb.append(putActivationBlockAddressInRegister(this.primero))
+//                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
+//                .append(putActivationBlockAddressInRegister(this.segundo))
+//                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
+//                .append("\tcmp D0, D1\n")
+//                .append("\tsgt D1 \n")
+//                .append("\tand #1, D1\n")
+//                .append(putActivationBlockAddressInRegister(this.tercero))
+//                .append("\tmove D1, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
 //                .append("\tmove.w SR, D1\n")
 //                .append("and.w #8, D1")  // Limpia el resto de los bits del SR. No nos importan
 //                .append("lsr #3, D1")    // El tercer bit del SR es el N

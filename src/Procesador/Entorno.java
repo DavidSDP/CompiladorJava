@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import Checkers.Tipo;
 import Checkers.TipoObject;
@@ -284,7 +285,9 @@ public class Entorno {
         for (int index = 0; index < elementIndex; index++) {
             desplazamiento += this.ids.get(index).getOcupacion();
         }
-        return desplazamiento;
+        // El +2 proviene de que necesitamos saltarnos el BP. Obviamente esto no debería
+        // ir aqui pero estoy escaso de imaginacion ahora mismo
+        return desplazamiento + 2;
     }
 
     /*
@@ -295,7 +298,9 @@ public class Entorno {
     public int getTamanoTotalVariables() {
         int tamano = 0;
 
-        for (Declaracion decl : ids) {
+        List<Declaracion> localIds = this.getLocalVariables();
+
+        for (Declaracion decl : localIds) {
             tamano += decl.getOcupacion();
         }
 
@@ -306,6 +311,10 @@ public class Entorno {
             tamano += hijo.getTamanoTotalVariables();
         }
         return tamano;
+    }
+
+    protected List<Declaracion> getLocalVariables() {
+        return this.ids.stream().filter( x -> !x.isParam()).collect(Collectors.toList());
     }
 
     protected void registraEntornoHijo(Entorno hijo) {

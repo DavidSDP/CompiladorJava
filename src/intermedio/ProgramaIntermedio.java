@@ -35,7 +35,31 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
      * modifique el estado del propio programa.
      */
     public void optimizar() {
-        // TODO
+        ArrayList<InstruccionTresDirecciones> instrucciones = new ArrayList<>();
+        int numElementos = this.instrucciones.size();
+        int i = 0;
+
+        InstruccionTresDirecciones instruccion;
+        while(i < numElementos) {
+            instruccion = this.instrucciones.get(i);
+            switch (instruccion.getOperacion()) {
+                case GT:
+                    break;
+                case GTE:
+                    break;
+                case LT:
+                    break;
+                case LTE:
+                    break;
+                case EQ:
+                    break;
+                case NE:
+                    break;
+                case ENTRY_POINT:
+                    break;
+            }
+
+        }
     }
     
     @Override

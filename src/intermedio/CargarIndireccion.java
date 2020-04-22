@@ -34,15 +34,27 @@ public class CargarIndireccion extends InstruccionTresDirecciones {
     public String toMachineCode() {
         StringBuilder sb = new StringBuilder();
         DeclaracionArray declArray = (DeclaracionArray)this.primero.getValor();
-        sb.append(putActivationBlockAddressInRegister(this.primero))
-                .append("\tmove A6, A5\n")
+
+        sb.append(super.toMachineCode());
+        sb.append(this.primero.load("D0")) // El guardar al registro es totalmente dummy, lo que nos interesa
+                .append("\tmove A6, A5\n")            // es la direccion que se deja en A6
                 .append("\tadd.w #").append(declArray.getDesplazamiento()).append(", A5\n")
-                .append(putActivationBlockAddressInRegister(this.segundo))
-                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
+                .append(this.segundo.load("D1"))
                 .append("\tmulu #").append(declArray.getTipoDato().getSize()).append(", D1\n")
                 .append("\tadd D1, A5\n")
-                .append(putActivationBlockAddressInRegister(this.tercero))
-                .append("\tmove (A5), ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
+                // Juas lo siguiente es hack hack porque hemos permitido meter strings a pelo jajajajaja
+                .append(this.tercero.save("(A5)"));
+
+        // Codigo de referencia para cuando se tenga que arreglar la mierda que hay encima de este comentario
+//        sb.append(putActivationBlockAddressInRegister(this.primero))
+//                .append("\tmove A6, A5\n")
+//                .append("\tadd.w #").append(declArray.getDesplazamiento()).append(", A5\n")
+//                .append(putActivationBlockAddressInRegister(this.segundo))
+//                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
+//                .append("\tmulu #").append(declArray.getTipoDato().getSize()).append(", D1\n")
+//                .append("\tadd D1, A5\n")
+//                .append(putActivationBlockAddressInRegister(this.tercero))
+//                .append("\tmove (A5), ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
 
         return sb.toString();
     }

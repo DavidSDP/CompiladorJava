@@ -18,7 +18,8 @@ public class Llamada extends InstruccionTresDirecciones {
         StringBuilder sb = new StringBuilder();
         DeclaracionFuncion callee = (DeclaracionFuncion)this.primero.getValor();
 
-        sb.append("\tmove.w #STACK_TOP, A6\n");
+        sb.append(super.toMachineCode());
+        sb.append("\tmove.w STACK_TOP, A6\n");
         if (callee.getTamanoRetorno() > 0) {
             sb.append("\tadd.w #").append(callee.getTamanoRetorno()).append(", A6\n");
         }
@@ -34,7 +35,7 @@ public class Llamada extends InstruccionTresDirecciones {
                 // BP hace referencia al bloque de activacion antiguo y el nuevo, que esta en construccion,
                 // esta referenciado por el STACK_TOP
                 // El access link es el access link que tiene el caller
-                sb.append("\tmove.w #BP, A5\n")
+                sb.append("\tmove.w BP, A5\n")
                         .append("\tsub.w #2, A5\n")
                         .append("\tadd.w #2, A6\n") // Avanzamos el puntero a la nueva posición
                         // Actualiza el access link y el stack top
@@ -53,7 +54,7 @@ public class Llamada extends InstruccionTresDirecciones {
             // Saltamos el BP actual
             sb.append("\tadd.w #2, A6\n")
                     // y actualiza el access link y el stack top
-                    .append("\tmove.w #BP, (A6)\n")
+                    .append("\tmove.w BP, (A6)\n")
                     .append("\tmove.w A6, STACK_TOP\n");
         }
         sb.append("\tbsr update_bp\n") // Actualiza BP y Access link

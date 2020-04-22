@@ -14,19 +14,17 @@ public class Division extends InstruccionTresDirecciones {
         // operando, así que necesitamos guardar el valor en el registro para
         // devolver donde toque eso.
         StringBuilder sb = new StringBuilder();
-        
+
+        sb.append(super.toMachineCode());
         /*
          * 1. Cargamos el valor del primer elemento en el registro
          * 2. Le div el valor del segundo al registro
          * 3. Copiamos el valor del registro a la variable de destino
          */
-        sb.append(putActivationBlockAddressInRegister(this.primero))
-                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
-                .append(putActivationBlockAddressInRegister(this.segundo))
-                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
+        sb.append(this.primero.load("D0"))
+                .append(this.segundo.load("D1"))
                 .append("\tdivs D1, D0\n")
-                .append(putActivationBlockAddressInRegister(this.tercero))
-                .append("\tmove D0, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
+                .append(this.tercero.save("D0"));
         
         return sb.toString();
     }

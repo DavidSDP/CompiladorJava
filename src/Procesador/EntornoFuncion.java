@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import Checkers.TipoObject;
 import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
 
@@ -38,6 +40,22 @@ public class EntornoFuncion extends Entorno {
 			throw new ErrorSemantico("Se ha definido el argumento: '"+argumentoID+"' duplicado para la función '"+funcionID+"'");
 		
 		this.getListaArgumentos().add(argumentoID);
+	}
+
+	// Especifica los argumentos de la función
+	public void putFuncionArg(String name, TipoObject tipo) throws ErrorSemantico {
+		Declaracion param = this.put(tipo, name);
+		param.markParam();
+
+		this.listaArgumentos.add(name);
+	}
+
+
+	public void putFuncionArrayArg(String name, String tipo, Integer size ) throws ErrorSemantico {
+		Declaracion param = this.putArray(name, tipo, size);
+		param.markParam();
+
+		this.listaArgumentos.add(name);
 	}
 	
 	// Devuelve true si el ID es un argumento de función especificada. Mismo entorno.
@@ -126,16 +144,36 @@ public class EntornoFuncion extends Entorno {
 		FicheroEntornos.almacenaEntorno(sb.toString());
 	}
 
-	public int getTamanoMemoriaNecesaria() {
-		int tamano = 0;
+	public int getDesplazamiento(Declaracion decl) {
+		if(decl.isParam()) {
+			return getDesplazamientoParametro(decl);
+		} else {
+			return getDesplazamientoVariableLocal(decl);
+		}
+	}
 
-		for (Declaracion decl : ids)
-			tamano += decl.getOcupacion();
+	protected int getDesplazamientoVariableLocal(Declaracion decl) {
+		// El +2 proviene de que necesitamos saltarnos el BP. Obviamente esto no debería
+		// ir aqui pero estoy escaso de imaginacion ahora mismo
+		return this.getDesplazamientoElemento(decl, getLocalVariables()) + 2;
+	}
 
-		for (Entorno hijo: entornosHijo)
-			tamano += hijo.getTamanoTotalVariables();
+	protected int getDesplazamientoParametro(Declaracion decl) {
+		List<Declaracion> params = this.ids.stream().filter( x -> !x.isParam).collect(Collectors.toList());
+		int offset = this.getDesplazamientoElemento(decl, params);
+		// Ojo que para situarnos al inicio de la variable cuando tratamos esta mierda tenemos que saltarnos
+		// todos los elementos que tenemos enmedio, y además nuestra memoria ocupada.
+		// Además al ser un parametro el desplazamiento es negativo
+		return -(offset + decl.getOcupacion());
+	}
 
-		return tamano;
+	private int getDesplazamientoElemento(Declaracion decl, List<Declaracion> elementos) {
+		int elementIndex = this.ids.indexOf(decl);
+		int desplazamiento = 0;
+		for (int index = 0; index < elementIndex; index++) {
+			desplazamiento += this.ids.get(index).getOcupacion();
+		}
+		return desplazamiento;
 	}
 
 }

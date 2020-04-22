@@ -28,8 +28,4 @@ public class OperandoEtiqueta extends Operando {
         return etiqueta; 
     }
 
-    @Override
-    public String toMachineCode() {
-        return etiqueta + ":  ;skip ;)\n";
-    }
 }

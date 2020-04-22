@@ -1,0 +1,2 @@
+// ERRORES GENERADOS //
+La ejecución ha finalizado sin errores.

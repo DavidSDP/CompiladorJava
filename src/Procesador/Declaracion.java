@@ -14,6 +14,8 @@ public class Declaracion {
     // Entorno donde ha sido declarada la variable.
     protected Entorno entorno;
 
+    protected boolean isParam;
+
     /**
      * Las declaraciones de funciones y clases no necesitan ni profunidad de declaracion
      * ni desplazamiento en la memoria ( no se gestionan asi )
@@ -25,12 +27,14 @@ public class Declaracion {
         this.tipo = tipo;
         // No necesita profundidad
         this.profundidadDeclaracion = -1;
+        this.isParam = false;
     }
 
     public Declaracion(Identificador identificador, TipoObject tipo, int profundidad) {
 		this.identificador = identificador;
 		this.tipo = tipo;
 		this.profundidadDeclaracion = profundidad;
+		this.isParam = false;
 	}
 
     public Identificador getId() {
@@ -85,12 +89,20 @@ public class Declaracion {
         return this.entorno.getDesplazamiento(this);
     }
 
+    public void markParam() {
+        this.isParam = true;
+    }
+
     public int getProfundidadDeclaracion() {
 	    return this.profundidadDeclaracion;
     }
 
     public void setEntorno(Entorno entorno) {
         this.entorno = entorno;
+    }
+
+    public boolean isParam() {
+        return isParam;
     }
 }
 

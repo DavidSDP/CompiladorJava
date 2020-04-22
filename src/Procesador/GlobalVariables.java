@@ -32,6 +32,7 @@ public class GlobalVariables {
     public static Boolean hayErrores = false;
 
     private static Integer SecuenciaIdEtiqueta = 0;
+    private static Integer SecuenciaIdLiteral = 0;
 
     private static Integer _idnodoIncremental = 0;
     private static Integer CONTADOR = 1;
@@ -110,6 +111,22 @@ public class GlobalVariables {
         EntornoFuncion top = (EntornoFuncion) entornoActual();
         ((EntornoClase) top.getEntornoPadre()).putFuncionEntorno(idFuncion, top);
     }
+
+    public static void asignaFuncionArg(String nombre, String tipoString) throws ErrorSemantico {
+        TipoObject tipo = Tipo.getTipo(tipoString);
+        EntornoFuncion top = (EntornoFuncion) entornoActual();
+        top.putFuncionArg(nombre, tipo);
+    }
+
+    public static void asignaFuncionArgArray(String id, String tipo, SimboloArray simboloArrayDef) throws ErrorSemantico {
+        EntornoFuncion top = (EntornoFuncion)entornoActual();
+        // Aqui hay un leak gigante.
+        // Pasamos un número, pero realmente en los parametros no podemos especificarlo (almenos no tal cual lo tenemos)
+        // por tanto o permitimos que pongan el tamano en la declaracion o directamente utilizamos el heap para manejar todo esto
+        // P.D: Usar el heap probablemente nos hará subir por encima del 9 y aumentar el aprobado
+        top.putFuncionArrayArg(id, tipo, simboloArrayDef.getNumero());
+    }
+
 
     public static void asignaFuncionArgs(String idFuncion, SimboloArgs args) throws ErrorSemantico {
         EntornoFuncion top = (EntornoFuncion) entornoActual();
@@ -234,7 +251,12 @@ public class GlobalVariables {
     }
 
     public static DeclaracionConstante crearVariableTemporal(TipoObject tipo, Object valor) throws ErrorSemantico {
-        return entornoActual().putConstante(tipo, null, valor);
+        // Ojo, esto de momento solo sirve para crear literales!
+        // En caso de utilizar esta parte para crear una constante ( cosa que no deberías, ya que es una variables más )
+        // habrá que utilizar el entorno adaptandolo para que nos facilite la creación de literales
+        String name = generarNombreLiteral();
+        return new DeclaracionConstante(new Identificador(name, name), tipo, valor, -1);
+//        return entornoActual().putConstante(tipo, null, valor);
     }
 
     public static Declaracion crearVariableTemporal(TipoObject tipo) throws ErrorSemantico {
@@ -243,6 +265,10 @@ public class GlobalVariables {
 
     public static String generarEtiqueta() {
         return "e" + SecuenciaIdEtiqueta++;
+    }
+
+    public static String generarNombreLiteral() {
+        return "l" + SecuenciaIdLiteral++;
     }
 
     public static DeclaracionFuncion getMainFunction() throws ErrorSemantico {

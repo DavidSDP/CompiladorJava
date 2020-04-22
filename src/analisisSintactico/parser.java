@@ -755,7 +755,6 @@ class CUP$parser$actions {
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloArgs a = (SimboloArgs)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		  
-      GlobalVariables.asignaFuncionArgs(fn.getId(), a); 
       // Propagate the args upwards
       fn.setArgs(a);
       RESULT = fn; 
@@ -940,9 +939,9 @@ class CUP$parser$actions {
 		SimboloArray a = (SimboloArray)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		  try{
 																	if(a!=null)
-																		GlobalVariables.asignaArray(i,t,a);
+																		GlobalVariables.asignaFuncionArgArray(i,t,a);
 																	else
-																		GlobalVariables.asignaID(i,t);
+																		GlobalVariables.asignaFuncionArg(i,t);
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
@@ -1084,7 +1083,7 @@ class CUP$parser$actions {
 						ErrorHandler.reportaError(e);
 				}
 				String etFin = GlobalVariables.generarEtiqueta();
-				Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), 0);
+				Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Boolean), "false");
 				// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
 				I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, etFin);
 				RESULT = new SimboloCondicionBucle(o, start.getEtiqueta(), etFin);
@@ -1192,7 +1191,7 @@ class CUP$parser$actions {
 					// TODO Forma hacky de hacer que el valor constante False esté en el codigo.
 					// Además el valor false y true deberían estar codificados en algun lado para reusarlo
 					// en el codigo
-					Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), 0);
+					Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Boolean), "false");
 					// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
 					I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, et);
 					RESULT = new SimboloClausulaCondicion(o, et);

@@ -1,0 +1,93 @@
+
+ -> ENTORNO FUNCIÓN 3, de nivel 2 <- 
+
+ID: print , TIPO: Void
+ VARIABLES: 
+
+
+ID: i , TIPO: Integer
+
+
+     -> argumentos: 
+
+
+             -> id: i , tipo: Integer
+
+
+_______________________________________
+
+
+
+ -> ENTORNO FUNCIÓN 4, de nivel 2 <- 
+
+ID: main , TIPO: Void
+ VARIABLES: 
+
+
+ID: b , TIPO: Integer
+
+
+ID: args , TIPO: String
+
+
+     -> argumentos: 
+
+
+             -> id: args , tipo: String
+
+
+_______________________________________
+
+
+
+ -> ENTORNO CLASE 2, de nivel 1 <- 
+
+ VARIABLES: 
+
+ID: a , TIPO: Integer
+
+
+ CLASES: 
+
+ - no hay clases declaradas - 
+
+
+ FUNCIONES: 
+
+ID: main , TIPO: Void
+     -> argumentos: 
+
+             -> id: args , tipo: String
+
+ID: print , TIPO: Void
+     -> argumentos: 
+
+             -> id: i , tipo: Integer
+
+
+
+_______________________________________
+
+
+
+ -> ENTORNO CLASE 1, de nivel 0 <- 
+
+ VARIABLES: 
+
+ - no hay identificadores declarados - 
+
+ CLASES: 
+
+ID: ClasePrincipal , TIPO: Class
+
+
+ FUNCIONES: 
+
+
+ - no hay funciones declaradas - 
+
+
+
+_______________________________________
+
+

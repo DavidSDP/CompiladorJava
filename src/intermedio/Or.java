@@ -35,13 +35,12 @@ public class Or extends InstruccionTresDirecciones {
     @Override
     public String toMachineCode() {
         StringBuilder sb = new StringBuilder();
-        sb.append(putActivationBlockAddressInRegister(this.primero))
-                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
-                .append(putActivationBlockAddressInRegister(this.segundo))
-                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
+
+        sb.append(super.toMachineCode());
+        sb.append(this.primero.load("D0"))
+                .append(this.segundo.load("D1"))
                 .append("\tor D0, D1\n")
-                .append(putActivationBlockAddressInRegister(this.tercero))
-                .append("\tmove D1, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
+                .append(this.tercero.save("D1"));
 
         return sb.toString();
     }

@@ -15,13 +15,11 @@ public class Resta extends InstruccionTresDirecciones {
         // devolver donde toque eso.
         StringBuilder sb = new StringBuilder();
 
-        sb.append(putActivationBlockAddressInRegister(this.primero))
-                .append("\tmove.w ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
-                .append(putActivationBlockAddressInRegister(this.segundo))
-                .append("\tmove.w ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
+        sb.append(super.toMachineCode());
+        sb.append(this.primero.load("D0"))
+                .append(this.segundo.load("D1"))
                 .append("\tsub.w D1, D0\n")
-                .append(putActivationBlockAddressInRegister(this.tercero))
-                .append("\tmove D0, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
+                .append(this.tercero.save("D0"));
 
         return sb.toString();
     }

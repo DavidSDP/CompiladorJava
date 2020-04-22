@@ -15,18 +15,16 @@ public class Producto extends InstruccionTresDirecciones {
         // devolver donde toque eso.
         StringBuilder sb = new StringBuilder();
 
+        sb.append(super.toMachineCode());
         /*
          * 1. Cargamos el valor del primer elemento en el registro
          * 2. Le div el valor del segundo al registro
          * 3. Copiamos el valor del registro a la variable de destino
          */
-        sb.append(putActivationBlockAddressInRegister(this.primero))
-                .append("\tmove.w ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
-                .append(putActivationBlockAddressInRegister(this.segundo))
-                .append("\tmove.w ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
+        sb.append(this.primero.load("D0"))
+                .append(this.segundo.load("D1"))
                 .append("\tmuls D0, D1\n")
-                .append(putActivationBlockAddressInRegister(this.tercero))
-                .append("\tmove.w D1, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
+                .append(this.tercero.save("D1"));
 
         return sb.toString();
     }

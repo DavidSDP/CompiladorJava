@@ -7,11 +7,6 @@ import Procesador.GlobalVariables;
 
 public class I3DUtils {
 
-    // Usado por los retornos de procedimiento ( return void )
-    public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr) {
-        return crearInstruccion(instr, null, null, null);
-    }
-
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Declaracion source, Declaracion dest) {
         Entorno entorno = GlobalVariables.entornoActual();
         Operando sourceOperator = new Operando(source, entorno.getProfundidad());

@@ -5,6 +5,7 @@ import java_cup.runtime.Symbol;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 
 // Module dependencies
+import intermedio.Param;
 import Checkers.Tipo;
 import Checkers.TipoOperador;
 import Checkers.TypeCheck;
@@ -282,7 +283,6 @@ funcionDecl ::= funchead:fh LLAVEIZQ contenido:c LLAVEDER
 
 funchead ::= funcname:fn PARENIZQ args:a PARENDER 
   {:  
-      GlobalVariables.asignaFuncionArgs(fn.getId(), a); 
       // Propagate the args upwards
       fn.setArgs(a);
       RESULT = fn; 
@@ -346,6 +346,18 @@ funcionInvk ::= VID:i PARENIZQ params:p PARENDER
 
 					EntornoFuncion entorno = (EntornoFuncion)GlobalVariables.entornoFuncionActual();
 					funcionInvocadora = (DeclaracionFuncion)entorno.getIdentificador();
+
+					SimboloParams previous = null;
+					SimboloParams param = p;
+					while(param != null) {							
+							previous = param;
+							param = param.getNextParam();
+					}
+				
+					if (previous != null) {
+							previous.markLastParam();
+					}
+
 			}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 			}
@@ -379,9 +391,9 @@ nextArg ::= COMA argDecl:d nextArg:n						{:
 		
 argDecl ::= TVAR:t VID:i arrayDef:a 						{:  try{
 																	if(a!=null)
-																		GlobalVariables.asignaArray(i,t,a);
+																		GlobalVariables.asignaFuncionArgArray(i,t,a);
 																	else
-																		GlobalVariables.asignaID(i,t);
+																		GlobalVariables.asignaFuncionArg(i,t);
 																}catch(ErrorSemantico e){
 																	ErrorHandler.reportaError(e);
 																}
@@ -423,7 +435,7 @@ cond_bucle ::= TWHILE PARENIZQ M1:start Operacion:o PARENDER
 						ErrorHandler.reportaError(e);
 				}
 				String etFin = GlobalVariables.generarEtiqueta();
-				Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), 0);
+				Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Boolean), "false");
 				// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
 				I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, etFin);
 				RESULT = new SimboloCondicionBucle(o, start.getEtiqueta(), etFin);
@@ -464,7 +476,7 @@ clausula_cond   ::= TIF PARENIZQ Operacion:o PARENDER
 					// TODO Forma hacky de hacer que el valor constante False esté en el codigo.
 					// Además el valor false y true deberían estar codificados en algun lado para reusarlo
 					// en el codigo
-					Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), 0);
+					Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Boolean), "false");
 					// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
 					I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, et);
 					RESULT = new SimboloClausulaCondicion(o, et);
@@ -664,18 +676,15 @@ factor ::= VID:i arrayAsig:a
 params ::= Operacion:o nextParam:n							
 		{: 
 				// Generamos las instrucciones para empilar cada uno de los parametros.
-				// TODO A pesar de que en la teoria pone que se deben generar en el
-				// mismo orden en que se encuentran, me da no deberia ser asi
-				// ya que el primer parametro es el que esta mas cerca de la cima de la pila
-				I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
-				RESULT = new SimboloParams(o,n,true); 
+				Param param = (Param)I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				RESULT = new SimboloParams(o,n,true, param); 
 		:}
 		| {: RESULT = null; :};
 
 nextParam ::= COMA Operacion:o nextParam:n
 		{: 
-				I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
-				RESULT = new SimboloParams(o,n,false); 
+				Param param = (Param)I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				RESULT = new SimboloParams(o,n,false, param); 
 		:}
 		| {: RESULT = null; :}
 			;

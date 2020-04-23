@@ -10,17 +10,28 @@ import analisisSintactico.sym;
 import analisisSintactico.arbol.INodo;
 import analisisSintactico.arbol.Nodo;
 import analisisSintactico.arbol.SimboloTerminal;
+import intermedio.InstruccionTresDirecciones;
+import intermedio.Param;
 
 public class SimboloParams extends Nodo implements TipoSubyacente{
 	
 	private SimboloOperacion operacion;
 	private SimboloParams nextParam;
 	private Boolean esPrimeraproduccion;
+
+	private Param param;
 	
 	public SimboloParams(SimboloOperacion o, SimboloParams n, Boolean esPrimeraproduccion) {
 		this.setOperacion(o);
 		this.setNextParam(n);
 		this.esPrimeraproduccion = esPrimeraproduccion;
+	}
+
+	public SimboloParams(SimboloOperacion o, SimboloParams n, Boolean esPrimeraproduccion, Param param) {
+		this.setOperacion(o);
+		this.setNextParam(n);
+		this.esPrimeraproduccion = esPrimeraproduccion;
+		this.param = param;
 	}
 
 	public SimboloOperacion getOperacion() {
@@ -58,5 +69,9 @@ public class SimboloParams extends Nodo implements TipoSubyacente{
 
 	public void setNextParam(SimboloParams nextParam) {
 		this.nextParam = nextParam;
+	}
+
+	public void markLastParam() {
+		this.param.markLastParam();
 	}
 }

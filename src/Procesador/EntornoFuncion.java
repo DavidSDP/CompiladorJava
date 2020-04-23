@@ -159,19 +159,21 @@ public class EntornoFuncion extends Entorno {
 	}
 
 	protected int getDesplazamientoParametro(Declaracion decl) {
-		List<Declaracion> params = this.ids.stream().filter( x -> !x.isParam).collect(Collectors.toList());
+		List<Declaracion> params = this.ids.stream().filter( x -> x.isParam()).collect(Collectors.toList());
 		int offset = this.getDesplazamientoElemento(decl, params);
+		DeclaracionFuncion declaracion = (DeclaracionFuncion)identificador;
+
 		// Ojo que para situarnos al inicio de la variable cuando tratamos esta mierda tenemos que saltarnos
 		// todos los elementos que tenemos enmedio, y además nuestra memoria ocupada.
 		// Además al ser un parametro el desplazamiento es negativo
-		return -(offset + decl.getOcupacion());
+		return -(offset + decl.getOcupacion() + declaracion.getTamanoRetorno());
 	}
 
 	private int getDesplazamientoElemento(Declaracion decl, List<Declaracion> elementos) {
-		int elementIndex = this.ids.indexOf(decl);
+		int elementIndex = elementos.indexOf(decl);
 		int desplazamiento = 0;
 		for (int index = 0; index < elementIndex; index++) {
-			desplazamiento += this.ids.get(index).getOcupacion();
+			desplazamiento += elementos.get(index).getOcupacion();
 		}
 		return desplazamiento;
 	}

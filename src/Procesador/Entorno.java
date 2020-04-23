@@ -18,7 +18,7 @@ public class Entorno {
 
     private Integer nivel;
 
-    private Declaracion identificador;
+    protected Declaracion identificador;
 
     private Hashtable<String, Declaracion> tablaIDs;
     protected ArrayList<Declaracion> ids;

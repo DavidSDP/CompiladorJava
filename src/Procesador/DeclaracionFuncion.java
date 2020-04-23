@@ -37,6 +37,9 @@ public class DeclaracionFuncion extends Declaracion {
     }
 
     public int getTamanoRetorno() {
-        return tipo.getSize();
+        if (tipo != null)
+            return tipo.getSize();
+        else
+            return 0;
     }
 }

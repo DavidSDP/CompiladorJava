@@ -20,6 +20,13 @@ public class Llamada extends InstruccionTresDirecciones {
 
         sb.append(super.toMachineCode());
         sb.append("\tmove.w STACK_TOP, A6\n");
+        if (!callee.hasParams()) {
+            // Si la funcion no tiene parametros no se ha movido el STACK_TOP desde la ultima insercion de
+            // datos y sigue en el dato anterior, así que aqui lo tenemos que mover
+            sb.append("\tadd.w #2, A6\n");
+
+        }
+
         if (callee.getTamanoRetorno() > 0) {
             sb.append("\tadd.w #").append(callee.getTamanoRetorno()).append(", A6\n");
         }

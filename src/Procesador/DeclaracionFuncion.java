@@ -42,4 +42,8 @@ public class DeclaracionFuncion extends Declaracion {
         else
             return 0;
     }
+
+    public boolean hasParams() {
+        return entornoDependiente.getListaArgumentos().size() > 0;
+    }
 }

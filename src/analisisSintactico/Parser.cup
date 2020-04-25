@@ -420,10 +420,8 @@ contenido ::= contenido:c expresion:e						{: RESULT = new SimboloContenido(c,e)
 			| 	{: RESULT = null; :}
 			;
 		
-bucle ::= cond_bucle:cb LLAVEIZQ {: GlobalVariables.entraBloqueWhile(); :}
-					contenido:o  LLAVEDER 
+bucle ::= cond_bucle:cb LLAVEIZQ contenido:o  LLAVEDER 
 		{: 
-				GlobalVariables.saleBloqueWhile(); 
 				I3DUtils.crea(OperacionTresDirecciones.GOTO, cb.getEtiquetaStart());
 				I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, cb.getEtiquetaFin());
 				RESULT = new SimboloBucle(cb, o);
@@ -456,16 +454,13 @@ condicional     ::= cond_main_block:cmb condelse:e
         RESULT = new SimboloCondicional(cmb, e);
     :};
 
-cond_main_block ::= clausula_cond:cc LLAVEIZQ {: GlobalVariables.entraBloqueIf(); :}
-							  contenido:c {:
-									GlobalVariables.saleBloqueIf(); 
-									
-                  String etFin = GlobalVariables.generarEtiqueta();
-									I3DUtils.crea(OperacionTresDirecciones.GOTO, etFin);
-									I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, cc.getEtiqueta());
-									RESULT = new SimboloCondicionalBloquePrincipal(cc, c, etFin);
-								:}
-								LLAVEDER;
+cond_main_block ::= clausula_cond:cc LLAVEIZQ contenido:c LLAVEDER 
+		{:
+		     String etFin = GlobalVariables.generarEtiqueta();
+				 I3DUtils.crea(OperacionTresDirecciones.GOTO, etFin);
+				 I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, cc.getEtiqueta());
+				 RESULT = new SimboloCondicionalBloquePrincipal(cc, c, etFin);
+		:};
 
 clausula_cond   ::= TIF PARENIZQ Operacion:o PARENDER 
 			{:
@@ -487,10 +482,8 @@ clausula_cond   ::= TIF PARENIZQ Operacion:o PARENDER
 // No es necesario generar nada adicional aqui por dos motivos:
 // 1. Cuando se acaba el else no hace falta ningun salto
 // 2. La gestion de la etiqueta para el salto de condicion falsa se hace en un bloque superior
-condelse ::= TELSE LLAVEIZQ 								{: GlobalVariables.entraBloqueElse(); :}
-				contenido:e 								{: GlobalVariables.saleBloqueElse(); :}
-				LLAVEDER									{: RESULT = new SimboloCondElse(e); :}
-			|												{: RESULT = null; :}
+condelse ::= TELSE LLAVEIZQ	contenido:e LLAVEDER	{: RESULT = new SimboloCondElse(e); :}
+			|	{: RESULT = null; :}
 			;
 			
 expresion ::= asignacion:a 									{: RESULT = new SimboloExpresion(a); :}

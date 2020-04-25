@@ -192,43 +192,6 @@ public class GlobalVariables {
         }
     }
 
-    public static void entraBloqueIf() {
-//        Entorno e = new Entorno(entornoActual(), Tipo.getTipoSafe(Tipo.IF));
-//        pilaEntornos.push(e);
-    }
-
-    public static void saleBloqueIf() throws IOException {
-//        Entorno popped = pilaEntornos.pop();
-//        if (DEBUG_MODE) {
-//            popped.printEntorno();
-//        }
-    }
-
-    public static void entraBloqueElse() {
-//        Entorno e = new Entorno(entornoActual(), Tipo.getTipoSafe(Tipo.ELSE));
-//        pilaEntornos.push(e);
-    }
-
-    public static void saleBloqueElse() throws IOException {
-//        Entorno popped = pilaEntornos.pop();
-//        if (DEBUG_MODE) {
-//            popped.printEntorno();
-//        }
-    }
-
-    public static void entraBloqueWhile() {
-//        Entorno e = new Entorno(entornoActual(), Tipo.getTipoSafe(Tipo.WHILE));
-//        pilaEntornos.push(e);
-    }
-
-    public static void saleBloqueWhile() throws IOException {
-//        Entorno popped = pilaEntornos.pop();
-//        if (DEBUG_MODE) {
-//            popped.printEntorno();
-//        }
-    }
-
-
     public static void entraBloqueFuncion(Declaracion identificadorFuncion) {
         EntornoFuncion e = new EntornoFuncion((EntornoClase) entornoActual(), identificadorFuncion);
         pilaEntornos.push(e);

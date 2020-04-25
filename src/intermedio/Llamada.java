@@ -5,12 +5,14 @@ import Procesador.DeclaracionFuncion;
 import Procesador.Entorno;
 
 public class Llamada extends InstruccionTresDirecciones {
-    public Llamada(Operando primero, Operando segundo) {
+    public Llamada(Operando primero, Operando segundo, Operando tercero) {
         super(OperacionTresDirecciones.LLAMADA);
         // Callee
         this.primero = primero;
         // Caller
         this.segundo = segundo;
+        // Return container
+        this.tercero = tercero;
     }
 
     @Override
@@ -23,7 +25,8 @@ public class Llamada extends InstruccionTresDirecciones {
         if (!callee.hasParams()) {
             // Si la funcion no tiene parametros no se ha movido el STACK_TOP desde la ultima insercion de
             // datos y sigue en el dato anterior, así que aqui lo tenemos que mover
-            sb.append("\tadd.w #2, A6\n");
+            sb.append("\tmove.w STACK_TOP, -(A7)\n")
+                    .append("\tadd.w #2, A6\n");
 
         }
 
@@ -44,7 +47,6 @@ public class Llamada extends InstruccionTresDirecciones {
                 // El access link es el access link que tiene el caller
                 sb.append("\tmove.w BP, A5\n")
                         .append("\tsub.w #2, A5\n")
-                        .append("\tadd.w #2, A6\n") // Avanzamos el puntero a la nueva posición
                         // Actualiza el access link y el stack top
                         .append("\tmove.w (A5), (A6)\n")
                         .append("\tmove.w A6, STACK_TOP\n");
@@ -64,13 +66,27 @@ public class Llamada extends InstruccionTresDirecciones {
                     .append("\tmove.w BP, (A6)\n")
                     .append("\tmove.w A6, STACK_TOP\n");
         }
+
+        // Actualizamos el estado del programa y llamamos a la función
         sb.append("\tbsr update_bp\n") // Actualiza BP y Access link
-                .append("\tbsr ").append(callee.getEtiqueta()).append("\n")
-                .append("\tbsr restore_bp\n")
-                // Esto funciona si los supuestos parametros han añadido el backup de la cima de la pila
-                // Una alternativa es guardar el listado de declaraciones de los parametros de las funciones en la
-                // declaracion de la funcion para poder calcular el offset de las variables para poder eliminarlas de la pila
-                .append("\tmove.w (A7)+, STACK_TOP\n");
+                .append("\tbsr ").append(callee.getEtiqueta()).append("\n");
+
+        // Puede que la función tenga retorno y que el que llama no lo esté gestionando
+        if (this.tercero != null) {
+            sb.append("\tmove.w BP, A6\n")
+                    .append("\tsub.w #").append(2 + callee.getTamanoRetorno()).append(", A6\n")
+                    .append("\tmove.w (A6), D5\n")
+                    .append("\tbsr restore_bp\n")
+                    // Esto asume que el retorno es de 1 palabra (Bad idea)
+                    .append(this.tercero.save("D5"));
+        } else {
+            sb.append("\tbsr restore_bp\n");
+        }
+
+        // Esto funciona si los supuestos parametros han añadido el backup de la cima de la pila
+        // Una alternativa es guardar el listado de declaraciones de los parametros de las funciones en la
+        // declaracion de la funcion para poder calcular el offset de las variables para poder eliminarlas de la pila
+        sb.append("\tmove.w (A7)+, STACK_TOP\n");
 
 
         return sb.toString();

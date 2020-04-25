@@ -17,8 +17,13 @@ public class Retorno extends InstruccionTresDirecciones {
 
         sb.append(super.toMachineCode());
         if (this.segundo != null) {
+            // El offset se calcula desplazando desde BP el access link + el tamano del
+            // tipo que retornamos
+            int returnOffset = this.segundo.getValor().getOcupacion() + 2;
+
             sb.append("\tmove.w BP, A5\n")
-                    .append("\tsub.w #-4, A5\n") // Esto tiene pinta de depender del tipo de retorno
+                    // Probablemente esto se podría hacer con una indirección sobre A5
+                    .append("\tsub.w #").append(returnOffset).append(", A5\n")
                     .append(this.segundo.load("D0"))
                     .append("\tmove.w D0, (A5)\n");
         }

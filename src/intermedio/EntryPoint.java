@@ -8,7 +8,7 @@ package intermedio;
 public class EntryPoint extends Llamada {
 
     public EntryPoint(Operando callee, Operando caller) {
-        super(callee, caller);
+        super(callee, caller, null);
         this.operacion = OperacionTresDirecciones.ENTRY_POINT;
     }
 

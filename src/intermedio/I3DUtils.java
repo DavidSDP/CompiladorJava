@@ -71,7 +71,7 @@ public class I3DUtils {
                 c3d = new Param(primero);
                 break;
             case LLAMADA:
-                c3d = new Llamada(primero, segundo);
+                c3d = new Llamada(primero, segundo, tercero);
                 break;
             case PREAMBULO:
                 c3d = new Preambulo(primero); // primero es el numero de procedimiento/funcion

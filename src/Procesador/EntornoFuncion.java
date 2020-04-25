@@ -163,10 +163,12 @@ public class EntornoFuncion extends Entorno {
 		int offset = this.getDesplazamientoElemento(decl, params);
 		DeclaracionFuncion declaracion = (DeclaracionFuncion)identificador;
 
-		// Ojo que para situarnos al inicio de la variable cuando tratamos esta mierda tenemos que saltarnos
-		// todos los elementos que tenemos enmedio, y además nuestra memoria ocupada.
-		// Además al ser un parametro el desplazamiento es negativo
-		return -(offset + decl.getOcupacion() + declaracion.getTamanoRetorno());
+		// El depslazamiento para situarse al INICIO del parámetro es la suma de (en el orden que se tiene que mover en memoria)
+		//    - El access link (1 palabra = 2 bytes )
+		//    - El retorno si lo hubiera ( tamano variable: 0..n bytes)
+		//    - Las variables que estan entre el BP y la declaracion que buscamos (variable)
+		//    - El tamano de la variable que vamos a usar. (variable)
+		return -(offset + decl.getOcupacion() + declaracion.getTamanoRetorno() + 2);
 	}
 
 	private int getDesplazamientoElemento(Declaracion decl, List<Declaracion> elementos) {

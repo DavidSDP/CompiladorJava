@@ -362,13 +362,15 @@ funcionInvk ::= VID:i PARENIZQ params:p PARENDER
 					ErrorHandler.reportaError(e);
 			}
 
-			// Generamos la llamada
-			I3DUtils.crea(OperacionTresDirecciones.LLAMADA, funcionInvocada, funcionInvocadora);
-			// TODO Esta variable temporal ahora mismo no sirve de nada, pero de alguna manera
-			// Tenemos que propagar el posible resultado (falta mirar el tema de los void)
-			// No estoy seguro de que el void se deba retornar como valor de variable
-			// intermedia :thinking:
-			Declaracion declRetorno = GlobalVariables.crearVariableTemporal(funcionInvocada.getTipo());			
+			Declaracion declRetorno = null;
+			if (funcionInvocada.hasRetorno()) {
+					declRetorno = GlobalVariables.crearVariableTemporal(funcionInvocada.getTipo());			
+					// Generamos la llamada
+					I3DUtils.crea(OperacionTresDirecciones.LLAMADA, funcionInvocada, funcionInvocadora, declRetorno);
+			} else {
+					I3DUtils.crea(OperacionTresDirecciones.LLAMADA, funcionInvocada, funcionInvocadora);
+			}
+
 			RESULT = new SimboloFuncionInvk(funcionInvocada, declRetorno, i, p);
 	:}
 		;

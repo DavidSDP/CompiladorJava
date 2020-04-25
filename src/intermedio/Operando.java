@@ -78,6 +78,9 @@ public class Operando {
                         .append(valor).append(", ")
                         .append(toRegister)
                         .append("\n");
+            } else if(constante.getTipo().equals(Tipo.String)) {
+                // TODO reservar memoria dinamica, copiar contenido dentro y asignar
+                //  memoria a la variable/registro en cuestion
             }
         } else {
             // Si no es una constante es una variable
@@ -104,42 +107,6 @@ public class Operando {
                 .append("\tmove.w ").append(fromRegister).append(", ").append(this.getValor().getDesplazamiento()).append("(A6)\n");
         return sb.toString();
     }
-
-    public String toMachineCode(String targetRegister) {
-
-        StringBuilder sb = new StringBuilder();
-
-        // Ojo! Aqui miro si es constante porque ahora mismo todas las constantes que se gestionan así
-        // son literales. Probablemente deberíamos diferenciar entre literal y constante.
-        if (this.valor instanceof DeclaracionConstante) {
-            DeclaracionConstante constante = (DeclaracionConstante)this.valor;
-            // Convertimos el valor ( sea cual sea ) a valor máquina. Ahora mismo los literales son Bool e Integer.
-            // Falta por ver como se manejan los strings. De momento los dejo de lado.
-            if (constante.getTipo().equals(Tipo.Integer)) {
-                Integer numero = Integer.parseInt((String) constante.getValor());
-                sb.append("\tmove.w #")
-                        .append(numero).append(", ")
-                        .append(targetRegister)
-                        .append("\n");
-            } else if(constante.getTipo().equals(Tipo.Boolean)) {
-                int valor = mapBooleanValue((String) constante.getValor());
-                sb.append("\tmove.w #")
-                        .append(valor).append(", ")
-                        .append(targetRegister)
-                        .append("\n");
-            }
-        } else {
-            // Si no es una constante es una variable
-            sb.append(this.putActivationBlockAddressInRegister())
-                    .append("\tmove ")
-                    .append(this.valor.getDesplazamiento()).append("(A6), ")
-                    .append(targetRegister)
-                    .append("\n");
-        }
-
-        return sb.toString();
-    }
-
 
     public Declaracion getValor() {
         return valor;

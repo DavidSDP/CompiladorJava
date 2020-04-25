@@ -27,10 +27,10 @@ public class LTE extends InstruccionTresDirecciones {
         sb.append(super.toMachineCode());
         sb.append(this.primero.load("D0"))
                 .append(this.segundo.load("D1"))
-                .append("\tcmp D0, D1\n")
-                .append("\tsle D1\n")
-                .append("\tand #1, D1\n")
-                .append(this.tercero.save("D1"));
+                .append("\tcmp D1, D0\n")
+                .append("\tsle D0\n")
+                .append("\tand #1, D0\n")
+                .append(this.tercero.save("D0"));
 
         return sb.toString();
     }

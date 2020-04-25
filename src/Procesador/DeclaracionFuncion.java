@@ -43,6 +43,11 @@ public class DeclaracionFuncion extends Declaracion {
             return 0;
     }
 
+    public boolean hasRetorno() {
+        // TODO Check if void messes with this
+        return tipo != null;
+    }
+
     public boolean hasParams() {
         return entornoDependiente.getListaArgumentos().size() > 0;
     }

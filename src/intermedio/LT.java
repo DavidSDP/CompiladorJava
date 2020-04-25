@@ -26,10 +26,10 @@ public class LT extends InstruccionTresDirecciones {
         sb.append(super.toMachineCode());
         sb.append(this.primero.load("D0"))
                 .append(this.segundo.load("D1"))
-                .append("\tcmp D0, D1\n")
-                .append("\tslt D1 \n")
-                .append("\tand #1, D1\n")
-                .append(this.tercero.save("D1"));
+                .append("\tcmp D1, D0\n")
+                .append("\tslt D0 \n")
+                .append("\tand #1, D0\n")
+                .append(this.tercero.save("D0"));
 
 //        sb.append(putActivationBlockAddressInRegister(this.primero))
 //                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")

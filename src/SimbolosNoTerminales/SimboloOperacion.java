@@ -26,6 +26,19 @@ public class SimboloOperacion extends Nodo implements TipoSubyacente {
 
     private Declaracion declaracionResultado;
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        if(this.esOperacion) {
+            sb.append(this.operandoIzquierda.toString());
+        } else if(this.esFactor) {
+            sb.append(this.factor.toString());
+        } else {
+            sb.append(this.operandoIzquierda.toString()).append(" ").append(operadorString).append(" ").append(operandoDerecha);
+        }
+        return sb.toString();
+    }
+
     public SimboloOperacion(SimboloOperacion o) {
         this.operandoIzquierda = o;
         this.esOperacion = true;

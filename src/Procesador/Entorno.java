@@ -95,7 +95,6 @@ public class Entorno {
         if (this.containsSoloPropioEntorno(name))
             throw new ErrorSemantico("El identificador '" + name + "' se ha declarado por duplicado");
 
-
         Declaracion nuevaDeclaracion = new Declaracion(new Identificador(name, name), tipo, this.getProfundidad());
         nuevaDeclaracion.setEntorno(this);
         this.tablaIDs.put(name, nuevaDeclaracion);
@@ -279,9 +278,13 @@ public class Entorno {
         return "t" + nameSeq++;
     }
 
+    // Este desplazamiento se usa en los ambitos "nesteados" de bucles y condicionales y en las clases.
+    // En el caso particular de las clases, no tienen un scope superior ( las clases residen en el root )
+    // Es por ello que comprobamos a ver si el entorno superior existe.
     public int getDesplazamiento(Declaracion decl) {
-        int elementIndex = this.ids.indexOf(decl);
         int desplazamiento = 0;
+        int elementIndex = this.ids.indexOf(decl);
+
         for (int index = 0; index < elementIndex; index++) {
             desplazamiento += this.ids.get(index).getOcupacion();
         }

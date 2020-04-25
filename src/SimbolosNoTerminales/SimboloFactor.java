@@ -26,6 +26,19 @@ public class SimboloFactor extends Nodo implements TipoSubyacente {
     private Declaracion decl;
     private int arrayIndex;
 
+    @Override
+    public String toString() {
+        if (id != null) {
+            return id;
+        } else if (string != null) {
+            return string;
+        } else if (numero != null) {
+            return numero;
+        } else if (booleano != null) {
+            return booleano;
+        }
+        return "";
+    }
 
     public SimboloFactor(Declaracion decl) {
         this.decl = decl;

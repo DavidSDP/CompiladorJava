@@ -25,7 +25,9 @@ public class Param extends InstruccionTresDirecciones {
         if (this.isLast) {
             // El ultimo parametro de la llamada es el que se pone primero en la pila por tanto
             // es el que tiene que actualizar el bp para evitar problemas de solapamiento de memoria
-            sb.append("\tmove.w STACK_TOP, A5\n")
+            // Además almacenamos el stack top en la pila para poder recuperarla más adelante
+            sb.append("\tmove.w STACK_TOP, -(A7)\n")
+                    .append("\tmove.w STACK_TOP, A5\n")
                     .append("\tadd.w #2, A5\n")
                     .append("\tmove.w A5, STACK_TOP\n");
 

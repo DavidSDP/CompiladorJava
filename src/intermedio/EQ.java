@@ -24,6 +24,9 @@ public class EQ extends InstruccionTresDirecciones {
         StringBuilder sb = new StringBuilder();
 
         sb.append(super.toMachineCode());
+
+        // TODO Obviamente esto no funciona para los strings. Probablemente
+
         // Estoy casi convencido de que la comprobacion de igualdad se puede hacer como LT y familiares
         sb.append(this.primero.load("D0"))
                 .append(this.segundo.load("D1"))

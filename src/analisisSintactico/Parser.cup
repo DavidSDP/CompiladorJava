@@ -115,6 +115,8 @@ clase	::=	clase_primera_parte:cpp cuerpo:c	LLAVEDER
 					simbolo.setCuerpo(c);
 					
 					// Implementamos una pseuda llamada a la inizialicacion de variables de la clase
+					I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, simbolo.getEtiquetaPreInicializacion());
+					I3DUtils.crea(OperacionTresDirecciones.CLASE, simbolo.getDeclaracionClase());
 					I3DUtils.crea(OperacionTresDirecciones.GOTO, simbolo.getEtiquetaDeclaraciones());
 					I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, simbolo.getEtiquetaPostInicializacion());
 					
@@ -142,6 +144,7 @@ clase_firma ::= TCLASS VID:i LLAVEIZQ
 					DeclaracionClase decl = null;
 					try {
 							decl = GlobalVariables.asignaClaseID(i);
+							I3DUtils.crea(OperacionTresDirecciones.GOTO, decl.getEtiquetaPreInicializacion());
 							I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiquetaDeclaraciones());
 							GlobalVariables.entraBloqueClase(decl);
 					} catch(ErrorSemantico e) {

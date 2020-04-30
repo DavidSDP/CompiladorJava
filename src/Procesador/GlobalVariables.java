@@ -180,8 +180,12 @@ public class GlobalVariables {
             throw new ErrorSemantico("El id " + id + " no es un sÃ­mbolo de clase declarado en el entorno");
     }
 
-    public static void entraBloqueClase(Declaracion identificadorClase) {
+    public static void entraBloqueClase(DeclaracionClase identificadorClase) {
         EntornoClase e = new EntornoClase(entornoActual(), identificadorClase);
+        // El entorno global no tiene declaracion
+        if (identificadorClase != null) {
+            identificadorClase.setEntornoAsociado(e);
+        }
         pilaEntornos.push(e);
     }
 

@@ -115,6 +115,9 @@ public class I3DUtils {
             case NE:
                 c3d = new NE(primero, segundo, tercero);
                 break;
+            case CLASE:
+                c3d = new Clase(primero);
+                break;
             case ENTRY_POINT:
                 c3d = new EntryPoint(primero, segundo);
                 break;

@@ -91,6 +91,7 @@ public class EntornoClase extends Entorno {
 		DeclaracionClase decl = new DeclaracionClase(new Identificador(s, s), Tipo.getTipo(Tipo.Class.name().toLowerCase()));
 		decl.setEtiquetaDeclaraciones(generateClassLabel());
 		decl.setEtiquetaPostInicializacion(generateClassLabel());
+		decl.setEtiquetaPreInicializacion(generateClassLabel());
 		this.tablaClases.put(s, decl);
 		return decl;
 	}
@@ -220,7 +221,8 @@ public class EntornoClase extends Entorno {
 	 * Las funciones no utilizan ningun sistema que necesite almacenar la memoria en runtime ( vtable )
 	 *
 	 */
-	public int getTamanoMemoriaNecesaria() {
+	@Override
+	public int getTamanoTotalVariables() {
 		int tamano = 0;
 		for (Declaracion decl: ids) {
 			tamano += decl.getOcupacion();

@@ -62,6 +62,14 @@ public class SimboloClase extends Nodo implements TipoSubyacente {
 		return this.decl.getEtiquetaPostInicializacion();
 	}
 
+	public String getEtiquetaPreInicializacion() {
+		return this.decl.getEtiquetaPreInicializacion();
+	}
+
+	public DeclaracionClase getDeclaracionClase() {
+		return decl;
+	}
+
 	public void setCuerpo(SimboloCuerpo cuerpo) {
 		this.cuerpo = cuerpo;
 	}

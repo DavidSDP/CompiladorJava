@@ -48,8 +48,12 @@ public enum OperacionTresDirecciones {
     AND,
     OR,
 
+    // Se utiliza para inicializar lo que sea necesario en las clases
+    CLASE,
+
     // Instruccion especial usada para inicializar
     // htodo lo que tiene que ver con el inicio de la ejecución
     ENTRY_POINT,
+    ;
 
 }

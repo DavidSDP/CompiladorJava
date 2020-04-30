@@ -2,6 +2,8 @@
 * Ejemplo simple de funcion con bucle y retorno
 */
 class ClasePrincipal {
+	
+	int a = 10;
 
 	function int multiplica(int multiplicando, int multiplicador) {
 		int resultado = multiplicando;
@@ -16,6 +18,6 @@ class ClasePrincipal {
 	
 	function void main() {
 		int resultado = multiplica(2, 10);
-		resultado = resultado + 10;
+		resultado = resultado + a;
 	}
 }

@@ -48,33 +48,6 @@ public class GTE extends InstruccionTresDirecciones {
                 .append("\tand #1, D0\n")
                 .append(this.tercero.save("D0"));
 
-//        sb.append(putActivationBlockAddressInRegister(this.primero))
-//                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
-//                .append(putActivationBlockAddressInRegister(this.segundo))
-//                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
-//                .append("\tcmp D0, D1\n")
-//                .append("\tsge D1")
-//                .append("\tand #1, D1")
-//                .append(putActivationBlockAddressInRegister(this.tercero))
-//                .append("\tmove D1, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
-
-// Opcion hardcore. Preferiria no morir en el intento
-//                .append("\tmove.w SR, D1\n")
-//                .append("and.w #9, D1")  // Limpia el resto de los bits del SR. No nos importan
-//                // Sacamos el valor de N
-//                .append("move D1, D0")
-//                .append("lsr #3, D1")    // El bit 3 del SR es el N
-//                // Sacamos el valor de V
-//                .append("lsr #1, D0")    // El bit 1 del SR es el V
-//                // Segun el manual del 68 V xor N == 0 es GE
-//                // Por tanto comparamos si los dos números son iguales y utilizamos el Z como
-//                // resultado
-//                .append("cmp D0, D1")
-//                .append("and.w #4, D1")  // Limpia el resto de los bits del SR. No nos importan
-//                .append("lsr #2, D1")    // El tercer bit del SR es el Z
-//                .append(putActivationBlockAddressInRegister(this.tercero))
-//                .append("\tmove D1, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
-
         return sb.toString();
     }
 
@@ -85,6 +58,14 @@ public class GTE extends InstruccionTresDirecciones {
         } else {
             return this.generateOperation();
         }
+    }
+
+    public boolean isBranch() {
+        return this.tercero instanceof OperandoEtiqueta;
+    }
+
+    public InstruccionTresDirecciones getComplementario(Goto salto) {
+        return new LT(primero, segundo, salto.getTercero());
     }
 
 }

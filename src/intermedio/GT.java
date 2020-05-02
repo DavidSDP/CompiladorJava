@@ -32,31 +32,24 @@ public class GT extends InstruccionTresDirecciones {
                 .append("\tand #1, D0\n")
                 .append(this.tercero.save("D0"));
 
-//        sb.append(putActivationBlockAddressInRegister(this.primero))
-//                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
-//                .append(putActivationBlockAddressInRegister(this.segundo))
-//                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
-//                .append("\tcmp D0, D1\n")
-//                .append("\tsgt D1 \n")
-//                .append("\tand #1, D1\n")
-//                .append(putActivationBlockAddressInRegister(this.tercero))
-//                .append("\tmove D1, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
-//                .append("\tmove.w SR, D1\n")
-//                .append("and.w #8, D1")  // Limpia el resto de los bits del SR. No nos importan
-//                .append("lsr #3, D1")    // El tercer bit del SR es el N
-//                .append(putActivationBlockAddressInRegister(this.tercero))
-//                .append("\tmove D1, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
-
         return sb.toString();
     }
 
     @Override
     public String toMachineCode() {
-        if (this.tercero instanceof OperandoEtiqueta) {
+        if (isBranch()) {
             return this.generateBranch();
         } else {
             return this.generateOperation();
         }
+    }
+
+    public boolean isBranch() {
+        return this.tercero instanceof OperandoEtiqueta;
+    }
+
+    public InstruccionTresDirecciones getComplementario(Goto salto) {
+        return new LTE(primero, segundo, salto.getTercero());
     }
 
 }

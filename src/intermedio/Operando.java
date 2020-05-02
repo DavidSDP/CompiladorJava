@@ -2,8 +2,8 @@ package intermedio;
 
 import Checkers.Tipo;
 import Procesador.Declaracion;
-import Procesador.DeclaracionArray;
 import Procesador.DeclaracionConstante;
+
 
 public class Operando {
     protected ModoDireccionamiento modo;
@@ -11,7 +11,7 @@ public class Operando {
     // Ahora mismo Declaracion puede contener una variable o una constante.
     // Asi que no es necesario diferenciar el tipo de valor que estamos manejando
     // en este momento
-    protected  Declaracion valor;
+    protected Declaracion valor;
 
     // El operando refleja que variable/constante se está utilizando en el cálculo
     // y a que profundidad se está usando.
@@ -35,11 +35,11 @@ public class Operando {
     /**
      * Utilidad para generar el código relacionado con la busqueda de las variables a traves de los
      * bloques de activación
-     *
+     * <p>
      * Esto NO esta bien hecho. Ahora mismo escalamos por los diferentes bloques de activación
      * que son los inmediatamente superiores en el orden de llamada. Pero esto no refleja
      * los ambitos de ejecución.
-     *
+     * <p>
      * Para arreglarlo, realmente se tiene que escalar por los access links que realmente contienen
      * el puntero al entorno contenedor ( no tiene porque ser el bloque de activacion anterior )
      */
@@ -51,6 +51,7 @@ public class Operando {
             // Uso de una variable "global"
             sb.append("\tmove.w BP, A6\n");
             for (int distanciaEntornos = profundidadLlamada - profundidadDeclaracion; distanciaEntornos > 0; distanciaEntornos--) {
+                sb.append("\tsubq.w #2, A6\n");
                 sb.append("\tmove.w (A6), A6\n");
             }
         } else {
@@ -63,7 +64,7 @@ public class Operando {
     public String load(String toRegister) {
         StringBuilder sb = new StringBuilder();
         if (this.valor instanceof DeclaracionConstante) {
-            DeclaracionConstante constante = (DeclaracionConstante)this.valor;
+            DeclaracionConstante constante = (DeclaracionConstante) this.valor;
             // Convertimos el valor ( sea cual sea ) a valor máquina. Ahora mismo los literales son Bool e Integer.
             // Falta por ver como se manejan los strings. De momento los dejo de lado.
             if (constante.getTipo().equals(Tipo.Integer)) {
@@ -72,13 +73,13 @@ public class Operando {
                         .append(numero).append(", ")
                         .append(toRegister)
                         .append("\n");
-            } else if(constante.getTipo().equals(Tipo.Boolean)) {
+            } else if (constante.getTipo().equals(Tipo.Boolean)) {
                 int valor = mapBooleanValue((String) constante.getValor());
                 sb.append("\tmove.w #")
                         .append(valor).append(", ")
                         .append(toRegister)
                         .append("\n");
-            } else if(constante.getTipo().equals(Tipo.String)) {
+            } else if (constante.getTipo().equals(Tipo.String)) {
                 // TODO reservar memoria dinamica, copiar contenido dentro y asignar
                 //  memoria a la variable/registro en cuestion
             }
@@ -95,13 +96,13 @@ public class Operando {
 
     /**
      * Posibilidades:
-     *     Variable
-     *     Posicion de array
+     * Variable
+     * Posicion de array
      *
      * @param fromRegister
      * @return
      */
-    public String save(String fromRegister){
+    public String save(String fromRegister) {
         StringBuilder sb = new StringBuilder();
         sb.append(this.putActivationBlockAddressInRegister())
                 .append("\tmove.w ").append(fromRegister).append(", ").append(this.getValor().getDesplazamiento()).append("(A6)\n");
@@ -117,7 +118,7 @@ public class Operando {
     }
 
     private int mapBooleanValue(String value) {
-        return value.equals("true")? 1 : 0;
+        return value.equals("true") ? 1 : 0;
     }
 
 }

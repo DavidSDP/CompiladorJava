@@ -31,16 +31,6 @@ public class LT extends InstruccionTresDirecciones {
                 .append("\tand #1, D0\n")
                 .append(this.tercero.save("D0"));
 
-//        sb.append(putActivationBlockAddressInRegister(this.primero))
-//                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), D0\n")
-//                .append(putActivationBlockAddressInRegister(this.segundo))
-//                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
-//                .append("\tcmp D0, D1\n")
-//                .append("\tslt D1")
-//                .append("\tand #1, D1")
-//                .append(putActivationBlockAddressInRegister(this.tercero))
-//                .append("\tmove D1, ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
-
         return sb.toString();
     }
 
@@ -51,5 +41,13 @@ public class LT extends InstruccionTresDirecciones {
         } else {
             return this.generateOperation();
         }
+    }
+
+    public boolean isBranch() {
+        return this.tercero instanceof OperandoEtiqueta;
+    }
+
+    public InstruccionTresDirecciones getComplementario(Goto salto) {
+        return new GTE(primero, segundo, salto.getTercero());
     }
 }

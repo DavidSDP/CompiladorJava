@@ -53,4 +53,11 @@ public class EQ extends InstruccionTresDirecciones {
         }
     }
 
+    public boolean isBranch() {
+        return this.tercero instanceof OperandoEtiqueta;
+    }
+
+    public InstruccionTresDirecciones getComplementario(Goto salto) {
+        return new NE(primero, segundo, salto.getTercero());
+    }
 }

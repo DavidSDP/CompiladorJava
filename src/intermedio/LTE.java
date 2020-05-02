@@ -43,4 +43,12 @@ public class LTE extends InstruccionTresDirecciones {
             return this.generateOperation();
         }
     }
+
+    public boolean isBranch() {
+        return this.tercero instanceof OperandoEtiqueta;
+    }
+
+    public InstruccionTresDirecciones getComplementario(Goto salto) {
+        return new GT(primero, segundo, salto.getTercero());
+    }
 }

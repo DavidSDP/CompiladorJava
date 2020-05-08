@@ -45,17 +45,6 @@ public class CargarIndireccion extends InstruccionTresDirecciones {
                 // Juas lo siguiente es hack hack porque hemos permitido meter strings a pelo jajajajaja
                 .append(this.tercero.save("(A5)"));
 
-        // Codigo de referencia para cuando se tenga que arreglar la mierda que hay encima de este comentario
-//        sb.append(putActivationBlockAddressInRegister(this.primero))
-//                .append("\tmove A6, A5\n")
-//                .append("\tadd.w #").append(declArray.getDesplazamiento()).append(", A5\n")
-//                .append(putActivationBlockAddressInRegister(this.segundo))
-//                .append("\tmove ").append(this.segundo.getValor().getDesplazamiento()).append("(A6), D1\n")
-//                .append("\tmulu #").append(declArray.getTipoDato().getSize()).append(", D1\n")
-//                .append("\tadd D1, A5\n")
-//                .append(putActivationBlockAddressInRegister(this.tercero))
-//                .append("\tmove (A5), ").append(this.tercero.getValor().getDesplazamiento()).append("(A6)\n");
-
         return sb.toString();
     }
 }

@@ -22,35 +22,31 @@ public enum Tipo {
      * De las siguientes no estoy tan seguro, esta puedo comprender que se queden aqui
      * - Void
      * - Array
+     *
      */
     Integer, String, Boolean, Class, Void, Array, Final, Identificador, Token, Comparable, IF, WHILE, ELSE;
 
-    public static TipoObject getTipo(Tipo t) throws ErrorSemantico {
-        switch (t) {
+    public static TipoObject getTipo(Tipo tipo) throws ErrorSemantico {
+        switch (tipo) {
             case Integer:
                 return new TipoObject(Tipo.Integer, 2);
             case String:
-                // Esto es un poco diferente. Probablemente este elemento sea un valor en memoria dinamica
-                // y el footprint deberia ser por caracter.
-                return new TipoObject(Tipo.String, 2);
+            case Array:
+                // Tanto string como array ocupan dos palabras.
+                // la primera contiene el puntero a memoria dinámica y el segundo el número
+                // de elementos en el vector ( Spoiler: el string es un array de caracteres )
+                return new TipoObject(tipo, 4);
             case Boolean:
                 return new TipoObject(Tipo.Boolean, 2);
-            case Class:
-                return new TipoObject(Tipo.Class, 0);
             case Void:
                 return new TipoObject(Tipo.Void, 0);
-            case Array:
-                // TODO Este tipo deberia ser algo especial que calcule el tamaño en base al tipo
-				// basico del elemento
-                return new TipoObject(Tipo.Array, 0);
+            // Ojo!!! Esto no son tipos
+            case Class:
             case Final:
-				return new TipoObject(Tipo.Final, 0);
             case IF:
-				return new TipoObject(Tipo.IF, 0);
             case WHILE:
-				return new TipoObject(Tipo.WHILE, 0);
             case ELSE:
-				return new TipoObject(Tipo.ELSE, 0);
+				return new TipoObject(tipo, 0);
 			default:
 				throw new ErrorSemantico("No se ha encontrado el tipo especificado");
         }
@@ -69,10 +65,19 @@ public enum Tipo {
         switch (s) {
             case "void":
                 return new TipoObject(Tipo.Void, 0);
+            // Ojo! El tamaño de arrays y strings es 4 debido a que en
+            // los bloques de activación mantenemos un puntero a memoria (1 palabra)
+            // y el número de elementos ( otra palabra ) ( 2 palabras = 4 bytes )
             case "array":
-                // TODO Este tipo deberia ser algo especial que calcule el tamaño en base al tipo
-                // basico del elemento
-                return new TipoObject(Tipo.Array, 0);
+                return new TipoObject(Tipo.Array, 4);
+            case "String":
+                return new TipoObject(Tipo.String, 4);
+            case "int":
+                return new TipoObject(Tipo.Integer, 2);
+            case "boolean":
+                return new TipoObject(Tipo.Boolean, 2);
+
+            // Ojo! esto no son tipos
             case "final":
                 return new TipoObject(Tipo.Final, 0);
             case "if":
@@ -83,14 +88,6 @@ public enum Tipo {
                 return new TipoObject(Tipo.WHILE, 0);
             case "class":
                 return new TipoObject(Tipo.Class, 0);
-            case "int":
-                return new TipoObject(Tipo.Integer, 2);
-            case "String":
-                // Esto es un poco diferente. Probablemente este elemento sea un valor en memoria dinamica
-                // y el footprint deberia ser por caracter.
-                return new TipoObject(Tipo.String, 2);
-            case "boolean":
-                return new TipoObject(Tipo.Boolean, 2);
             default:
                 throw new ErrorSemantico("No se ha encontrado el tipo especificado");
         }

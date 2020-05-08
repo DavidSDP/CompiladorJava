@@ -6,8 +6,6 @@ import Procesador.DeclaracionConstante;
 
 
 public class Operando {
-    protected ModoDireccionamiento modo;
-
     // Ahora mismo Declaracion puede contener una variable o una constante.
     // Asi que no es necesario diferenciar el tipo de valor que estamos manejando
     // en este momento
@@ -80,8 +78,31 @@ public class Operando {
                         .append(toRegister)
                         .append("\n");
             } else if (Tipo.String.equals(constante.getTipo().getTipo())) {
-                // TODO reservar memoria dinamica, copiar contenido dentro y asignar
-                //  memoria a la variable/registro en cuestion
+                /**
+                 * 1. Reservar memoria dinámica
+                 * 2. Poner contenido en la memoria
+                 * 3. Contar numero de caracteres
+                 * 4. Rellenar metainformación en registro
+                 *      - En offset 0 está la dirección
+                 *      - En offset 16 está el tamaño
+                 */
+                // guardar A0
+                String text = (String)constante.getValor();
+                int size = text.length();
+
+                sb.append("\tmove.l A0, -(A7)\n")
+                        // Reservar espacio en memoria dinamica y crear descriptor
+                        .append("\tbsr DMMALLOC\n")
+                        .append("\tclr.l ").append(toRegister).append("\n")
+                        .append("\tmove.w #").append(size).append(", ").append(toRegister).append("\n")
+                        .append("\tlsl.l #16, ").append(toRegister).append("\n")
+                        .append("\tmove.w A0, ").append(toRegister).append("\n");
+
+                // Rellenar memoria dinamica
+                for (int idx = 0; idx < size; idx++) {
+                    sb.append("\tmove.w #").append((int)text.charAt(idx)).append(", (A0)+\n");
+                }
+                sb.append("\tmove.l (A7)+, A0\n");
             }
         } else {
             // Si no es una constante es una variable

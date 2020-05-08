@@ -91,18 +91,18 @@ public class TypeCheck {
 
 	public static void typesMatch(TipoObject tipo, TipoOperador tipoOperador) throws ErrorSemantico {
 		if(TipoOperador.ComparadorLogico.equals(tipoOperador)) {
-			if(!tipo.equals(Tipo.Boolean)
-					&& !tipo.equals(Tipo.Integer)
-					&& !tipo.equals(Tipo.String))
+			if(!Tipo.Boolean.equals(tipo.getTipo())
+					&& !Tipo.Integer.equals(tipo.getTipo())
+					&& !Tipo.String.equals(tipo.getTipo()))
 				lanzaErrorTypeMismatch(tipo, Tipo.Comparable);
 		}else if(TipoOperador.Comparador.equals(tipoOperador)) {
-			if(!tipo.equals(Tipo.Integer))
+			if(!Tipo.Integer.equals(tipo.getTipo()))
 				lanzaErrorTypeMismatch(tipo, Tipo.Integer);
 		}else if(TipoOperador.Logico.equals(tipoOperador)) {
-			if(!tipo.equals(Tipo.Boolean))
+			if(!Tipo.Boolean.equals(tipo.getTipo()))
 				lanzaErrorTypeMismatch(tipo, Tipo.Boolean);
 		}else if(TipoOperador.AritmeticoSuma.equals(tipoOperador) || TipoOperador.AritmeticoProducto.equals(tipoOperador)) {
-			if(!tipo.equals(Tipo.Integer))
+			if(!Tipo.Integer.equals(tipo.getTipo()))
 				lanzaErrorTypeMismatch(tipo, Tipo.Integer);
 		}
 	}

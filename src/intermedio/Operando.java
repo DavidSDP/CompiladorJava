@@ -67,19 +67,19 @@ public class Operando {
             DeclaracionConstante constante = (DeclaracionConstante) this.valor;
             // Convertimos el valor ( sea cual sea ) a valor máquina. Ahora mismo los literales son Bool e Integer.
             // Falta por ver como se manejan los strings. De momento los dejo de lado.
-            if (constante.getTipo().equals(Tipo.Integer)) {
+            if (Tipo.Integer.equals(constante.getTipo().getTipo())) {
                 Integer numero = Integer.parseInt((String) constante.getValor());
                 sb.append("\tmove.w #")
                         .append(numero).append(", ")
                         .append(toRegister)
                         .append("\n");
-            } else if (constante.getTipo().equals(Tipo.Boolean)) {
+            } else if (Tipo.Boolean.equals(constante.getTipo().getTipo())) {
                 int valor = mapBooleanValue((String) constante.getValor());
                 sb.append("\tmove.w #")
                         .append(valor).append(", ")
                         .append(toRegister)
                         .append("\n");
-            } else if (constante.getTipo().equals(Tipo.String)) {
+            } else if (Tipo.String.equals(constante.getTipo().getTipo())) {
                 // TODO reservar memoria dinamica, copiar contenido dentro y asignar
                 //  memoria a la variable/registro en cuestion
             }

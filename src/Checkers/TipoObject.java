@@ -21,13 +21,10 @@ public class TipoObject {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Tipo) {
-            return obj == this.tipo;
-        } else if (obj instanceof TipoObject) {
+        if (obj instanceof TipoObject) {
             TipoObject other = (TipoObject) obj;
-            return other.tipo == this.tipo;
+            return other.getTipo().equals(this.getTipo());
         }
-
         return false;
     }
 

@@ -1,6 +1,7 @@
 package intermedio;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,6 +24,25 @@ class OptimizationReturn {
     }
 }
 
+class RangoInstruccionesFuncion {
+    // Indice a la primera y última instrucción de una funcion
+    // Ambas instrucciones inclusive
+    private int inicio, fin;
+
+    public RangoInstruccionesFuncion(int inicio, int fin) {
+        this.inicio = inicio;
+        this.fin = fin;
+    }
+
+    public int getInicio() {
+        return inicio;
+    }
+
+    public int getFin() {
+        return fin;
+    }
+}
+
 
 /**
  * Un programa intermedio es una secuencia de instrucciones en código de 3
@@ -33,14 +53,12 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
 
     private static ProgramaIntermedio instance;
 
-    /**
-     * Llegado el momento esta lista de instrucciones se tendrá que 
-     * iterar para reordenar/eliminar instrucciones (fase de optimización)
-     */
     private final ArrayList<InstruccionTresDirecciones> instrucciones;
+    private ArrayList<InstruccionTresDirecciones> instruccionesOptimizadas;
 
     public ProgramaIntermedio() {
         instrucciones = new ArrayList<>();
+        instruccionesOptimizadas = new ArrayList<>();
     }
 
     public void addInstruccion(InstruccionTresDirecciones instr) {
@@ -68,7 +86,6 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
 
         }
 
-
         // Local
         cambiado = true;
         while (cambiado) {
@@ -76,6 +93,7 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
             cambiado = cambiado && retornoOptimizacion.isCambiado();
             optimizado = retornoOptimizacion.getInstrucciones();
         }
+        instruccionesOptimizadas = optimizado;
     }
 
     protected OptimizationReturn optimizarSaltosCondicionales(ArrayList<InstruccionTresDirecciones> instrucciones) {
@@ -91,61 +109,73 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
                 case GT:
                     siguienteInstruccion = this.getSiguiente(instrucciones, i);
                     if (siguienteInstruccion instanceof Goto) {
-                        cambiado = false;
+                        cambiado = true;
                         Goto salto = (Goto)siguienteInstruccion;
                         complementario = ((GT)instruccion).getComplementario(salto);
                         nuevas.add(complementario);
                         i++;
+                    } else {
+                        nuevas.add(instruccion);
                     }
                     break;
                 case GTE:
                     siguienteInstruccion = this.getSiguiente(instrucciones, i);
                     if (siguienteInstruccion instanceof Goto) {
-                        cambiado = false;
+                        cambiado = true;
                         Goto salto = (Goto)siguienteInstruccion;
                         complementario = ((GTE)instruccion).getComplementario(salto);
                         nuevas.add(complementario);
                         i++;
+                    } else {
+                        nuevas.add(instruccion);
                     }
                     break;
                 case LT:
                     siguienteInstruccion = this.getSiguiente(instrucciones, i);
                     if (siguienteInstruccion instanceof Goto) {
-                        cambiado = false;
+                        cambiado = true;
                         Goto salto = (Goto)siguienteInstruccion;
                         complementario = ((LT)instruccion).getComplementario(salto);
                         nuevas.add(complementario);
                         i++;
+                    } else {
+                        nuevas.add(instruccion);
                     }
                     break;
                 case LTE:
                     siguienteInstruccion = this.getSiguiente(instrucciones, i);
                     if (siguienteInstruccion instanceof Goto) {
-                        cambiado = false;
+                        cambiado = true;
                         Goto salto = (Goto)siguienteInstruccion;
                         complementario = ((LTE)instruccion).getComplementario(salto);
                         nuevas.add(complementario);
                         i++;
+                    } else {
+                        nuevas.add(instruccion);
                     }
                     break;
                 case EQ:
                     siguienteInstruccion = this.getSiguiente(instrucciones, i);
                     if (siguienteInstruccion instanceof Goto) {
-                        cambiado = false;
+                        cambiado = true;
                         Goto salto = (Goto)siguienteInstruccion;
                         complementario = ((EQ)instruccion).getComplementario(salto);
                         nuevas.add(complementario);
                         i++;
+                    } else {
+                        nuevas.add(instruccion);
                     }
                     break;
                 case NE:
                     siguienteInstruccion = this.getSiguiente(instrucciones, i);
                     if (siguienteInstruccion instanceof Goto) {
-                        cambiado = false;
+                        cambiado = true;
                         Goto salto = (Goto)siguienteInstruccion;
                         complementario = ((NE)instruccion).getComplementario(salto);
                         nuevas.add(complementario);
                         i++;
+                    } else {
+                        nuevas.add(instruccion);
                     }
                     break;
                 default:
@@ -156,9 +186,8 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
         return new OptimizationReturn(nuevas, cambiado);
     }
 
-    protected OptimizationReturn optimizacionLocal(ArrayList<InstruccionTresDirecciones> instrucciones) {
-
-        int inicio, fin, idBloque = 0;
+    protected Grafo getGrafoFlujoFuncion(ArrayList<InstruccionTresDirecciones> instrucciones, RangoInstruccionesFuncion rango) {
+        int idBloque = 0;
         boolean finales;
         BloqueBasico e, s, bloque, siguienteBloque;
         InstruccionTresDirecciones instruccion, siguiente;
@@ -174,24 +203,21 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
         grafoFlujoBloquesBasicos.addVertice(e);
         grafoFlujoBloquesBasicos.addVertice(s);
 
-        inicio = fin = -1;
-
         // Identificacion de lideres
-        int numElementos = instrucciones.size();
-        for (int i = 0; i < numElementos; i++) {
+        for (int i = rango.getInicio(); i <= rango.getFin(); i++) {
             instruccion = instrucciones.get(i);
 
             if (isEtiqueta(instruccion)) {
-                bloque = new BloqueBasico(++idBloque, inicio);
+                bloque = new BloqueBasico(++idBloque, i);
                 grafoFlujoBloquesBasicos.addVertice(bloque);
                 bloques.add(bloque);
-                etiqueta = (OperandoEtiqueta)instruccion.getTercero();
+                etiqueta = (OperandoEtiqueta)instruccion.getPrimero();
                 etiquetaToLider.put(etiqueta, bloque);
             } else if (isConditionalBranch(instruccion)) {
                 siguiente = getSiguiente(instrucciones, i + 1);
                 finales = isBranch(siguiente) || isRetorno(siguiente) || isEtiqueta(siguiente);
                 if (!finales) {
-                    bloque = new BloqueBasico(++idBloque, inicio);
+                    bloque = new BloqueBasico(++idBloque, i + 1);
                     grafoFlujoBloquesBasicos.addVertice(bloque);
                     bloques.add(bloque);
                 }
@@ -208,7 +234,7 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
             indiceInstruccion = bloque.getInicio();
             instruccion = instrucciones.get(indiceInstruccion);
             finales = isBranch(instruccion) || isRetorno(instruccion) || isEtiqueta(instruccion);
-            while(!finales) {
+            while(!finales || esEtiquetaBloquePropio(instruccion, bloque, etiquetaToLider)) {
                 instruccion = instrucciones.get(++indiceInstruccion);
                 finales = isBranch(instruccion) || isRetorno(instruccion) || isEtiqueta(instruccion);
             }
@@ -241,8 +267,72 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
             }
         }
 
+        return grafoFlujoBloquesBasicos;
+    }
 
+    protected RangoInstruccionesFuncion getSiguienteFuncion(ArrayList<InstruccionTresDirecciones> instrucciones, int inicioBusqueda) {
+        int inicio, fin, actual;
+        boolean encontradoFin = false;
+        InstruccionTresDirecciones instruccion;
+        inicio = fin = -1;
+        for (actual = inicioBusqueda; actual < instrucciones.size() && !encontradoFin; actual++) {
+            instruccion = instrucciones.get(actual);
+            if (instruccion instanceof Preambulo && inicio == -1) {
+                // La primera "instruccion" de una funcion es su etiqueta, pero es más fácil identificar preambulos.
+                inicio = actual - 1;
+            } else if (instruccion instanceof Preambulo) {
+                // Ha encontrado el preambulo de otra función, por tanto, debemos retroceder 2 instrucciones
+                // (preambulo + etiqueta) para encontrar la última instrucción de la funcion
+                fin = actual - 2;
+                encontradoFin = true;
+            } else if (instruccion instanceof Clase) {
+                // Hemos encontrado la declaración de la clase, por tanto, también se ha finalizado la función
+                // actual
+                fin = actual - 2;
+                encontradoFin = true;
+            } else if (instruccion instanceof Retorno) {
+                // Hemos encontrado un posible final, pero no podemos asegurar que no haya más instrucciones despues
+                // por tanto, seguimos buscando hasta que encontremos la declaración de una funcion
+                // o hasta que acabemos las instrucciones
+                fin = actual;
+            }
+        }
+
+        if (inicio > -1) {
+            fin = encontradoFin ? fin : actual - 1;
+            return new RangoInstruccionesFuncion(inicio, fin);
+        } else {
+            // No hemos encontrado más funciones
+            return null;
+        }
+    }
+
+    /**
+     * Las optimizaciones locales solo se aplican sobre las funciones. Así que, para cada una de las funciones
+     * se genera un grafo independiente sobre el cual se puede optimizar el código
+     * @param instrucciones
+     * @return
+     */
+    protected OptimizationReturn optimizacionLocal(ArrayList<InstruccionTresDirecciones> instrucciones) {
+        ArrayList<RangoInstruccionesFuncion> funciones = new ArrayList<>();
+        HashMap<RangoInstruccionesFuncion, Grafo> grafosFunciones = new HashMap<>();
+        Grafo grafoFuncion;
+        RangoInstruccionesFuncion rangoInstrucciones = getSiguienteFuncion(instrucciones, 0);
+        while (rangoInstrucciones != null) {
+            grafoFuncion = getGrafoFlujoFuncion(instrucciones, rangoInstrucciones);
+            funciones.add(rangoInstrucciones);
+            grafosFunciones.put(rangoInstrucciones, grafoFuncion);
+            rangoInstrucciones = getSiguienteFuncion(instrucciones, rangoInstrucciones.getFin() + 1);
+        }
         return null;
+    }
+
+    protected boolean esEtiquetaBloquePropio(InstruccionTresDirecciones instruccion, BloqueBasico bloque, HashMap<OperandoEtiqueta, BloqueBasico> etiquetaToLider) {
+        if (isEtiqueta(instruccion)) {
+            OperandoEtiqueta etiqueta = (OperandoEtiqueta)instruccion.getPrimero();
+            return bloque == etiquetaToLider.get(etiqueta);
+        }
+        return false;
     }
 
     protected boolean isConditionalBranch(InstruccionTresDirecciones instruccion) {
@@ -285,7 +375,11 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
         }
         return null;
     }
-    
+
+    public ArrayList<InstruccionTresDirecciones> optimizado() {
+        return this.instruccionesOptimizadas;
+    }
+
     @Override
     public Iterator<InstruccionTresDirecciones> iterator() {
         return this.instrucciones.iterator();

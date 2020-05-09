@@ -11,13 +11,13 @@ import Procesador.DeclaracionConstante;
 
 /**
  * Primero es el origen de la copia. Puede ser una constante o una variable
- * Segundo es el destino a donde se quiere copiar. Esto solo puede ser una 
+ * Segundo es el destino a donde se quiere copiar. Esto solo puede ser una
  * variable.
- * 
+ * <p>
  * Nota para el futuro: No es necesario comprobar si la instrucción es correcta
- * en cuanto a constancia de valores y tipos ya que eso debería haberse 
+ * en cuanto a constancia de valores y tipos ya que eso debería haberse
  * comprobado antes. Esto complicaría bastantes las cosas.
- * 
+ *
  * @author jesus
  */
 public class Copia extends InstruccionTresDirecciones {

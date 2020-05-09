@@ -25,6 +25,7 @@ public class GlobalVariables {
     public static final Path FICHERO_ERRORES = outputDir.resolve("Errores.txt");
     public static final Path FICHERO_ENTORNOS = outputDir.resolve("Entornos.txt");
     public static final Path FICHERO_INTERMEDIO = outputDir.resolve("codigo_intermedio.txt");
+    public static final Path FICHERO_INTERMEDIO_OPT = outputDir.resolve("codigo_intermedio_opt.txt");
     public static final Path FICHERO_MAQUINA = outputDir.resolve("codigo_maquina.txt");
     public static final Path FICHERO_MAQUINA_OPT = outputDir.resolve("codigo_maquina_opt.txt");
 

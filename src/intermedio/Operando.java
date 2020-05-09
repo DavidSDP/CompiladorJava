@@ -90,19 +90,21 @@ public class Operando {
                 String text = (String)constante.getValor();
                 int size = text.length();
 
-                sb.append("\tmove.l A0, -(A7)\n")
+                sb.append("\tmovem.l A0/D3, -(A7)\n")
                         // Reservar espacio en memoria dinamica y crear descriptor
-                        .append("\tbsr DMMALLOC\n")
+                        // Ojo, las rutinas del DMM están demasiado lejos para usar bsr
+                        .append("\tjsr DMMALLOC\n")
                         .append("\tclr.l ").append(toRegister).append("\n")
                         .append("\tmove.w #").append(size).append(", ").append(toRegister).append("\n")
-                        .append("\tlsl.l #16, ").append(toRegister).append("\n")
+                        .append("\tmoveq #16, D3\n")
+                        .append("\tlsl.l D3, ").append(toRegister).append("\n")
                         .append("\tmove.w A0, ").append(toRegister).append("\n");
 
                 // Rellenar memoria dinamica
                 for (int idx = 0; idx < size; idx++) {
                     sb.append("\tmove.w #").append((int)text.charAt(idx)).append(", (A0)+\n");
                 }
-                sb.append("\tmove.l (A7)+, A0\n");
+                sb.append("\tmovem.l (A7)+, A0/D3\n");
             }
         } else {
             // Si no es una constante es una variable
@@ -125,8 +127,14 @@ public class Operando {
      */
     public String save(String fromRegister) {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.putActivationBlockAddressInRegister())
-                .append("\tmove.w ").append(fromRegister).append(", ").append(this.getValor().getDesplazamiento()).append("(A6)\n");
+        // Estos dos son descriptores de variables dinámicas
+        if (Tipo.String.equals(this.valor.getTipo().getTipo()) || Tipo.Array.equals(this.valor.getTipo().getTipo())) {
+            sb.append(this.putActivationBlockAddressInRegister())
+                    .append("\tmove.l ").append(fromRegister).append(", ").append(this.getValor().getDesplazamiento()).append("(A6)\n");
+        } else {
+            sb.append(this.putActivationBlockAddressInRegister())
+                    .append("\tmove.w ").append(fromRegister).append(", ").append(this.getValor().getDesplazamiento()).append("(A6)\n");
+        }
         return sb.toString();
     }
 

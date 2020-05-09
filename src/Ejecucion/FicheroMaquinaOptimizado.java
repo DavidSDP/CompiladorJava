@@ -35,9 +35,8 @@ public class FicheroMaquinaOptimizado {
 
 
     public static void escribirInstrucciones(ProgramaIntermedio programa) throws IOException {
-        for (InstruccionTresDirecciones instr : programa) {
-            fileWriter.write(instr.toString());
-            fileWriter.write(System.lineSeparator());
+        for (InstruccionTresDirecciones instr : programa.optimizado()) {
+            fileWriter.write(instr.toMachineCode());
         }
     }
 }

@@ -18,13 +18,18 @@ import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.Symbol;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Boolean errorGrave = false;
+        CommandlineParser clparser = new CommandlineParser(args);
+        clparser.parse();
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("Parámetros de la compilación");
+        System.out.println(clparser.toString());
+        System.out.println("-------------------------------------------------------------");
         try {
 
             comienzaEjecucion();
-
-            FileReader in = new FileReader(args[0]);
+            FileReader in = new FileReader(clparser.getFilepath());
 
             ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
 
@@ -47,8 +52,17 @@ public class Main {
             // en estos mismos instantes
             // Además, algún arquitecto de software acaba de morir en India
             if (!GlobalVariables.hayErrores) {
+                // Sin optimizaciones
                 FicheroIntermedio.escribirInstrucciones(ProgramaIntermedio.getInstance());
                 FicheroMaquina.escribirInstrucciones(ProgramaIntermedio.getInstance());
+
+                if (clparser.getNivelOptimizacion() > 0) {
+                    ProgramaIntermedio.getInstance().optimizar();
+                    // Optimizado
+                    FicheroIntermedioOptimizado.escribirInstrucciones(ProgramaIntermedio.getInstance());
+                    FicheroMaquinaOptimizado.escribirInstrucciones(ProgramaIntermedio.getInstance());
+                }
+
             }
         } catch (FileNotFoundException e) {
             ErrorHandler.reportaError("El fichero de entrada '" + args[0] + "' no existe");
@@ -81,7 +95,9 @@ public class Main {
         ErrorHandler.abreFichero();
         FicheroEntornos.abreFichero();
         FicheroIntermedio.abreFichero();
+        FicheroIntermedioOptimizado.abreFichero();
         FicheroMaquina.abreFichero();
+        FicheroMaquinaOptimizado.abreFichero();
         System.out.println("Ejecución Procesador de Lenguaje...");
     }
 
@@ -107,7 +123,9 @@ public class Main {
             ErrorHandler.cierraFichero();
             FicheroEntornos.cierraFichero();
             FicheroIntermedio.cierraFichero();
+            FicheroIntermedioOptimizado.cierraFichero();
             FicheroMaquina.cierraFichero();
+            FicheroMaquinaOptimizado.cierraFichero();
         } catch (ErrorProcesador e) {
             System.out.println(e.getMensaje());
         }

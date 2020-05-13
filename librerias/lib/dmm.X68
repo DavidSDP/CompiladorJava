@@ -21,12 +21,11 @@ DMMINIT:
 .LOOP
             ; Fill header info
             MOVE.L  A1, 0(A0)            ; Previous block
-            MOVE.W  #1, 8(A0)            ; Free state
-            MOVE.W  #DMMBSIZE, 10(A0)     ; Content size
+            MOVE.W  #1, 4(A0)            ; Free state
+            MOVE.W  #DMMBSIZE, 6(A0)     ; Content size
 
             ; Fill trailer info
-            MOVE.W  #DMMBSIZE, D1
-            ADD.W   #6, D1
+            MOVE.L  #DMMBSIZE+METAINFOSIZE, D1
             MOVE.W  #DMMBSIZE, 0(A0, D1) ; Content size
             MOVE.W  #1, 2(A0, D1)        ; Free state
             MOVEA.L A0, A1
@@ -38,7 +37,7 @@ DMMINIT:
             ADD.L   #DMMBSIZE+METAINFOSIZE*2, A0
 
             DBRA.W  D0,.LOOP
-            MOVE.L  #0, -8(A0)
+            MOVE.L  #0, -4(A0)
             MOVE.L  #HEAP_MEMORY, FREE_LIST
             MOVEM.L (A7)+,D0/A0-A1
             RTS
@@ -127,13 +126,11 @@ DMMALLOC
             MOVE.L  A1, FREE_LIST
             CMP #0, 4(A0, D1)
             BEQ .UPDATE_REQUESTED_BLOCK
-						; TODO esto esta mal. Estoy actualizando la palabra de la memoria
-						; contigua que no tiene  porque ser el siguiente bloque.
 						MOVE.L	4(A0, D1), A1
 						MOVE.L	#0, (A1) ; Put to 0 the next block's previous pointer
 .UPDATE_REQUESTED_BLOCK:
             MOVE.L  #0, 0(A0)      ; Remove previous pointer
-            MOVE.W  #0, 8(A0)      ; Set Free state to 0
+            MOVE.W  #0, 4(A0)      ; Set Free state to 0
 
             MOVE.W  #0, 2(A0, D1)  ; Set Free state to 0
             MOVE.L  #0, 4(A0, D1)  ; Remove pinter to next block
@@ -164,7 +161,7 @@ DMMFREE
             ; and the recently released block
 .UPDATE_METAINFO:
             MOVE.L  #0, 0(A0)
-            MOVE.W  #1, 8(A0)
+            MOVE.W  #1, 4(A0)
 
             ; Update the list start pointer
             MOVE.L  A0, FREE_LIST

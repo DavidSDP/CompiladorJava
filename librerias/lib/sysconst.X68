@@ -4,7 +4,7 @@
 
 DMMBNUM 		EQU 	100
 DMMBSIZE 		EQU 	256
-METAINFOSIZE 	EQU 	6						; BYTES
+METAINFOSIZE 	EQU 	8						; BYTES
 
 *~Font name~Courier New~
 *~Font size~10~

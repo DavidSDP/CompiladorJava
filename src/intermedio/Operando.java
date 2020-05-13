@@ -3,6 +3,7 @@ package intermedio;
 import Checkers.Tipo;
 import Procesador.Declaracion;
 import Procesador.DeclaracionConstante;
+import Procesador.GlobalVariables;
 
 
 public class Operando {
@@ -78,35 +79,9 @@ public class Operando {
                         .append(toRegister)
                         .append("\n");
             } else if (Tipo.String.equals(constante.getTipo().getTipo())) {
-                /**
-                 * 1. Reservar memoria dinámica
-                 * 2. Poner contenido en la memoria
-                 * 3. Contar numero de caracteres
-                 * 4. Rellenar metainformación en registro
-                 *      - En offset 0 está la dirección
-                 *      - En offset 16 está el tamaño
-                 */
-                // guardar A0
-                String text = (String)constante.getValor();
-                int size = text.length();
-
-                sb.append("\tmovem.l A0/D3, -(A7)\n")
-                        // Reservar espacio en memoria dinamica y crear descriptor
-                        // Ojo, las rutinas del DMM están demasiado lejos para usar bsr
-                        .append("\tjsr DMMALLOC\n")
-                        .append("\tclr.l ").append(toRegister).append("\n")
-                        .append("\tmove.w #").append(size).append(", ").append(toRegister).append("\n")
-                        .append("\tmoveq #16, D3\n")
-                        .append("\tlsl.l D3, ").append(toRegister).append("\n")
-                        .append("\tmove.w A0, ").append(toRegister).append("\n");
-
-                // Rellenar memoria dinamica
-                for (int idx = 0; idx < size; idx++) {
-                    sb.append("\tmove.w #").append((int)text.charAt(idx)).append(", (A0)+\n");
-                }
-                sb.append("\tmovem.l (A7)+, A0/D3\n");
             }
         } else {
+        	
             // Si no es una constante es una variable
             sb.append(this.putActivationBlockAddressInRegister())
                     .append("\tmove ")

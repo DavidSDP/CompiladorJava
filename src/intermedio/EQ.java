@@ -1,5 +1,7 @@
 package intermedio;
 
+import Checkers.Tipo;
+
 public class EQ extends InstruccionTresDirecciones {
     public EQ(Operando primero, Operando segundo, Operando resultado) {
         super(OperacionTresDirecciones.EQ);
@@ -25,17 +27,27 @@ public class EQ extends InstruccionTresDirecciones {
 
         sb.append(super.toMachineCode());
 
-        // TODO Obviamente esto no funciona para los strings. Probablemente
-
-        // Estoy casi convencido de que la comprobacion de igualdad se puede hacer como LT y familiares
-        sb.append(this.primero.load("D0"))
-                .append(this.segundo.load("D1"))
-                .append("\tcmp D0, D1\n")
-                .append("\tmove.w SR, D1\n")
-                .append("\tand.w #4, D1\n")
-                .append("\tlsr #2, D1\n")
-                .append(this.tercero.save("D1"));
-
+        // TODO Preparado para Descriptor de String del tipo @.L y #.L
+        
+        if(Tipo.String.equals(this.primero.getValor().getTipo().getTipo())){
+        	sb.append(this.primero.load("A0"))
+        	.append(this.segundo.load("A1"))
+        	.append("\t\t\tJSR\tSTREQUALS\n")
+        	.append(this.tercero.save("D0"));
+        	
+        } else if(Tipo.Array.equals(this.primero.getValor().getTipo().getTipo())){
+        	
+        } else {
+	        // Estoy casi convencido de que la comprobacion de igualdad se puede hacer como LT y familiares
+	        sb.append(this.primero.load("D0"))
+	                .append(this.segundo.load("D1"))
+	                .append("\tcmp D0, D1\n")
+	                .append("\tmove.w SR, D1\n")
+	                .append("\tand.w #4, D1\n")
+	                .append("\tlsr #2, D1\n")
+	                .append(this.tercero.save("D1"));
+        }
+        
         return sb.toString();
     }
 

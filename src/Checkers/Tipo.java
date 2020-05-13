@@ -24,18 +24,20 @@ public enum Tipo {
      * - Array
      *
      */
-    Integer, String, Boolean, Class, Void, Array, Final, Identificador, Token, Comparable, IF, WHILE, ELSE;
+    Integer, Char, String, Boolean, Class, Void, Array, Final, Identificador, Token, Comparable, IF, WHILE, ELSE;
 
     public static TipoObject getTipo(Tipo tipo) throws ErrorSemantico {
         switch (tipo) {
-            case Integer:
-                return new TipoObject(Tipo.Integer, 2);
+	        case Integer:
+	            return new TipoObject(Tipo.Integer, 2);
+	        case Char:
+	            return new TipoObject(Tipo.Char, 2);
             case String:
             case Array:
                 // Tanto string como array ocupan dos palabras.
                 // la primera contiene el puntero a memoria dinámica y el segundo el número
                 // de elementos en el vector ( Spoiler: el string es un array de caracteres )
-                return new TipoObject(tipo, 4);
+                return new TipoObject(tipo, 8);
             case Boolean:
                 return new TipoObject(Tipo.Boolean, 2);
             case Void:
@@ -70,8 +72,10 @@ public enum Tipo {
             // y el número de elementos ( otra palabra ) ( 2 palabras = 4 bytes )
             case "array":
                 return new TipoObject(Tipo.Array, 4);
+            case "Char":
+                return new TipoObject(Tipo.Char, 2);
             case "String":
-                return new TipoObject(Tipo.String, 4);
+                return new TipoObject(Tipo.String, 8);
             case "int":
                 return new TipoObject(Tipo.Integer, 2);
             case "boolean":

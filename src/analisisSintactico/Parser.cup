@@ -9,6 +9,7 @@ import intermedio.Param;
 import Checkers.Tipo;
 import Checkers.TipoOperador;
 import Checkers.TypeCheck;
+import Checkers.OverflowCheck;
 import Errores.ErrorHandler;
 import Errores.ErrorSemantico;
 import Errores.ErrorSintactico;
@@ -652,6 +653,7 @@ factor ::= VID:i arrayAsig:a
     :}
     | VSTRING:s                      
     {: 
+    			OverflowCheck.string(s);
 			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.String), s);
 				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.String));
 				I3DUtils.crea(OperacionTresDirecciones.COPIA, decl, varDecl);				

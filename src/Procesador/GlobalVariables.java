@@ -38,6 +38,9 @@ public class GlobalVariables {
     private static Integer _idnodoIncremental = 0;
     private static Integer CONTADOR = 1;
     private static Stack<Entorno> pilaEntornos = new Stack<>();
+    
+    // Memory Management related constants
+    public static final int MEMORY_DATA_BLOCK_SIZE_BYTES = 256;
 
     public static Entorno entornoActual() {
         try {

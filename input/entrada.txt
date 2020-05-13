@@ -1,0 +1,25 @@
+/*
+* Ejemplo simple de funcion con bucle y retorno
+*/
+class ClasePrincipal {
+	
+	int a = 10;
+
+	function int multiplica(int multiplicando, int multiplicador) {
+		int resultado = multiplicando;
+		int contador = multiplicador - 1;
+		while (contador > 0) {
+			contador = contador - 1;
+			resultado = resultado + multiplicando;
+		}
+
+		return resultado;
+  }
+	
+	function void main() {
+		String str = "uep";
+		boolean esIgual = (str == "uep");
+		int resultado = multiplica(2, 10);
+		resultado = resultado + a;
+	}
+}

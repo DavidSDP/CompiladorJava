@@ -11,6 +11,7 @@ import intermedio.Param;
 import Checkers.Tipo;
 import Checkers.TipoOperador;
 import Checkers.TypeCheck;
+import Checkers.OverflowCheck;
 import Errores.ErrorHandler;
 import Errores.ErrorSemantico;
 import Errores.ErrorSintactico;
@@ -1513,6 +1514,7 @@ class CUP$parser$actions {
 		int sright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String s = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 
+    			OverflowCheck.string(s);
 			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.String), s);
 				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.String));
 				I3DUtils.crea(OperacionTresDirecciones.COPIA, decl, varDecl);				

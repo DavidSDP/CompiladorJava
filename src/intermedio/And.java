@@ -1,5 +1,10 @@
 package intermedio;
 
+import CodigoMaquina.BloqueInstrucciones;
+import CodigoMaquina.DataRegister;
+import CodigoMaquina.Instruccion;
+import CodigoMaquina.OpCode;
+
 /**
     TODO Aclarar que pasa con este tipo de operaciones en los condicionales
     Es decir, if (a<b) probablemente deba utilizar una variable temporal
@@ -35,14 +40,12 @@ public class And extends InstruccionTresDirecciones {
      */
     @Override
     public String toMachineCode() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(super.toMachineCode());
-        sb.append(this.primero.load("D0"))
-                .append(this.segundo.load("D1"))
-                .append("\tand D0, D1\n")
-                .append(this.tercero.save("D1"));
-
-        return sb.toString();
+        BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
+        bI.add(this.primero.load(DataRegister.D0));
+        bI.add(this.segundo.load(DataRegister.D1));
+        bI.add(new Instruccion(OpCode.AND, DataRegister.D0, DataRegister.D1));
+        bI.add(this.tercero.save(DataRegister.D1));
+        return bI.toString();
     }
 }

@@ -1,5 +1,7 @@
 package intermedio;
 
+import CodigoMaquina.DataRegister;
+
 public class Suma extends InstruccionTresDirecciones {
     public Suma(Operando primero, Operando segundo, Operando tercero) {
         super(OperacionTresDirecciones.SUMA);
@@ -16,10 +18,10 @@ public class Suma extends InstruccionTresDirecciones {
         StringBuilder sb = new StringBuilder();
 
         sb.append(super.toMachineCode());
-        sb.append(this.primero.load("D0"))
-                .append(this.segundo.load("D1"))
+        sb.append(this.primero.load(DataRegister.D0))
+                .append(this.segundo.load(DataRegister.D1))
                 .append("\tadd.w D0, D1\n")
-                .append(this.tercero.save("D1"));
+                .append(this.tercero.save(DataRegister.D1));
 
         return sb.toString();
     }

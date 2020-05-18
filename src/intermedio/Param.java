@@ -1,5 +1,6 @@
 package intermedio;
 
+import CodigoMaquina.DataRegister;
 import Procesador.Declaracion;
 
 public class Param extends InstruccionTresDirecciones {
@@ -33,7 +34,7 @@ public class Param extends InstruccionTresDirecciones {
 
         }
 
-        sb.append(this.primero.load("D0")) // D0 me da igual, solo me interesa A6
+        sb.append(this.primero.load(DataRegister.D0)) // D0 me da igual, solo me interesa A6
                 .append("\tPUSH_PARAM ").append(valor.getDesplazamiento()).append("(A6), #").append(valor.getOcupacion()).append("\n");
 
         return sb.toString();

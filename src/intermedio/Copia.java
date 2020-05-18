@@ -7,6 +7,10 @@
 package intermedio;
 
 import Checkers.Tipo;
+import CodigoMaquina.AddressRegister;
+import CodigoMaquina.BloqueInstrucciones;
+import CodigoMaquina.DataRegister;
+import CodigoMaquina.Instruccion;
 import Procesador.DeclaracionConstante;
 
 /**
@@ -52,62 +56,27 @@ public class Copia extends InstruccionTresDirecciones {
          *      - En offset 16 está el tamaño
          */
         // guardar A0
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toMachineCode());
-        if (this.primero.getValor() instanceof DeclaracionConstante) {
-        	// Copia String Constante
-                    // Reservar espacio en memoria dinamica y crear descriptor
-                    // Ojo, las rutinas del DMM están demasiado lejos para usar bsr
-            		// ^ Hostia es verdad, qu� putada xD
-        	
-            DeclaracionConstante constante = (DeclaracionConstante) this.primero.getValor();
-            String text = (String) constante.getValor();
-            int size = text.length();
-            
-            sb.append("\tmovem.l A1/D0, -(A7)\n")
-	            .append("\tjsr DMMALLOC\n")
-	            .append("\tclr.l D0\n")
-	            .append("\tmove.l #").append(size).append(", D0\n")
-	            .append("\tmove.l A0, A1\n");
-            for (int idx = 0; idx < size; idx++) {
-                sb.append("\tmove.w #").append((int)text.charAt(idx)).append(", (A1)+\n");
-            }
-            sb.append("\tmovem.l (A7)+, A1/D0\n");
-            sb.append(this.segundo.putActivationBlockAddressInRegister())
-            /*
-             * 1000 BP XXXX
-             * 1004 STRING #
-             * 1008 STRING @
-             * 100C
-             */
-            .append("\tmove.l A6, A1\n")
-            .append("\tadd.l #").append(this.segundo.getValor().getDesplazamiento()).append(", A1\n")
-            .append("\tmove.l D0, (A1)\n")
-            .append("\tmove.l A0, 4(A1)\n");
+    	
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
+    	bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
+        if(this.primero.getValor() instanceof DeclaracionConstante) {
+        	bI.add(this.primero.loadStringDescriptorConstante(DataRegister.D0, AddressRegister.A1));
+        	bI.add(this.segundo.saveStringDescriptorConstante(DataRegister.D0, AddressRegister.A1));
         }else {
-        	// Copia String Variable
-            sb.append("\tmove.l #0, A6\n");
-            sb.append(this.primero.putActivationBlockAddressInRegister())
-		            .append("\tmove.l A6, A0\n")
-		            .append("\tadd.l #").append(this.primero.getValor().getDesplazamiento()).append(", A0\n");
-            sb.append("\tmove.l #0, A6\n");
-		    sb.append(this.segundo.putActivationBlockAddressInRegister())
-		            .append("\tmove.l A6, A1\n")
-		            .append("\tadd.l #").append(this.segundo.getValor().getDesplazamiento()).append(", A1\n")
-            		.append("\tmove.l (A0), (A1)\n")
-            		.append("\tmove.l 4(A0), 4(A1)\n");
+        	bI.add(this.primero.loadStringDescriptorVariable(AddressRegister.A1));
+        	bI.add(this.segundo.saveStringDescriptorVariable(AddressRegister.A1));
         }
-        return sb.toString();
+        return bI.toString();
     }
 
     public String basicTypeToMachineCode() {
-        StringBuilder sb = new StringBuilder();
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
 
-        sb.append(super.toMachineCode());
-        sb.append(this.primero.load("D0"))
-                .append(this.segundo.save("D0"));
+    	bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
+    	bI.add(this.primero.load(DataRegister.D0));
+    	bI.add(this.segundo.save(DataRegister.D0));
 
-        return sb.toString();
+        return bI.toString();
     }
 
     @Override
@@ -117,6 +86,5 @@ public class Copia extends InstruccionTresDirecciones {
         } else {
             return this.basicTypeToMachineCode();
         }
-//        return this.basicTypeToMachineCode();
     }
 }

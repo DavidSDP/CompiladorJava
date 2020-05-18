@@ -1,6 +1,7 @@
 package intermedio;
 
 
+import CodigoMaquina.DataRegister;
 import Procesador.DeclaracionFuncion;
 import Procesador.Entorno;
 
@@ -78,7 +79,7 @@ public class Llamada extends InstruccionTresDirecciones {
                     .append("\tmove.w (A6), D5\n")
                     .append("\tbsr restore_bp\n")
                     // Esto asume que el retorno es de 1 palabra (Bad idea)
-                    .append(this.tercero.save("D5"));
+                    .append(this.tercero.save(DataRegister.D5));
         } else {
             sb.append("\tbsr restore_bp\n");
         }

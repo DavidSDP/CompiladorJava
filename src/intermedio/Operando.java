@@ -1,9 +1,23 @@
 package intermedio;
 
 import Checkers.Tipo;
+import CodigoMaquina.AddressRegister;
+import CodigoMaquina.BloqueInstrucciones;
+import CodigoMaquina.DataRegister;
+import CodigoMaquina.Instruccion;
+import CodigoMaquina.OpCode;
+import CodigoMaquina.OperandoEspecial;
+import CodigoMaquina.Size;
+import CodigoMaquina.StackPointer;
+import CodigoMaquina.Variables;
+import CodigoMaquina.especiales.Contenido;
+import CodigoMaquina.especiales.Indireccion;
+import CodigoMaquina.especiales.Literal;
+import CodigoMaquina.especiales.PostIncremento;
+import CodigoMaquina.especiales.PreDecremento;
+import CodigoMaquina.especiales.Restore;
 import Procesador.Declaracion;
 import Procesador.DeclaracionConstante;
-import Procesador.GlobalVariables;
 
 
 public class Operando {
@@ -42,54 +56,78 @@ public class Operando {
      * Para arreglarlo, realmente se tiene que escalar por los access links que realmente contienen
      * el puntero al entorno contenedor ( no tiene porque ser el bloque de activacion anterior )
      */
-    public String putActivationBlockAddressInRegister() {
-        StringBuilder sb = new StringBuilder();
+    public BloqueInstrucciones putActivationBlockAddressInRegister() {
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
         int profundidadLlamada = this.getProfundidad();
         int profundidadDeclaracion = this.getValor().getProfundidadDeclaracion();
         if (profundidadLlamada > profundidadDeclaracion) {
             // Uso de una variable "global"
-            sb.append("\tmove.w BP, A6\n");
+	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Variables.BP, AddressRegister.A6));
             for (int distanciaEntornos = profundidadLlamada - profundidadDeclaracion; distanciaEntornos > 0; distanciaEntornos--) {
-                sb.append("\tsubq.w #2, A6\n");
-                sb.append("\tmove.w (A6), A6\n");
+    	        bI.add(new Instruccion(OpCode.SUBQ, Size.W, Literal.__(2), AddressRegister.A6));
+    	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Contenido.__(AddressRegister.A6), AddressRegister.A6));
             }
         } else {
             // Uso de una variable local
-            sb.append("\tmove.w BP, A6\n");
+	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Variables.BP, AddressRegister.A6));
         }
-        return sb.toString();
+        return bI;
     }
 
-    public String load(String toRegister) {
-        StringBuilder sb = new StringBuilder();
+    public BloqueInstrucciones load(DataRegister toRegister) {
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
         if (this.valor instanceof DeclaracionConstante) {
             DeclaracionConstante constante = (DeclaracionConstante) this.valor;
+            
             // Convertimos el valor ( sea cual sea ) a valor máquina. Ahora mismo los literales son Bool e Integer.
             // Falta por ver como se manejan los strings. De momento los dejo de lado.
             if (Tipo.Integer.equals(constante.getTipo().getTipo())) {
+            	
                 Integer numero = Integer.parseInt((String) constante.getValor());
-                sb.append("\tmove.w #")
-                        .append(numero).append(", ")
-                        .append(toRegister)
-                        .append("\n");
+                bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(numero), toRegister));
+                
             } else if (Tipo.Boolean.equals(constante.getTipo().getTipo())) {
+            	
                 int valor = mapBooleanValue((String) constante.getValor());
-                sb.append("\tmove.w #")
-                        .append(valor).append(", ")
-                        .append(toRegister)
-                        .append("\n");
+                bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(valor), toRegister));
+                
             } else if (Tipo.String.equals(constante.getTipo().getTipo())) {
+            	
             }
         } else {
-        	
             // Si no es una constante es una variable
-            sb.append(this.putActivationBlockAddressInRegister())
-                    .append("\tmove ")
-                    .append(this.valor.getDesplazamiento()).append("(A6), ")
-                    .append(toRegister)
-                    .append("\n");
+        	bI.add(this.putActivationBlockAddressInRegister());
+            bI.add(new Instruccion(OpCode.MOVE, Size.W, Indireccion.__(this.valor.getDesplazamiento(), AddressRegister.A6), toRegister));
         }
-        return sb.toString();
+        return bI;
+    }
+    
+    public BloqueInstrucciones loadStringDescriptorConstante(DataRegister DX, AddressRegister AX) {
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
+    	
+        DeclaracionConstante constante = (DeclaracionConstante) this.getValor();
+        String text = (String) constante.getValor();
+        int size = text.length();
+        bI.add(new Instruccion(OpCode.MOVEM, Size.L, Restore.__(AddressRegister.A0), PreDecremento.__(StackPointer.A7)));
+        bI.add(new Instruccion(OpCode.JSR, new OperandoEspecial("DMMALLOC")));
+        bI.add(new Instruccion(OpCode.CLR, Size.L, DX));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(size), DX));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, AX));
+        for (int idx = 0; idx < size; idx++) {
+	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__((int)text.charAt(idx)), PostIncremento.__(AddressRegister.A0)));
+        }
+        bI.add(new Instruccion(OpCode.MOVEM, Size.L, PostIncremento.__(StackPointer.A7), Restore.__(AddressRegister.A0)));
+        
+        return bI;
+    }
+    
+    public BloqueInstrucciones loadStringDescriptorVariable(AddressRegister AX) {
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), AddressRegister.A6));
+        bI.add(this.putActivationBlockAddressInRegister());
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AX));
+        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AX));
+        return bI;
     }
 
     /**
@@ -100,17 +138,47 @@ public class Operando {
      * @param fromRegister
      * @return
      */
-    public String save(String fromRegister) {
-        StringBuilder sb = new StringBuilder();
+    public BloqueInstrucciones save(CodigoMaquina.Operando fromRegister) {
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
         // Estos dos son descriptores de variables dinámicas
         if (Tipo.String.equals(this.valor.getTipo().getTipo()) || Tipo.Array.equals(this.valor.getTipo().getTipo())) {
-            sb.append(this.putActivationBlockAddressInRegister())
-                    .append("\tmove.l ").append(fromRegister).append(", ").append(this.getValor().getDesplazamiento()).append("(A6)\n");
+        	bI.add(this.putActivationBlockAddressInRegister());
+        	bI.add(new Instruccion(OpCode.MOVE, Size.L, fromRegister, Indireccion.__(this.getValor().getDesplazamiento(), AddressRegister.A6)));
         } else {
-            sb.append(this.putActivationBlockAddressInRegister())
-                    .append("\tmove.w ").append(fromRegister).append(", ").append(this.getValor().getDesplazamiento()).append("(A6)\n");
+        	bI.add(this.putActivationBlockAddressInRegister());
+        	bI.add(new Instruccion(OpCode.MOVE, Size.W, fromRegister, Indireccion.__(this.getValor().getDesplazamiento(), AddressRegister.A6)));
         }
-        return sb.toString();
+        return bI;
+    }
+    
+    /*
+     * 1000 BP XXXX
+     * 1004 STRING #
+     * 1008 STRING @
+     * 100C
+     */
+    public BloqueInstrucciones saveStringDescriptorConstante(DataRegister DX, AddressRegister AX) {
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AX, AddressRegister.A0));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), AddressRegister.A6));
+        bI.add(this.putActivationBlockAddressInRegister());
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AddressRegister.A1));
+        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A1));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, DX, Contenido.__(AddressRegister.A1)));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, Indireccion.__(4, AddressRegister.A1)));
+        return bI;
+    }
+    
+    public BloqueInstrucciones saveStringDescriptorVariable(AddressRegister AX) {
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AX, AddressRegister.A0));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), AddressRegister.A6));
+        bI.add(this.putActivationBlockAddressInRegister());
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AddressRegister.A1));
+		bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A1));
+		bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A0), Contenido.__(AddressRegister.A1)));
+		bI.add(new Instruccion(OpCode.MOVE, Size.L, Indireccion.__(4, AddressRegister.A0), Indireccion.__(4, AddressRegister.A1)));
+        return bI;
     }
 
     public Declaracion getValor() {

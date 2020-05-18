@@ -1,6 +1,15 @@
 package intermedio;
 
 import Checkers.Tipo;
+import CodigoMaquina.AddressRegister;
+import CodigoMaquina.BloqueInstrucciones;
+import CodigoMaquina.DataRegister;
+import CodigoMaquina.Instruccion;
+import CodigoMaquina.OpCode;
+import CodigoMaquina.OperandoEspecial;
+import CodigoMaquina.Size;
+import CodigoMaquina.Variables;
+import CodigoMaquina.especiales.Literal;
 
 public class EQ extends InstruccionTresDirecciones {
     public EQ(Operando primero, Operando segundo, Operando resultado) {
@@ -10,45 +19,41 @@ public class EQ extends InstruccionTresDirecciones {
         this.tercero = resultado;
     }
 
-    public String generateBranch() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(super.toMachineCode());
-        sb.append(this.primero.load("D0"))
-                .append(this.segundo.load("D1"))
-                .append("\tcmp D0, D1\n")
-                .append("\tbeq ").append(this.tercero.toString()).append("\n");
-
-        return sb.toString();
+    public BloqueInstrucciones generateBranch() {
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
+    	bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
+    	bI.add(this.primero.load(DataRegister.D0));
+    	bI.add(this.segundo.load(DataRegister.D1));
+        bI.add(new Instruccion(OpCode.CMP, DataRegister.D0, DataRegister.D1));
+        bI.add(new Instruccion(OpCode.BEQ, new OperandoEspecial(this.tercero.toString())));
+        return bI;
     }
 
-    public String generateOperation() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(super.toMachineCode());
-
-        // TODO Preparado para Descriptor de String del tipo @.L y #.L
+    public BloqueInstrucciones generateOperation() {
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
+    	
+        bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
         
+        // Preparado para Descriptor de String del tipo @.L y #.L
         if(Tipo.String.equals(this.primero.getValor().getTipo().getTipo())){
-        	sb.append(this.primero.load("A0"))
-        	.append(this.segundo.load("A1"))
-        	.append("\t\t\tJSR\tSTREQUALS\n")
-        	.append(this.tercero.save("D0"));
-        	
+        	bI.add(this.primero.loadStringDescriptorVariable(AddressRegister.A1));
+        	bI.add(this.segundo.loadStringDescriptorVariable(AddressRegister.A1));
+        	bI.add(Instruccion.nuevaInstruccion("\t\t\tJSR\tSTREQUALS"));
+        	bI.add(this.tercero.save(DataRegister.D0));
         } else if(Tipo.Array.equals(this.primero.getValor().getTipo().getTipo())){
         	
         } else {
 	        // Estoy casi convencido de que la comprobacion de igualdad se puede hacer como LT y familiares
-	        sb.append(this.primero.load("D0"))
-	                .append(this.segundo.load("D1"))
-	                .append("\tcmp D0, D1\n")
-	                .append("\tmove.w SR, D1\n")
-	                .append("\tand.w #4, D1\n")
-	                .append("\tlsr #2, D1\n")
-	                .append(this.tercero.save("D1"));
+        	bI.add(this.primero.load(DataRegister.D0));
+        	bI.add(this.segundo.load(DataRegister.D1));
+            bI.add(new Instruccion(OpCode.CMP, DataRegister.D0, DataRegister.D1));
+            bI.add(new Instruccion(OpCode.MOVE, Size.W, Variables.SR, DataRegister.D1));
+            bI.add(new Instruccion(OpCode.AND, Size.W, Literal.__(4), DataRegister.D1));
+            bI.add(new Instruccion(OpCode.LSR, Literal.__(2), DataRegister.D1));
+			bI.add(this.tercero.save(DataRegister.D1));
         }
         
-        return sb.toString();
+        return bI;
     }
 
     @Override
@@ -59,9 +64,9 @@ public class EQ extends InstruccionTresDirecciones {
          * para las condiciones en los saltos de las operaciones que se asignan a algún lado.
          */
         if (this.tercero instanceof OperandoEtiqueta) {
-            return generateBranch();
+            return generateBranch().toString();
         } else {
-            return generateOperation();
+            return generateOperation().toString();
         }
     }
 

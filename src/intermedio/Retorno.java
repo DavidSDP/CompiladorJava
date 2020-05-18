@@ -1,5 +1,6 @@
 package intermedio;
 
+import CodigoMaquina.DataRegister;
 import Procesador.DeclaracionFuncion;
 
 public class Retorno extends InstruccionTresDirecciones {
@@ -24,7 +25,7 @@ public class Retorno extends InstruccionTresDirecciones {
             sb.append("\tmove.w BP, A5\n")
                     // Probablemente esto se podría hacer con una indirección sobre A5
                     .append("\tsub.w #").append(returnOffset).append(", A5\n")
-                    .append(this.segundo.load("D0"))
+                    .append(this.segundo.load(DataRegister.D0))
                     .append("\tmove.w D0, (A5)\n");
         }
 

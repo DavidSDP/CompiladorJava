@@ -1,5 +1,13 @@
 package intermedio;
 
+import CodigoMaquina.AddressRegister;
+import CodigoMaquina.BloqueInstrucciones;
+import CodigoMaquina.DataRegister;
+import CodigoMaquina.Instruccion;
+import CodigoMaquina.OpCode;
+import CodigoMaquina.Size;
+import CodigoMaquina.especiales.Contenido;
+import CodigoMaquina.especiales.Literal;
 import Procesador.DeclaracionArray;
 
 public class CargarIndireccion extends InstruccionTresDirecciones {
@@ -32,19 +40,19 @@ public class CargarIndireccion extends InstruccionTresDirecciones {
      */
     @Override
     public String toMachineCode() {
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
         StringBuilder sb = new StringBuilder();
         DeclaracionArray declArray = (DeclaracionArray)this.primero.getValor();
 
-        sb.append(super.toMachineCode());
-        sb.append(this.primero.load("D0")) // El guardar al registro es totalmente dummy, lo que nos interesa
-                .append("\tmove A6, A5\n")            // es la direccion que se deja en A6
-                .append("\tadd.w #").append(declArray.getDesplazamiento()).append(", A5\n")
-                .append(this.segundo.load("D1"))
-                .append("\tmulu #").append(declArray.getTipoDato().getSize()).append(", D1\n")
-                .append("\tadd D1, A5\n")
+        bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
+        bI.add(this.primero.load(DataRegister.D0)); // El guardar al registro es totalmente dummy, lo que nos interesa
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AddressRegister.A5));            // es la direccion que se deja en A6
+        bI.add(new Instruccion(OpCode.ADD, Size.W, Literal.__(declArray.getDesplazamiento()), AddressRegister.A5));
+        bI.add(this.segundo.load(DataRegister.D1));
+        bI.add(new Instruccion(OpCode.MULU, Literal.__(declArray.getTipoDato().getSize()), DataRegister.D1));
+        bI.add(new Instruccion(OpCode.ADD, DataRegister.D1, AddressRegister.A5));
                 // Juas lo siguiente es hack hack porque hemos permitido meter strings a pelo jajajajaja
-                .append(this.tercero.save("(A5)"));
-
+        bI.add(this.tercero.save(Contenido.__(AddressRegister.A5)));
         return sb.toString();
     }
 }

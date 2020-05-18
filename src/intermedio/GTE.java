@@ -1,5 +1,12 @@
 package intermedio;
 
+import CodigoMaquina.BloqueInstrucciones;
+import CodigoMaquina.DataRegister;
+import CodigoMaquina.Instruccion;
+import CodigoMaquina.OpCode;
+import CodigoMaquina.OperandoEspecial;
+import CodigoMaquina.especiales.Literal;
+
 public class GTE extends InstruccionTresDirecciones {
     public GTE(Operando primero, Operando segundo, Operando resultado) {
         super(OperacionTresDirecciones.GTE);
@@ -9,15 +16,13 @@ public class GTE extends InstruccionTresDirecciones {
     }
 
     public String generateBranch() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(super.toMachineCode());
-        sb.append(this.primero.load("D0"))
-                .append(this.segundo.load("D1"))
-                .append("\tcmp D0, D1\n")
-                .append("\tbge ").append(this.tercero.toString());
-
-        return sb.toString();
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
+        bI.add(this.primero.load(DataRegister.D0));
+        bI.add(this.segundo.load(DataRegister.D1));
+        bI.add(new Instruccion(OpCode.CMP, DataRegister.D0, DataRegister.D1));
+        bI.add(new Instruccion(OpCode.BGE, new OperandoEspecial(this.tercero.toString())));
+        return bI.toString();
     }
 
     /**
@@ -38,17 +43,15 @@ public class GTE extends InstruccionTresDirecciones {
      * Si los dos operandos fueran diferentes Z sería 0 y si fueran iguales Z sería 1
      */
     public String generateOperation() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(super.toMachineCode());
-        sb.append(this.primero.load("D0"))
-                .append(this.segundo.load("D1"))
-                .append("\tcmp D1, D0\n")
-                .append("\tsge D0")
-                .append("\tand #1, D0\n")
-                .append(this.tercero.save("D0"));
-
-        return sb.toString();
+    	BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
+        bI.add(this.primero.load(DataRegister.D0));
+        bI.add(this.segundo.load(DataRegister.D1));
+        bI.add(new Instruccion(OpCode.CMP, DataRegister.D1, DataRegister.D0));
+        bI.add(new Instruccion(OpCode.SGE, DataRegister.D0));
+        bI.add(new Instruccion(OpCode.AND, Literal.__(1), DataRegister.D0));
+        bI.add(this.tercero.save(DataRegister.D0));
+        return bI.toString();
     }
 
     @Override

@@ -31,17 +31,17 @@ public class EQ extends InstruccionTresDirecciones {
 
     public BloqueInstrucciones generateOperation() {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
-    	
+
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-        
+
         // Preparado para Descriptor de String del tipo @.L y #.L
         if(Tipo.String.equals(this.primero.getValor().getTipo().getTipo())){
-        	bI.add(this.primero.loadStringDescriptorVariable(AddressRegister.A1));
+        	bI.add(this.primero.loadStringDescriptorVariable(AddressRegister.A0));
         	bI.add(this.segundo.loadStringDescriptorVariable(AddressRegister.A1));
         	bI.add(Instruccion.nuevaInstruccion("\t\t\tJSR\tSTREQUALS"));
         	bI.add(this.tercero.save(DataRegister.D0));
         } else if(Tipo.Array.equals(this.primero.getValor().getTipo().getTipo())){
-        	
+
         } else {
 	        // Estoy casi convencido de que la comprobacion de igualdad se puede hacer como LT y familiares
         	bI.add(this.primero.load(DataRegister.D0));
@@ -52,7 +52,7 @@ public class EQ extends InstruccionTresDirecciones {
             bI.add(new Instruccion(OpCode.LSR, Literal.__(2), DataRegister.D1));
 			bI.add(this.tercero.save(DataRegister.D1));
         }
-        
+
         return bI;
     }
 

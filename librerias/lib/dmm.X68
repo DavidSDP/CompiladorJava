@@ -116,7 +116,7 @@ DMMALLOC
 ; OUTPUT   - A0   : POINTER TO THE DATA OR 0 IF NOT FREE SPACE
 ; MODIFIES - NONE (ASIDE OF OUTPUT)
 ; -----------------------------------------------------------------------------
-            MOVEM.W  D0-D1/A1,-(A7)
+            MOVEM.L  D1/A1,-(A7)
             MOVE.L  FREE_LIST, A0
             CMP #0, A0
             BEQ .END
@@ -135,7 +135,7 @@ DMMALLOC
             MOVE.W  #0, 2(A0, D1)  ; Set Free state to 0
             MOVE.L  #0, 4(A0, D1)  ; Remove pinter to next block
             ADD.L   #METAINFOSIZE, A0
-.END        MOVEM.W  (A7)+,D0-D1/A1
+.END        MOVEM.L  (A7)+, D1/A1
             RTS
 
 ; -----------------------------------------------------------------------------

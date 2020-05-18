@@ -38,13 +38,13 @@ STREQUALS
 ;			- A1.L -> Puntero a descriptor 2
 ; OUTPUT	- D0.L -> #0 si falso, #1 si verdadero
 ; ============================================================
-        	MOVE.L	4(A0),D0
-        	CMP.L	4(A1),D0
+        	MOVE.L	(A0),D0
+        	CMP.L	(A1),D0
         	BNE		.STRNOTEQ
         	SUBQ 	#1, D0
+			MOVE.L	4(A0),A0
+			MOVE.L	4(A1),A1
 .LOOPSTR
-			MOVE.L	(A0),A0
-			MOVE.L	(A1),A1
         	CMP.W	(A0)+, (A1)+
         	BNE 	.STRNOTEQ
         	DBRA.W 	D0, .LOOPSTR

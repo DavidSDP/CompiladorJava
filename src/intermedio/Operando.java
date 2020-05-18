@@ -62,14 +62,14 @@ public class Operando {
         int profundidadDeclaracion = this.getValor().getProfundidadDeclaracion();
         if (profundidadLlamada > profundidadDeclaracion) {
             // Uso de una variable "global"
-	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Variables.BP, AddressRegister.A6));
+	        bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, AddressRegister.A6));
             for (int distanciaEntornos = profundidadLlamada - profundidadDeclaracion; distanciaEntornos > 0; distanciaEntornos--) {
-    	        bI.add(new Instruccion(OpCode.SUBQ, Size.W, Literal.__(2), AddressRegister.A6));
-    	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Contenido.__(AddressRegister.A6), AddressRegister.A6));
+    	        bI.add(new Instruccion(OpCode.SUBQ, Size.L, Literal.__(4), AddressRegister.A6));
+    	        bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A6), AddressRegister.A6));
             }
         } else {
             // Uso de una variable local
-	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Variables.BP, AddressRegister.A6));
+	        bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, AddressRegister.A6));
         }
         return bI;
     }

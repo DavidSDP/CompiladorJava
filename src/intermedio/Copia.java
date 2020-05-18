@@ -62,7 +62,7 @@ public class Copia extends InstruccionTresDirecciones {
         if(this.primero.getValor() instanceof DeclaracionConstante) {
         	bI.add(this.primero.loadStringDescriptorConstante(DataRegister.D0, AddressRegister.A1));
         	bI.add(this.segundo.saveStringDescriptorConstante(DataRegister.D0, AddressRegister.A1));
-        }else {
+        } else {
         	bI.add(this.primero.loadStringDescriptorVariable(AddressRegister.A1));
         	bI.add(this.segundo.saveStringDescriptorVariable(AddressRegister.A1));
         }

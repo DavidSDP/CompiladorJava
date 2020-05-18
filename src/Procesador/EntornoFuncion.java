@@ -153,9 +153,9 @@ public class EntornoFuncion extends Entorno {
 	}
 
 	protected int getDesplazamientoVariableLocal(Declaracion decl) {
-		// El +2 proviene de que necesitamos saltarnos el BP. Obviamente esto no debería
+		// El +4 proviene de que necesitamos saltarnos el BP. Obviamente esto no debería
 		// ir aqui pero estoy escaso de imaginacion ahora mismo
-		return this.getDesplazamientoElemento(decl, getLocalVariables()) + 2;
+		return this.getDesplazamientoElemento(decl, getLocalVariables()) + 4;
 	}
 
 	protected int getDesplazamientoParametro(Declaracion decl) {
@@ -164,11 +164,11 @@ public class EntornoFuncion extends Entorno {
 		DeclaracionFuncion declaracion = (DeclaracionFuncion)identificador;
 
 		// El depslazamiento para situarse al INICIO del parámetro es la suma de (en el orden que se tiene que mover en memoria)
-		//    - El access link (1 palabra = 2 bytes )
+		//    - El access link (1 long = 4 bytes )
 		//    - El retorno si lo hubiera ( tamano variable: 0..n bytes)
 		//    - Las variables que estan entre el BP y la declaracion que buscamos (variable)
 		//    - El tamano de la variable que vamos a usar. (variable)
-		return -(offset + decl.getOcupacion() + declaracion.getTamanoRetorno() + 2);
+		return -(offset + decl.getOcupacion() + declaracion.getTamanoRetorno() + 4);
 	}
 
 	private int getDesplazamientoElemento(Declaracion decl, List<Declaracion> elementos) {

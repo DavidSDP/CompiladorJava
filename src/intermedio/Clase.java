@@ -15,9 +15,9 @@ public class Clase extends InstruccionTresDirecciones {
         EntornoClase entorno = ((DeclaracionClase)this.primero.getValor()).getEntornoAsociado();
 
         sb.append(super.toMachineCode());
-        sb.append("\tmove.w STACK_TOP, A6\n")
-                .append("\tadd.w #").append(entorno.getTamanoTotalVariables()).append(", A6\n")
-                .append("\tmove.w A6, STACK_TOP\n");
+        sb.append("\tmove.l STACK_TOP, A6\n")
+                .append("\tadd.l #").append(entorno.getTamanoTotalVariables()).append(", A6\n")
+                .append("\tmove.l A6, STACK_TOP\n");
 
         return sb.toString();
     }

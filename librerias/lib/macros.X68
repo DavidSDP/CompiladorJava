@@ -9,11 +9,11 @@
 ; ============================================================
 
 PUSH_PARAM MACRO
-			move.w 	STACK_TOP, A5
-   			move.w 	\1, (A5)
-    		add.w 	\2, A5
-			move.w 	A5, STACK_TOP
-    		ENDM
+			MOVE.L 	STACK_TOP, A5
+   		MOVE.L 	\1, (A5)
+    	ADD.L 	\2, A5
+			MOVE.L 	A5, STACK_TOP
+    	ENDM
 
 *~Font name~Courier New~
 *~Font size~10~

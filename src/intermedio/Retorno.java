@@ -22,9 +22,12 @@ public class Retorno extends InstruccionTresDirecciones {
             // tipo que retornamos
             int returnOffset = this.segundo.getValor().getOcupacion() + 2;
 
-            sb.append("\tmove.w BP, A5\n")
+            sb.append("\tmove.l BP, A5\n")
                     // Probablemente esto se podría hacer con una indirección sobre A5
-                    .append("\tsub.w #").append(returnOffset).append(", A5\n")
+                    .append("\tsub.l #").append(returnOffset).append(", A5\n")
+                    // TODO El retorno asume que es 1 word, esto debe depender del tipo de variable
+                    //  y probablemente no será tan sencillo. ( Los strings ahora mismo no se pueden devolver,
+                    //  igual que tampoco permitimos devolver arrays ).
                     .append(this.segundo.load(DataRegister.D0))
                     .append("\tmove.w D0, (A5)\n");
         }
@@ -33,9 +36,9 @@ public class Retorno extends InstruccionTresDirecciones {
         int memoriaReservada = decl.getTamanoMemoriaNecesaria();
         if (memoriaReservada > 0) {
             // Si hemos reservado memoria para variables locales, se tiene que liberar.
-            sb.append("\tmove.w STACK_TOP, A6\n")
-                    .append("\tsub.w #").append(memoriaReservada).append(", A6\n")
-                    .append("\tmove.w A6, STACK_TOP\n");
+            sb.append("\tmove.l STACK_TOP, A6\n")
+                    .append("\tsub.l #").append(memoriaReservada).append(", A6\n")
+                    .append("\tmove.l A6, STACK_TOP\n");
         }
         sb.append("\trts\n");
 

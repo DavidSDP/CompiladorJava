@@ -18,17 +18,18 @@
 ; =============================================================================
 
 UPDATE_BP
-    		MOVE.W	STACK_TOP, A5				; Access link must be handled by every single function call
-    		ADD.W	#2, A5						; Place the pointer on the address for the new BP
-    		move.W 	BP, D4						; Move BP to new AB
-    		move.W 	D4, (A5)
-    		move.W 	A5, BP
-			move.W 	A5, STACK_TOP
+    		MOVE.L	STACK_TOP, A5				; Access link must be handled by every single function call
+    		ADDQ.L	#2, A5						; Place the pointer on the address for the new BP
+    		MOVE.L 	BP, D4						; Move BP to new AB
+    		MOVE.L 	D4, (A5)
+    		MOVE.L 	A5, BP
+				ADDQ.L	#2, A5
+				MOVE.L 	A5, STACK_TOP
     		RTS
 
 RESTORE_BP
-    		MOVE.W	BP, A4
-			MOVE.W	(A4),BP
+    	MOVE.L	BP, A4
+			MOVE.L	(A4),BP
 			RTS
 
 ; ============================================================

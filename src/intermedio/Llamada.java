@@ -22,17 +22,17 @@ public class Llamada extends InstruccionTresDirecciones {
         DeclaracionFuncion callee = (DeclaracionFuncion)this.primero.getValor();
 
         sb.append(super.toMachineCode());
-        sb.append("\tmove.w STACK_TOP, A6\n");
+        sb.append("\tmove.l STACK_TOP, A6\n");
         if (!callee.hasParams()) {
             // Si la funcion no tiene parametros no se ha movido el STACK_TOP desde la ultima insercion de
             // datos y sigue en el dato anterior, así que aqui lo tenemos que mover
-            sb.append("\tmove.w STACK_TOP, -(A7)\n")
-                    .append("\tadd.w #2, A6\n");
+            sb.append("\tmove.l STACK_TOP, -(A7)\n")
+                    .append("\tadd.l #2, A6\n");
 
         }
 
         if (callee.getTamanoRetorno() > 0) {
-            sb.append("\tadd.w #").append(callee.getTamanoRetorno()).append(", A6\n");
+            sb.append("\tadd.l #").append(callee.getTamanoRetorno()).append(", A6\n");
         }
 
         if (this.segundo != null) {
@@ -46,11 +46,13 @@ public class Llamada extends InstruccionTresDirecciones {
                 // BP hace referencia al bloque de activacion antiguo y el nuevo, que esta en construccion,
                 // esta referenciado por el STACK_TOP
                 // El access link es el access link que tiene el caller
-                sb.append("\tmove.w BP, A5\n")
-                        .append("\tsub.w #2, A5\n")
+                sb.append("\tmove.l BP, A5\n")
+                        .append("\tsub.l #4, A5\n")
                         // Actualiza el access link y el stack top
-                        .append("\tmove.w (A5), (A6)\n")
-                        .append("\tmove.w A6, STACK_TOP\n");
+                        .append("\tmove.l (A5), (A6)\n")
+                        // Forzamos a que el stack top apunte a la última palabra de la pila ( la pila se gestiona en palabras )
+                        .append("\taddq.l #2, A6\n")
+                        .append("\tmove.l A6, STACK_TOP\n");
 
             } else {
                 // Ahora mismo no tenemos llamadas recursivas ni clases anidadas
@@ -62,10 +64,11 @@ public class Llamada extends InstruccionTresDirecciones {
         } else {
             // Si no hay caller estamos gestionando el main y se tiene que hacer de forma diferente:
             // Saltamos el BP actual
-            sb.append("\tadd.w #2, A6\n")
+            sb.append("\tadd.l #2, A6\n")
                     // y actualiza el access link y el stack top
-                    .append("\tmove.w BP, (A6)\n")
-                    .append("\tmove.w A6, STACK_TOP\n");
+                    .append("\tmove.l BP, (A6)\n")
+                    .append("\taddq.l #2, A6\n")
+                    .append("\tmove.l A6, STACK_TOP\n");
         }
 
         // Actualizamos el estado del programa y llamamos a la función
@@ -74,11 +77,13 @@ public class Llamada extends InstruccionTresDirecciones {
 
         // Puede que la función tenga retorno y que el que llama no lo esté gestionando
         if (this.tercero != null) {
-            sb.append("\tmove.w BP, A6\n")
-                    .append("\tsub.w #").append(2 + callee.getTamanoRetorno()).append(", A6\n")
+            sb.append("\tmove.l BP, A6\n")
+                    .append("\tsub.l #").append(2 + callee.getTamanoRetorno()).append(", A6\n")
+                    // TODO Ahora mismo el tamaño asumido para el retorno es un word. Esto debe cambiar
+                    //  para tener en cuenta el tipo retornado.
                     .append("\tmove.w (A6), D5\n")
                     .append("\tbsr restore_bp\n")
-                    // Esto asume que el retorno es de 1 palabra (Bad idea)
+                    // TODO Esto asume que el retorno es de 1 palabra (Bad idea)
                     .append(this.tercero.save(DataRegister.D5));
         } else {
             sb.append("\tbsr restore_bp\n");
@@ -87,7 +92,7 @@ public class Llamada extends InstruccionTresDirecciones {
         // Esto funciona si los supuestos parametros han añadido el backup de la cima de la pila
         // Una alternativa es guardar el listado de declaraciones de los parametros de las funciones en la
         // declaracion de la funcion para poder calcular el offset de las variables para poder eliminarlas de la pila
-        sb.append("\tmove.w (A7)+, STACK_TOP\n");
+        sb.append("\tmove.l (A7)+, STACK_TOP\n");
 
 
         return sb.toString();

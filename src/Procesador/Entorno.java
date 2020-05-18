@@ -288,9 +288,9 @@ public class Entorno {
         for (int index = 0; index < elementIndex; index++) {
             desplazamiento += this.ids.get(index).getOcupacion();
         }
-        // El +2 proviene de que necesitamos saltarnos el BP. Obviamente esto no debería
+        // El +4 proviene de que necesitamos saltarnos el BP. Obviamente esto no debería
         // ir aqui pero estoy escaso de imaginacion ahora mismo
-        return desplazamiento + 2;
+        return desplazamiento + 4;
     }
 
     /*

@@ -7,6 +7,7 @@ import CodigoMaquina.Instruccion;
 import CodigoMaquina.OpCode;
 import CodigoMaquina.Size;
 import CodigoMaquina.especiales.Contenido;
+import CodigoMaquina.especiales.Indireccion;
 import CodigoMaquina.especiales.Literal;
 import Procesador.DeclaracionArray;
 
@@ -26,28 +27,21 @@ public class GuardarIndireccion extends InstruccionTresDirecciones {
         DeclaracionArray declArray = (DeclaracionArray) this.segundo.getValor();
     	BloqueInstrucciones bI = new BloqueInstrucciones();
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-        bI.add(this.segundo.load(DataRegister.D0));
-        bI.add(new Instruccion(OpCode.MOVE, AddressRegister.A6, AddressRegister.A5));
-        bI.add(new Instruccion(OpCode.ADD, Size.W, Literal.__(declArray.getDesplazamiento()), AddressRegister.A5));
+
+        bI.add(this.segundo.loadStringDescriptorVariable(AddressRegister.A5));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A5), DataRegister.D0));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Indireccion.__(4, AddressRegister.A5), AddressRegister.A5));
         bI.add(this.tercero.load(DataRegister.D1));
+        // TODO Add bounds checking
         bI.add(new Instruccion(OpCode.MULU, Literal.__(declArray.getTipoDato().getSize()), DataRegister.D1));
-        bI.add(new Instruccion(OpCode.ADD, DataRegister.D1, AddressRegister.A5));
-        
-                // Este paso lo debemos dar de forma extra para no tener que rehacer htodo la clase Operador
-                // debido a que no podemos decirle donde lo tiene que guardar
-        bI.add(this.tercero.load(DataRegister.D2));
+        bI.add(new Instruccion(OpCode.ADD, Size.L, DataRegister.D1, AddressRegister.A5));
+
+        // Este paso lo debemos dar de forma extra para no tener que rehacer htodo la clase Operador
+        // debido a que no podemos decirle donde lo tiene que guardar
+        bI.add(this.primero.load(DataRegister.D2));
+        // TODO Por ahora solo permitimos arrays de tipos básicos. Si admitieramos arrays de strings
+        //  esta implementación no serviría ya que tendríamos que guardar 2 Longs
         bI.add(new Instruccion(OpCode.MOVE, Size.W, DataRegister.D2, Contenido.__(AddressRegister.A5)));
         return bI.toString();
-        
-//        sb.append(putActivationBlockAddressInRegister(this.segundo))
-//                .append("\tmove A6, A5\n")
-//                .append("\tadd.w #").append(declArray.getDesplazamiento()).append(", A5\n")
-//                .append(putActivationBlockAddressInRegister(this.tercero))
-//                .append("\tmove ").append(this.tercero.getValor().getDesplazamiento()).append("(A6), D1\n")
-//                .append("\tmulu #").append(declArray.getTipoDato().getSize()).append(", D1\n")
-//                .append("\tadd D1, A5\n")
-//                .append(putActivationBlockAddressInRegister(this.primero))
-//                .append("\tmove ").append(this.primero.getValor().getDesplazamiento()).append("(A6), (A5)\n");
-        
     }
 }

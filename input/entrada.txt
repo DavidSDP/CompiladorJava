@@ -17,6 +17,9 @@ class ClasePrincipal {
   }
 	
 	function void main() {
+		int vectorNumeros[10];
+		vectorNumeros[0] = 5;
+		int numero = vectorNumeros[0];
 		String str = "uep";
 		boolean esIgual = (str == "uep");
 		int resultado = multiplica(2, 10);

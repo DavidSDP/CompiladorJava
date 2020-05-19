@@ -222,13 +222,12 @@ public class GlobalVariables {
         return _idnodoIncremental++;
     }
 
-    public static DeclaracionConstante crearVariableTemporal(TipoObject tipo, Object valor) throws ErrorSemantico {
+    public static DeclaracionConstante crearVariableTemporal(TipoObject tipo, Object valor) {
         // Ojo, esto de momento solo sirve para crear literales!
         // En caso de utilizar esta parte para crear una constante ( cosa que no deberías, ya que es una variables más )
         // habrá que utilizar el entorno adaptandolo para que nos facilite la creación de literales
         String name = generarNombreLiteral();
         return new DeclaracionConstante(new Identificador(name, name), tipo, valor, -1);
-//        return entornoActual().putConstante(tipo, null, valor);
     }
 
     public static Declaracion crearVariableTemporal(TipoObject tipo) throws ErrorSemantico {

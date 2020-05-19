@@ -61,6 +61,9 @@ public class I3DUtils {
             case ETIQUETA:
                 c3d = new Etiqueta(primero);
                 break;
+            case DECLARAR_INDIRECCION:
+                c3d = new DeclaracionIndireccion(primero);
+                break;
             case CARGAR_INDIRECCION:
                 c3d = new CargarIndireccion(primero, segundo, tercero);
                 break;

@@ -67,13 +67,10 @@ public enum Tipo {
         switch (s) {
             case "void":
                 return new TipoObject(Tipo.Void, 0);
-            // Ojo! El tamaño de arrays y strings es 4 debido a que en
-            // los bloques de activación mantenemos un puntero a memoria (1 palabra)
-            // y el número de elementos ( otra palabra ) ( 2 palabras = 4 bytes )
-            case "array":
-                return new TipoObject(Tipo.Array, 4);
             case "Char":
                 return new TipoObject(Tipo.Char, 2);
+            case "array":
+                return new TipoObject(Tipo.Array, 8);
             case "String":
                 return new TipoObject(Tipo.String, 8);
             case "int":

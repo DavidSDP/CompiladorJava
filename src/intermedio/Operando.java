@@ -17,6 +17,7 @@ import CodigoMaquina.especiales.PostIncremento;
 import CodigoMaquina.especiales.PreDecremento;
 import CodigoMaquina.especiales.Restore;
 import Procesador.Declaracion;
+import Procesador.DeclaracionArray;
 import Procesador.DeclaracionConstante;
 
 
@@ -82,10 +83,8 @@ public class Operando {
             // Convertimos el valor ( sea cual sea ) a valor máquina. Ahora mismo los literales son Bool e Integer.
             // Falta por ver como se manejan los strings. De momento los dejo de lado.
             if (Tipo.Integer.equals(constante.getTipo().getTipo())) {
-            	
-                Integer numero = Integer.parseInt((String) constante.getValor());
+                Integer numero = (Integer)constante.getValor();
                 bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(numero), toRegister));
-                
             } else if (Tipo.Boolean.equals(constante.getTipo().getTipo())) {
             	
                 int valor = mapBooleanValue((String) constante.getValor());
@@ -101,7 +100,24 @@ public class Operando {
         }
         return bI;
     }
-    
+
+    public BloqueInstrucciones createDescriptor(DataRegister DX, AddressRegister AX) {
+        int size;
+
+        if (this.valor instanceof DeclaracionConstante) {
+            size = ((String)((DeclaracionConstante) this.valor).getValor()).length();
+        } else {
+            size = ((DeclaracionArray)this.valor).getLongitudArray();
+        }
+
+        BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(new Instruccion(OpCode.JSR, new OperandoEspecial("DMMALLOC")));
+        bI.add(new Instruccion(OpCode.CLR, Size.L, DX));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(size), DX));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, AX));
+        return bI;
+    }
+
     public BloqueInstrucciones loadStringDescriptorConstante(DataRegister DX, AddressRegister AX) {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
     	
@@ -109,10 +125,7 @@ public class Operando {
         String text = (String) constante.getValor();
         int size = text.length();
         bI.add(new Instruccion(OpCode.MOVEM, Size.L, Restore.__(AddressRegister.A0), PreDecremento.__(StackPointer.A7)));
-        bI.add(new Instruccion(OpCode.JSR, new OperandoEspecial("DMMALLOC")));
-        bI.add(new Instruccion(OpCode.CLR, Size.L, DX));
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(size), DX));
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, AX));
+        bI.add(createDescriptor(DX, AX));
         for (int idx = 0; idx < size; idx++) {
 	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__((int)text.charAt(idx)), PostIncremento.__(AddressRegister.A0)));
         }
@@ -127,6 +140,24 @@ public class Operando {
         bI.add(this.putActivationBlockAddressInRegister());
         bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AX));
         bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AX));
+        return bI;
+    }
+    /**
+     * This is used just for the array initialization.
+     * String initialization takes place in the assignment of a literal. This cool feature
+     * is not present for the arrays at the time being. Thus, we need another
+     * way of initializing it.
+     */
+    public BloqueInstrucciones assignDynamicMemory() {
+        BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(new Instruccion(OpCode.MOVEM, Size.L, Restore.__(DataRegister.D0, AddressRegister.A0, AddressRegister.A6), PreDecremento.__(StackPointer.A7)));
+        bI.add(createDescriptor(DataRegister.D0, AddressRegister.A0));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), AddressRegister.A6));
+        bI.add(this.putActivationBlockAddressInRegister());
+        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, DataRegister.D0, Contenido.__(AddressRegister.A6)));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, Indireccion.__(4, AddressRegister.A6)));
+        bI.add(new Instruccion(OpCode.MOVEM, Size.L, PostIncremento.__(StackPointer.A7), Restore.__(DataRegister.D0, AddressRegister.A0, AddressRegister.A6)));
         return bI;
     }
 

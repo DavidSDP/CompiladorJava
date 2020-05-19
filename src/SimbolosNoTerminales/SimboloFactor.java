@@ -18,12 +18,22 @@ public class SimboloFactor extends Nodo implements TipoSubyacente {
 
     private String id;
     private String string;
-    private String numero;
+    private Integer numero;
     private String booleano;
     private SimboloFuncionInvk funcionInvk;
     private SimboloOperacion operacion;
 
+    /**
+     * Decl contendrá la declaración de la variable que contiene
+     * la información requerida.
+     * En el caso de los arrays es algo especial:
+     *  1.  Si es un array ( sin dereferenciación a un elemento ) decl contendrá
+     *      la declaración del array.
+     *  2.  Si es la dereferenciación del array, decl contiene la variable que
+     *      contiene el valor del elemento del array
+     */
     private Declaracion decl;
+    private Declaracion array;
     private int arrayIndex;
 
     @Override
@@ -33,7 +43,7 @@ public class SimboloFactor extends Nodo implements TipoSubyacente {
         } else if (string != null) {
             return string;
         } else if (numero != null) {
-            return numero;
+            return numero.toString();
         } else if (booleano != null) {
             return booleano;
         }
@@ -50,6 +60,12 @@ public class SimboloFactor extends Nodo implements TipoSubyacente {
 		this.arrayIndex = index;
 	}
 
+    public SimboloFactor(Declaracion decl, int index, Declaracion arrayElement) {
+        this.decl = arrayElement;
+        this.arrayIndex = index;
+        this.array = decl;
+    }
+
     public SimboloFactor(String s, Tipo tipo) {
     	this.arrayIndex = -1;
         switch (tipo) {
@@ -57,7 +73,7 @@ public class SimboloFactor extends Nodo implements TipoSubyacente {
                 this.booleano = s;
                 break;
             case Integer:
-                this.numero = s;
+                this.numero = Integer.parseInt(s);
                 break;
             case String:
                 this.string = s;
@@ -88,7 +104,7 @@ public class SimboloFactor extends Nodo implements TipoSubyacente {
             return hijos;
         }
         if (numero != null) {
-            hijos.add(new SimboloTerminal(numero, Tipo.Integer));
+            hijos.add(new SimboloTerminal(numero.toString(), Tipo.Integer));
             return hijos;
         }
         if (booleano != null) {
@@ -126,6 +142,7 @@ public class SimboloFactor extends Nodo implements TipoSubyacente {
             if (identificador != null) {
                 return identificador.getTipo();
             }
+            return null;
         } else if (string != null) {
             return Tipo.getTipoSafe(Tipo.String);
         } else if (numero != null) {
@@ -136,13 +153,9 @@ public class SimboloFactor extends Nodo implements TipoSubyacente {
             return funcionInvk.getTipoSubyacente();
         } else if (operacion != null) {
             return operacion.getTipoSubyacente();
+        } else {
+            return decl.getTipo();
         }
-
-        if (this.arrayIndex > -1) {
-			return ((DeclaracionArray)decl).getTipoDato();
-		} else {
-        	return decl.getTipo();
-		}
     }
 
     public Declaracion getDeclaracionResultado() {

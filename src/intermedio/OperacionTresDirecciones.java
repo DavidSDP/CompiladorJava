@@ -18,7 +18,8 @@ public enum OperacionTresDirecciones {
     // Creacion de etiquetas
     ETIQUETA,
 
-    // Creacion de etiquetas
+    // Soporte de arrays
+    DECLARAR_INDIRECCION,
     CARGAR_INDIRECCION,
     GUARDAR_INDIRECCION,
 

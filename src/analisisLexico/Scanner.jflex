@@ -24,6 +24,7 @@ import java.io.IOException;
 %eofval}
 
 %{
+    private StringBuffer string = new StringBuffer();
     private ComplexSymbolFactory symbolFactory;
     
     public Scanner(ComplexSymbolFactory sf, java.io.Reader reader){
@@ -65,6 +66,8 @@ TIF			= 	"if"
 TELSE		= 	"else"
 TWHILE		=	"while"
 
+FUNCTION		=	"function"
+
 LLAVEIZQ	=	"{"
 LLAVEDER	=	"}"
 
@@ -86,48 +89,75 @@ OPLOGICO	=	"&&"|"||"
 VBOOLEANO	=	"true"|"false"
 
 VSTRING		=	[\"][A-Za-z0-9_ ]*[\"]
+COMILLAS    =   [\"]
 VNUMERO		=	0|[1-9][0-9]*
 
 VID			=	[A-Za-z][A-Za-z0-9_]*
 
+
+LineTerminator = \r|\n|\r\n
+InputCharacter = [^\r\n]
+
+
+/* comments */
+Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
+
+
+TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
+// Comment can be the last line of the file, without line terminator.
+EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}?
+DocumentationComment = "/**" {CommentContent} "*"+ "/"
+CommentContent       = ( [^*] | \*+ [^/*] )*
+
+%state STRING
+
 %%
 
 {ESPACIO}		{/* nada que hacer */}
+<YYINITIAL> {
+    {TCLASS}		{return symbol(sym.TCLASS);}
+    {TVAR}			{return symbol(sym.TVAR, this.yytext());}
+    {TFINAL}		{return symbol(sym.TFINAL);}
+    {TVOID}			{return symbol(sym.TVOID);}
+    {TRETURN}		{return symbol(sym.TRETURN);}
+    {TIF}			{return symbol(sym.TIF);}
+    {TELSE}			{return symbol(sym.TELSE);}
 
-{TCLASS}		{return symbol(sym.TCLASS);}
-{TVAR}			{return symbol(sym.TVAR, this.yytext());}
-{TFINAL}		{return symbol(sym.TFINAL);}
-{TVOID}			{return symbol(sym.TVOID);}
-{TRETURN}		{return symbol(sym.TRETURN);}
-{TIF}			{return symbol(sym.TIF);}
-{TELSE}			{return symbol(sym.TELSE);}
+    {TWHILE}		{return symbol(sym.TWHILE);}
 
-{TWHILE}		{return symbol(sym.TWHILE);}
+    {FUNCTION}		{return symbol(sym.FUNCTION);}
 
-{LLAVEIZQ}		{return symbol(sym.LLAVEIZQ);}
-{LLAVEDER}		{return symbol(sym.LLAVEDER);}
+    {LLAVEIZQ}		{return symbol(sym.LLAVEIZQ);}
+    {LLAVEDER}		{return symbol(sym.LLAVEDER);}
 
-{CORCHIZQ}		{return symbol(sym.CORCHIZQ);}
-{CORCHDER}		{return symbol(sym.CORCHDER);}
+    {CORCHIZQ}		{return symbol(sym.CORCHIZQ);}
+    {CORCHDER}		{return symbol(sym.CORCHDER);}
 
-{IGUAL}			{return symbol(sym.IGUAL);}
-{PUNTOCOMA}		{return symbol(sym.PUNTOCOMA);}
-{COMA}			{return symbol(sym.COMA);}
+    {IGUAL}			{return symbol(sym.IGUAL);}
+    {PUNTOCOMA}		{return symbol(sym.PUNTOCOMA);}
+    {COMA}			{return symbol(sym.COMA);}
 
-{PARENIZQ}		{return symbol(sym.PARENIZQ);}
-{PARENDER}		{return symbol(sym.PARENDER);}
+    {PARENIZQ}		{return symbol(sym.PARENIZQ);}
+    {PARENDER}		{return symbol(sym.PARENDER);}
 
-{OPSUMA}		{return symbol(sym.OPSUMA, this.yytext());}
-{OPPROD}		{return symbol(sym.OPPROD, this.yytext());}
+    {OPSUMA}		{return symbol(sym.OPSUMA, this.yytext());}
+    {OPPROD}		{return symbol(sym.OPPROD, this.yytext());}
 
-{COMPARADOR}	{return symbol(sym.COMPARADOR, this.yytext());}
+    {COMILLAS}      {yybegin(STRING); string.setLength(0);}
 
-{OPLOGICO}		{return symbol(sym.OPLOGICO, this.yytext());}
+    {COMPARADOR}	{return symbol(sym.COMPARADOR, this.yytext());}
 
-{VBOOLEANO}		{return symbol(sym.VBOOLEANO, this.yytext());}
+    {OPLOGICO}		{return symbol(sym.OPLOGICO, this.yytext());}
 
-{VSTRING}		{return symbol(sym.VSTRING, this.yytext());}
+    {VBOOLEANO}		{return symbol(sym.VBOOLEANO, this.yytext());}
+}
+<STRING> {
+    {COMILLAS}		{ yybegin(YYINITIAL); return symbol(sym.VSTRING, string.toString());}
+    [^\n\r\"\\]+		{ string.append(yytext());}
+}
 {VNUMERO}		{return symbol(sym.VNUMERO, this.yytext());}
 {VID}			{return symbol(sym.VID, this.yytext());}
+
+{Comment} { /* ignore */ }
 
 [^]				{ ErrorHandler.reportaError(new ErrorLexico(this.yytext(), this.yyline, this.yycolumn)); }

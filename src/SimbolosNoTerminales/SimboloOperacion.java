@@ -4,111 +4,132 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Checkers.TipoOperador;
+import Procesador.Declaracion;
 import Procesador.TipoSubyacente;
 import analisisSintactico.arbol.INodo;
 import analisisSintactico.arbol.Nodo;
 import analisisSintactico.arbol.SimboloTerminal;
 
-public class SimboloOperacion extends Nodo implements TipoSubyacente{
+public class SimboloOperacion extends Nodo implements TipoSubyacente {
 
-	private SimboloOperacion operacion;
-	private TipoOperador operador;
-	private String operadorString;
-	private SimboloFactor factor;
-	private SimboloOperacion operacionDerecha;
-	
-	private Boolean esOperacion = false;
-	private Boolean esFactor = false;
-	private Boolean esModoCompleto = false;
-	
-	public SimboloOperacion(SimboloOperacion o) {
-		this.operacion = o;
-		this.esOperacion = true;
-	}
-	
-	public SimboloOperacion(SimboloFactor f) {
-		this.factor = f;
-		this.esFactor = true;
-	}
-	
-	public SimboloOperacion(SimboloOperacion o, String operadorString, SimboloOperacion operacionDerecha) {
-		this.operacion = o;
-		this.operador = TipoOperador.getTipoOperador(operadorString);
-		this.operadorString = operadorString;
-		this.operacionDerecha = operacionDerecha;
-		this.esModoCompleto = true;
-	}
+    private SimboloOperacion operandoIzquierda;
+    private SimboloOperacion operandoDerecha;
+    private TipoOperador operador;
+    private String operadorString;
+    private SimboloFactor factor;
 
-	@Override
-	public List<INodo> getChildren() {
-		List<INodo> hijos = new ArrayList<>();
-		if(this.esOperacion) {
-			hijos.add(operacion);
-			return hijos;
-		}
-		if(this.esFactor) {
-			hijos.add(factor);
-			return hijos;
-		}
-		hijos.add(operacion);
-		hijos.add(new SimboloTerminal(operadorString, Tipo.Token));
-		hijos.add(operacionDerecha);
-		return hijos;
-	}
+    private Boolean esOperacion = false;
+    private Boolean esFactor = false;
+    private Boolean esModoCompleto = false;
 
-	@Override
-	public String getName() {
-		return "SimboloOperacion";
-	}
+    private Declaracion declaracionResultado;
 
-	@Override
-	public Tipo getTipoSubyacente() {
-		if(this.esOperacion)
-			return this.operacion.getTipoSubyacente();
-		if(this.esFactor)
-			return this.factor.getTipoSubyacente();
-		
-		// Modo Completo ->
-		switch(this.operador) {
-			case AritmeticoProducto:
-				return Tipo.Integer;
-			case AritmeticoSuma:
-				return Tipo.Integer;
-			case Comparador:
-				return Tipo.Boolean;
-			case ComparadorLogico:
-				return Tipo.Boolean;
-			case Logico:
-				return Tipo.Boolean;
-			default:
-				return null;
-				
-		}
-	}
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
 
-	public SimboloOperacion getOperacion() {
-		return operacion;
-	}
+        if(this.esOperacion) {
+            sb.append(this.operandoIzquierda.toString());
+        } else if(this.esFactor) {
+            sb.append(this.factor.toString());
+        } else {
+            sb.append(this.operandoIzquierda.toString()).append(" ").append(operadorString).append(" ").append(operandoDerecha);
+        }
+        return sb.toString();
+    }
 
-	public void setOperacion(SimboloOperacion operacion) {
-		this.operacion = operacion;
-	}
+    public SimboloOperacion(SimboloOperacion o) {
+        this.operandoIzquierda = o;
+        this.esOperacion = true;
+    }
 
-	public SimboloFactor getFactor() {
-		return factor;
-	}
+    public SimboloOperacion(SimboloFactor f) {
+        this.factor = f;
+        this.esFactor = true;
+    }
 
-	public void setFactor(SimboloFactor factor) {
-		this.factor = factor;
-	}
+    public SimboloOperacion(SimboloOperacion operandoIzquierda, String operadorString, SimboloOperacion operacionDerecha) {
+        this.operador = TipoOperador.getTipoOperador(operadorString);
+        this.operandoIzquierda = operandoIzquierda;
+        this.operandoDerecha = operacionDerecha;
+        this.operadorString = operadorString;
+        this.esModoCompleto = true;
+    }
 
-	public TipoOperador getOperador() {
-		return operador;
-	}
+    @Override
+    public List<INodo> getChildren() {
+        List<INodo> hijos = new ArrayList<>();
+        if (this.esOperacion) {
+            hijos.add(operandoIzquierda);
+            return hijos;
+        }
+        if (this.esFactor) {
+            hijos.add(factor);
+            return hijos;
+        }
+        hijos.add(operandoIzquierda);
+        hijos.add(new SimboloTerminal(operadorString, Tipo.Token));
+        hijos.add(operandoDerecha);
+        return hijos;
+    }
 
-	public void setOperador(TipoOperador operador) {
-		this.operador = operador;
-	}
-	
+    @Override
+    public String getName() {
+        return "SimboloOperacion";
+    }
+
+    @Override
+    public TipoObject getTipoSubyacente() {
+        if (this.esOperacion)
+            return this.operandoIzquierda.getTipoSubyacente();
+        if (this.esFactor)
+            return this.factor.getTipoSubyacente();
+
+        // Modo Completo ->
+        switch (this.operador) {
+            case AritmeticoProducto:
+            case AritmeticoSuma:
+                return Tipo.getTipoSafe(Tipo.Integer);
+            case Comparador:
+            case ComparadorLogico:
+            case Logico:
+                return Tipo.getTipoSafe(Tipo.Boolean);
+            default:
+                return null;
+        }
+    }
+
+    public SimboloOperacion getOperandoIzquierda() {
+        return operandoIzquierda;
+    }
+
+    public void setOperandoIzquierda(SimboloOperacion operandoIzquierda) {
+        this.operandoIzquierda = operandoIzquierda;
+    }
+
+    public SimboloFactor getFactor() {
+        return factor;
+    }
+
+    public void setFactor(SimboloFactor factor) {
+        this.factor = factor;
+    }
+
+    public TipoOperador getOperador() {
+        return operador;
+    }
+
+    public void setOperador(TipoOperador operador) {
+        this.operador = operador;
+    }
+
+    public void setDeclaracionResultado(Declaracion declaracionResultado) {
+        this.declaracionResultado = declaracionResultado;
+    }
+
+    public Declaracion getDeclaracionResultado() {
+        return declaracionResultado;
+    }
+
 }

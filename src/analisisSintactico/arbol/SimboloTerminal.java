@@ -21,7 +21,7 @@ public class SimboloTerminal extends Nodo{
 
 	@Override
 	public String getName() {
-		return id+" ("+this.getTipo()+")";
+		return id+" ("+this.tipo+")";
 	}
 
 	public Tipo getTipo() {

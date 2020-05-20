@@ -1,34 +1,89 @@
 
- -> ENTORNO TIPO: IF 8, de nivel 3 <- 
+ -> ENTORNO FUNCIÓN 7, de nivel 2 <- 
 
+		ID FUNCION: multiplica , TIPO: Integer
  VARIABLES: 
 
 
+VARIABLE ID: t7 , TIPO: Integer
 
-VARIABLE ID: Procesador.Identificador@14ae5a5 , TIPO: Array
+
+VARIABLE ID: t6 , TIPO: Integer
+
+
+VARIABLE ID: t5 , TIPO: Integer
+
+
+VARIABLE ID: resultado , TIPO: Integer
+
+
+VARIABLE ID: t4 , TIPO: Boolean
+
+
+VARIABLE ID: t3 , TIPO: Integer
+
+
+VARIABLE ID: t2 , TIPO: Integer
+
+
+VARIABLE ID: multiplicador , TIPO: Integer
+
+
+VARIABLE ID: t1 , TIPO: Integer
+
+
+VARIABLE ID: multiplicando , TIPO: Integer
+
+
+VARIABLE ID: contador , TIPO: Integer
+
+
+     -> argumentos: 
+
+
+             -> id: multiplicando , tipo: Integer
+
+             -> id: multiplicador , tipo: Integer
 
 
 _______________________________________
 
 
- -> ENTORNO TIPO: ELSE 9, de nivel 3 <- 
 
+ -> ENTORNO FUNCIÓN 8, de nivel 2 <- 
+
+		ID FUNCION: main , TIPO: Void
  VARIABLES: 
 
 
- - no hay identificadores declarados - 
+VARIABLE ID: t11 , TIPO: Integer
 
 
-_______________________________________
+VARIABLE ID: t10 , TIPO: Boolean
 
 
- -> ENTORNO FUNCI�N 7, de nivel 2 <- 
-
-		ID FUNCION: mainFuncion , TIPO: Integer
- VARIABLES: 
+VARIABLE ID: t9 , TIPO: String
 
 
- 	- no hay identificadores declarados - 
+VARIABLE ID: t8 , TIPO: String
+
+
+VARIABLE ID: resultado , TIPO: Integer
+
+
+VARIABLE ID: str , TIPO: String
+
+
+VARIABLE ID: t14 , TIPO: Integer
+
+
+VARIABLE ID: esIgual , TIPO: Boolean
+
+
+VARIABLE ID: t13 , TIPO: Integer
+
+
+VARIABLE ID: t12 , TIPO: Integer
 
 
      -> argumentos: 
@@ -45,7 +100,10 @@ _______________________________________
 
  VARIABLES: 
 
- - no hay identificadores declarados - 
+VARIABLE ID: a , TIPO: Integer
+
+VARIABLE ID: t0 , TIPO: Integer
+
 
  CLASES: 
 
@@ -54,10 +112,17 @@ _______________________________________
 
  FUNCIONES: 
 
-ID: mainFuncion , TIPO: Integer
+ID: main , TIPO: Void
      -> argumentos: 
 
               -> sin argumentos <-
+
+ID: multiplica , TIPO: Integer
+     -> argumentos: 
+
+             -> id: multiplicando , tipo: Integer
+
+             -> id: multiplicador , tipo: Integer
 
 
 

@@ -17,7 +17,7 @@ public class FicheroTokens {
 	
 	public static void abreFichero() throws IOException, ErrorProcesador {
 		try {
-			file = new File(GlobalVariables.FICHERO_TOKENS);
+			file = new File(GlobalVariables.FICHERO_TOKENS.toString());
 			fileWriter = new FileWriter(file);
 		} catch (IOException e) {
 			throw new ErrorProcesador("Se ha producido un error al abrir el fichero de Tokens");

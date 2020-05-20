@@ -6,31 +6,46 @@ import java.util.Iterator;
 import java.util.List;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
 
-public class EntornoClase extends Entorno{
+public class EntornoClase extends Entorno {
+	private static int classSequence = 0;
 	
-	private Hashtable<String, Declaracion> tablaFunciones;
+	private Hashtable<String, DeclaracionFuncion> tablaFunciones;
 	private Hashtable<String, Declaracion> tablaClases;
 	
 	// La tabla FuncionEntorno se declara en el mismo entorno donde la función ha sido declarada
 	private Hashtable<String, EntornoFuncion> tablaFuncionEntorno;
 
-	public EntornoClase(Entorno entornoAnterior, Declaracion identificador) {
-		super(entornoAnterior, identificador);
+	private int profundidad;
+
+	public EntornoClase(Entorno entornoPadre, Declaracion identificador) {
+		super(entornoPadre, identificador);
 		this.tablaFunciones = new Hashtable<>();
 		this.tablaClases = new Hashtable<>();
 		this.tablaFuncionEntorno = new Hashtable<>();
+
+		// Notese que este es el único punto donde se puede crear un entorno sin entorno padre.
+		// Tal como esta montada la gramatica, las funciones no pueden estar fuera de las clases.
+		if (entornoPadre == null) {
+			this.profundidad = 0;
+		} else {
+			this.profundidad = entornoPadre.getProfundidad() + 1;
+		}
 	}
 	
 	////////*	IDENTIFICADORES DE FUNCIONES	*////////
 
 	// Introduce nuevo ID de Función en el entorno actual
-	public void putFuncion(Tipo tipo, String s) throws ErrorSemantico {
+	public DeclaracionFuncion putFuncion(TipoObject tipo, String s, String etiqueta) throws ErrorSemantico {
 		if(this.containsFuncion(s))
 			throw new ErrorSemantico("El identificador de función '"+s+"' se ha declarado por duplicado");
-		this.tablaFunciones.put(s, new Declaracion(new Identificador(s, s), tipo));
+
+		DeclaracionFuncion decl = new DeclaracionFuncion(new Identificador(s, s), tipo, etiqueta);
+		this.tablaFunciones.put(s, decl);
+		return decl;
 	}
 	
 	// Devuelve true si el ID de Función ha sido declarado en el entorno actual
@@ -39,7 +54,7 @@ public class EntornoClase extends Entorno{
 	}
 	
 	// Devuelve el ID de Función especificado en el entorno actual
-	public Declaracion getFuncion(String s) {
+	public DeclaracionFuncion getFuncion(String s) {
 		if(!this.containsFuncion(s)) {
 			return null;
 		}
@@ -70,10 +85,15 @@ public class EntornoClase extends Entorno{
 	////////*	IDENTIFICADORES	DE CLASES	*////////
 	
 	// Introduce nuevo ID de Clase en el entorno actual
-	public void putClase(String s) throws ErrorSemantico {
-		if(this.contains(s))
+	public DeclaracionClase putClase(String s) throws ErrorSemantico {
+		if(this.containsSoloPropioEntorno(s))
 			throw new ErrorSemantico("El identificador de clase '"+s+"' se ha declarado por duplicado");
-		this.tablaClases.put(s, new Declaracion(new Identificador(s, s), Tipo.Class));
+		DeclaracionClase decl = new DeclaracionClase(new Identificador(s, s), Tipo.getTipo(Tipo.Class.name().toLowerCase()));
+		decl.setEtiquetaDeclaraciones(generateClassLabel());
+		decl.setEtiquetaPostInicializacion(generateClassLabel());
+		decl.setEtiquetaPreInicializacion(generateClassLabel());
+		this.tablaClases.put(s, decl);
+		return decl;
 	}
 	
 	// Devuelve true si el ID de Clase ha sido declarado en el entorno actual
@@ -88,7 +108,12 @@ public class EntornoClase extends Entorno{
 		}
 		return this.tablaClases.get(s);
 	}
-	
+
+	@Override
+	public int getProfundidad() {
+		return this.profundidad;
+	}
+
 	/* Dibujando el Entorno */
 	
 	public void printEntorno() throws IOException {
@@ -113,7 +138,7 @@ public class EntornoClase extends Entorno{
 			while(iterator.hasNext()) {
 				String key = (String) iterator.next();
 				Declaracion id = this.getTablaIDs().get(key);
-				if(id.getEsConstante()) {
+				if(id instanceof DeclaracionConstante) {
 					sb.append("CONSTANTE "+"ID: "+id.getId().getId()+" , TIPO: "+id.getTipo()+"");
 				}else {
 					sb.append("VARIABLE "+"ID: "+id.getId().getId()+" , TIPO: "+id.getTipo()+"");
@@ -185,4 +210,23 @@ public class EntornoClase extends Entorno{
 		FicheroEntornos.almacenaEntorno(sb.toString());
 	}
 
+	protected String generateClassLabel() {
+		return "c" + ++classSequence;
+	}
+
+	/**
+	 * La memoria necesaria para una clase es solo la acumlacion
+	 * del tamano de las variables.
+	 *
+	 * Las funciones no utilizan ningun sistema que necesite almacenar la memoria en runtime ( vtable )
+	 *
+	 */
+	@Override
+	public int getTamanoTotalVariables() {
+		int tamano = 0;
+		for (Declaracion decl: ids) {
+			tamano += decl.getOcupacion();
+		}
+		return tamano;
+	}
 }

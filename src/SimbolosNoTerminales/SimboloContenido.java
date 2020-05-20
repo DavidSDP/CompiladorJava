@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Procesador.TipoSubyacente;
 import analisisSintactico.sym;
 import analisisSintactico.arbol.INodo;
@@ -74,8 +75,8 @@ public class SimboloContenido extends Nodo implements TipoSubyacente{
 	}
 
 	@Override
-	public Tipo getTipoSubyacente() {
-		return Tipo.Void;
+	public TipoObject getTipoSubyacente() {
+		return Tipo.getTipoSafe(Tipo.Void);
 	}
 	
 }

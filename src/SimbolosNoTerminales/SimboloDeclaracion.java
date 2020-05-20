@@ -1,6 +1,7 @@
 package SimbolosNoTerminales;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Procesador.TipoSubyacente;
 import analisisSintactico.arbol.Nodo;
 
@@ -8,13 +9,13 @@ public class SimboloDeclaracion extends Nodo implements TipoSubyacente{
 	
 	private String identificador;
 	
-	private Tipo tipo;
+	private TipoObject tipo;
 	
 	private Boolean esArray;
 	
 	private SimboloInicializacion simboloInicializacion;
 	
-	public SimboloDeclaracion(String id, Tipo tipo, Boolean esArray, SimboloInicializacion simboloInicializacion) {
+	public SimboloDeclaracion(String id, TipoObject tipo, Boolean esArray, SimboloInicializacion simboloInicializacion) {
 		this.identificador = id;
 		this.tipo = tipo;
 		this.esArray = esArray;
@@ -22,15 +23,15 @@ public class SimboloDeclaracion extends Nodo implements TipoSubyacente{
 	}
 	
 	@Override
-	public Tipo getTipoSubyacente() {
-		return Tipo.Void;
+	public TipoObject getTipoSubyacente() {
+		return Tipo.getTipoSafe(Tipo.Void);
 	}
 
 	public String getIdentificador() {
 		return identificador;
 	}
 
-	public Tipo getTipo() {
+	public TipoObject getTipo() {
 		return tipo;
 	}
 

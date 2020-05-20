@@ -1,6 +1,2 @@
 // ERRORES GENERADOS //
-
-Error semántico ->
-	Se ha producido un error en el id {arr} al tratar de asignar un tipo Boolean a un tipo Integer
-<-
-Se han encontrado errores, pero la ejecución ha continuado.
+La ejecuciÃ³n ha finalizado sin errores.

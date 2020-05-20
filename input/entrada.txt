@@ -1,0 +1,51 @@
+/*
+* Ejemplo simple de funcion con bucle y retorno
+*/
+class ClasePrincipal {
+	
+	int a = 10;
+
+	function int multiplica(int multiplicando, int multiplicador) {
+		int resultado = multiplicando;
+		int contador = multiplicador - 1;
+		while (contador > 0) {
+			contador = contador - 1;
+			resultado = resultado + multiplicando;
+		}
+
+		return resultado;
+  }
+
+	function int encuentra(int vector[], int tamano, int valor) {
+		int idx = 0;
+		int elemento;
+		boolean found = false;
+		while ( idx < tamano && found == false) {
+			elemento = vector[0];
+			found = elemento == valor;
+			idx = idx + 1;
+		} 
+		
+		if (found) {
+			return idx - 1;
+		} else {
+			return 0-1;
+		}
+	}
+
+	function String getNombre(String nombre) {
+		return nombre;
+	}
+	
+	function void main() {
+		int vectorNumeros[3];
+		vectorNumeros[0] = 5;
+		vectorNumeros[1] = 50;
+		vectorNumeros[2] = 60;
+		int idx = encuentra(vectorNumeros, 3, 5);
+		String str = getNombre("uep");
+		boolean esIgual = (str == "uep");
+		int resultado = multiplica(2, 10);
+		resultado = resultado + a;
+	}
+}

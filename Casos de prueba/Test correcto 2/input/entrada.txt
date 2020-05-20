@@ -1,13 +1,30 @@
 class ClasePrincipal {
 
-	void print(int i){}
-
 	int a = 200;
+
+	function void print(int i){}
 	
-	void main(String args){
+	function void main(){
+		boolean z = true;
+		int c[100];
+		c[1] = 10;
+		c[2] = 0;
+
+		while(c[1] > 0) {
+			c[2] = c[2] + 1;
+			c[1] = c[1] - 1;
+		}
+
 		if(a > 100){
 			int b = a*1000;
 			print(b);
+		} else {
+			int c = a + 1 / 100;
 		}
+
+		while(a > 100){
+			a = a + 1;
+		}
+
 	}
 }

@@ -26,5 +26,8 @@ public class Identificador {
 		this.id = id;
 	}
 	
-	
+        @Override
+        public String toString() {
+            return nombre;
+        }
 }

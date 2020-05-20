@@ -14,9 +14,13 @@ import analisisSintactico.arbol.Nodo;
 public class SimboloCondicionBucle extends Nodo {
     
     private SimboloOperacion operacion;
+    private String etStart;
+    private String etFin;
     
-    public SimboloCondicionBucle(SimboloOperacion operacion) {
+    public SimboloCondicionBucle(SimboloOperacion operacion, String etStart, String etFin) {
         this.operacion = operacion;
+        this.etStart = etStart;
+        this.etFin = etFin;
     }
     
     public SimboloOperacion getOperacion() {
@@ -26,5 +30,13 @@ public class SimboloCondicionBucle extends Nodo {
     @Override
     public String getName() {
             return "SimboloCondicional";
+    }
+
+    public String getEtiquetaStart() {
+        return this.etStart;
+    }
+
+    public String getEtiquetaFin() {
+        return this.etFin;
     }
 }

@@ -1,25 +1,26 @@
 package SimbolosNoTerminales;
 
 import Checkers.Tipo;
+import Checkers.TipoObject;
 import Procesador.TipoSubyacente;
 import analisisSintactico.arbol.Nodo;
 
 public class SimboloArgDecl extends Nodo implements TipoSubyacente{
 	
 	private String id;
-	private Tipo tipo;
+	private TipoObject tipo;
 	private SimboloArray simboloArrayDef;
 	
-	public SimboloArgDecl(String id, Tipo tipo, SimboloArray simboloArrayDef) {
+	public SimboloArgDecl(String id, TipoObject tipo, SimboloArray simboloArrayDef) {
 		this.id = id;
 		this.tipo = tipo;
 		this.simboloArrayDef = simboloArrayDef;
 	}
 	
 	@Override
-	public Tipo getTipoSubyacente() {
+	public TipoObject getTipoSubyacente() {
 		if(this.simboloArrayDef != null)
-			return Tipo.Array;
+			return Tipo.getTipoSafe(Tipo.Array);
 		return this.tipo;
 	}
 
@@ -31,11 +32,11 @@ public class SimboloArgDecl extends Nodo implements TipoSubyacente{
 		this.id = id;
 	}
 
-	public Tipo getTipo() {
+	public TipoObject getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(Tipo tipo) {
+	public void setTipo(TipoObject tipo) {
 		this.tipo = tipo;
 	}
 

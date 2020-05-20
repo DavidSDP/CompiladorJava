@@ -51,6 +51,9 @@ public class Instruccion {
 			}else {
 				stringMachineCode.append(TAB+TAB+TAB+opCode + TAB + op1);
 			}
+		} else {
+			// Hay instrucciones que solo es el opcode ( rts )
+			stringMachineCode.append(TAB+TAB+TAB+opCode);
 		}
 		return stringMachineCode.toString();
 	}

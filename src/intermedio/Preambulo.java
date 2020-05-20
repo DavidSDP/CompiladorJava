@@ -1,5 +1,7 @@
 package intermedio;
 
+import CodigoMaquina.*;
+import CodigoMaquina.especiales.Literal;
 import Procesador.DeclaracionFuncion;
 
 public class Preambulo extends InstruccionTresDirecciones {
@@ -10,15 +12,15 @@ public class Preambulo extends InstruccionTresDirecciones {
 
     @Override
     public String toMachineCode() {
-        StringBuilder sb = new StringBuilder();
         DeclaracionFuncion declaracionFuncion = (DeclaracionFuncion)this.primero.getValor();
         int memoria = declaracionFuncion.getTamanoMemoriaNecesaria();
 
-        sb.append(super.toMachineCode());
-        sb.append("\tmove.l STACK_TOP, A5\n")
-                .append("\tadd.l #").append(memoria).append(", A5\n")
-                .append("\tmove.l A5, STACK_TOP\n");
+        BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.STACK_TOP, AddressRegister.A5));
+        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(memoria), AddressRegister.A5));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A5, Variables.STACK_TOP));
 
-        return sb.toString();
+        return bI.toString();
     }
 }

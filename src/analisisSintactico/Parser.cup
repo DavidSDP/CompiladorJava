@@ -612,6 +612,7 @@ factor ::= VID:i arrayAsig:a
 								// TODO Esto no esta implementado. ¿Como debemos gestionarlo?
 								// Si usaramos memoria dinamica ( heap ) esto seria tan sencillo
 								// como asignar un valor a otro.
+								RESULT = new SimboloFactor(decl);
 						} else {
 								DeclaracionArray declArray = (DeclaracionArray) decl;
 								Declaracion variable = GlobalVariables.crearVariableTemporal(declArray.getTipoDato());
@@ -669,14 +670,26 @@ factor ::= VID:i arrayAsig:a
 params ::= Operacion:o nextParam:n							
 		{: 
 				// Generamos las instrucciones para empilar cada uno de los parametros.
-				Param param = (Param)I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				Param param;
+				Declaracion variable = o.getDeclaracionResultado();
+				if (GlobalVariables.isComplexParam(variable)) {
+					param = (Param)I3DUtils.crea(OperacionTresDirecciones.COMPLEX_PARAM, o.getDeclaracionResultado());
+				} else {
+					param = (Param)I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				}
 				RESULT = new SimboloParams(o,n,true, param); 
 		:}
 		| {: RESULT = null; :};
 
 nextParam ::= COMA Operacion:o nextParam:n
 		{: 
-				Param param = (Param)I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				Param param;
+				Declaracion variable = o.getDeclaracionResultado();
+				if (GlobalVariables.isComplexParam(variable)) {
+					param = (Param)I3DUtils.crea(OperacionTresDirecciones.COMPLEX_PARAM, o.getDeclaracionResultado());
+				} else {
+					param = (Param)I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				}
 				RESULT = new SimboloParams(o,n,false, param); 
 		:}
 		| {: RESULT = null; :}

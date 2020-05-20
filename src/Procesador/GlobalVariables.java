@@ -177,13 +177,6 @@ public class GlobalVariables {
         return i;
     }
 
-    public static void compruebaClaseID(String id) throws ErrorSemantico {
-        EntornoClase top = (EntornoClase) entornoActual();
-        Declaracion i = top.fullGetClase(id);
-        if (i == null)
-            throw new ErrorSemantico("El id " + id + " no es un sÃ­mbolo de clase declarado en el entorno");
-    }
-
     public static void entraBloqueClase(DeclaracionClase identificadorClase) {
         EntornoClase e = new EntornoClase(entornoActual(), identificadorClase);
         // El entorno global no tiene declaracion
@@ -248,5 +241,9 @@ public class GlobalVariables {
 
         if(declaracionMain == null) throw new ErrorSemantico("Falta la funcion de entrada: main");
         return declaracionMain;
+    }
+
+    public static boolean isComplexParam(Declaracion decl) {
+        return decl instanceof DeclaracionArray || Tipo.String.equals(decl.getTipo().getTipo());
     }
 }

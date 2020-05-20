@@ -71,7 +71,10 @@ public class I3DUtils {
                 c3d = new GuardarIndireccion(primero, segundo, tercero);
                 break;
             case PARAM:
-                c3d = new Param(primero);
+                c3d = new SimpleParam(primero);
+                break;
+            case COMPLEX_PARAM:
+                c3d = new ComplexParam(primero);
                 break;
             case LLAMADA:
                 c3d = new Llamada(primero, segundo, tercero);

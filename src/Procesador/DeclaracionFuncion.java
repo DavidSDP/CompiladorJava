@@ -48,6 +48,11 @@ public class DeclaracionFuncion extends Declaracion {
         return tipo != null;
     }
 
+    public boolean isReturnIsComplexType() {
+        // TODO Check if an array return is stored as array :thinking:
+        return Tipo.String.equals(tipo.getTipo()) || Tipo.Array.equals(tipo.getTipo());
+    }
+
     public boolean hasParams() {
         return entornoDependiente.getListaArgumentos().size() > 0;
     }

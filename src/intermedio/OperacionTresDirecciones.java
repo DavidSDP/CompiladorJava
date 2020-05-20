@@ -23,8 +23,9 @@ public enum OperacionTresDirecciones {
     CARGAR_INDIRECCION,
     GUARDAR_INDIRECCION,
 
-    // Carga de parametros para funciones. Solo tenemos parametros simples por ahora.
+    // Carga de parametros para funciones
     PARAM,
+    COMPLEX_PARAM,
 
     // Operaciones relacionadas con funciones
     LLAMADA,

@@ -34,13 +34,11 @@ public class DeclaracionArray extends Declaracion {
 
 	@Override
 	public int getOcupacion() {
-		if (this.size == -1) {
-			System.out.println("Se ha intentado acceder a la ocupacion de un array sin tamaño");
-			return -1;
-		} else {
-			// El tamaño ocupado en bloques de activación es la de un descriptor, por tanto,
-			// NO es el tamaño calculado de numero de elemntos * tamaño elemento
-			return tipo.getSize();
-		}
+		// El tamaño ocupado en bloques de activación es la de un descriptor, por tanto,
+		// NO es el tamaño calculado de numero de elemntos * tamaño elemento.
+		// Por otro lado, ante una declaración no inicializada (los parámetros de función)
+		// lo que tenem
+		// os que devolver es el tamaño del descriptor también.
+		return tipo.getSize();
 	}
 }

@@ -106,8 +106,8 @@ public class Entorno {
         if (this.containsSoloPropioEntorno(id))
             throw new ErrorSemantico("El identificador '" + id + "' se ha declarado por duplicado");
 
-
-        DeclaracionArray declArray = new DeclaracionArray(new Identificador(id, id), Tipo.getTipo(tipo), size, this.getProfundidad());
+        int _size = size == null ? -1 : size;
+        DeclaracionArray declArray = new DeclaracionArray(new Identificador(id, id), Tipo.getTipo(tipo), _size, this.getProfundidad());
         declArray.setEntorno(this);
         this.tablaIDs.put(id, declArray);
         this.ids.add(declArray);

@@ -1,5 +1,12 @@
 package intermedio;
 
+import CodigoMaquina.AddressRegister;
+import CodigoMaquina.BloqueInstrucciones;
+import CodigoMaquina.Instruccion;
+import CodigoMaquina.OpCode;
+import CodigoMaquina.OperandoEspecial;
+import CodigoMaquina.Size;
+import CodigoMaquina.especiales.Literal;
 import Procesador.DeclaracionClase;
 import Procesador.EntornoClase;
 
@@ -11,14 +18,12 @@ public class Clase extends InstruccionTresDirecciones {
 
     @Override
     public String toMachineCode() {
-        StringBuilder sb = new StringBuilder();
+        BloqueInstrucciones bI = new BloqueInstrucciones();
         EntornoClase entorno = ((DeclaracionClase)this.primero.getValor()).getEntornoAsociado();
-
-        sb.append(super.toMachineCode());
-        sb.append("\tmove.l STACK_TOP, A6\n")
-                .append("\tadd.l #").append(entorno.getTamanoTotalVariables()).append(", A6\n")
-                .append("\tmove.l A6, STACK_TOP\n");
-
-        return sb.toString();
+        bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, new OperandoEspecial("STACK_TOP"), AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(entorno.getTamanoTotalVariables()), AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, new OperandoEspecial("STACK_TOP")));
+        return bI.toString();
     }
 }

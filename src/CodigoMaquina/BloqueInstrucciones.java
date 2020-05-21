@@ -36,7 +36,15 @@ public class BloqueInstrucciones {
 				if(machineCode.startsWith(";")) {
 					sb.append(machineCode + "\n");
 				}else {
-					sb.append(machineCode + "   \t\t\t; " + x.toVisualRepresentation() + "\n");
+					if(machineCode.length() <= 16) {
+						sb.append(machineCode + "  \t\t\t\t; " + x.toVisualRepresentation() + "\n");
+					}else if(machineCode.length() > 24) {
+						sb.append(machineCode + "  \t; " + x.toVisualRepresentation() + "\n");
+					}else if(machineCode.length() > 20) {
+						sb.append(machineCode + "  \t\t; " + x.toVisualRepresentation() + "\n");
+					}else if(machineCode.length() > 16) {
+						sb.append(machineCode + "  \t\t\t; " + x.toVisualRepresentation() + "\n");
+					}
 				}
 			});
 		}

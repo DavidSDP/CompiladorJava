@@ -16,6 +16,18 @@ public class Declaracion {
 
     protected boolean isParam;
 
+    // Este flag solo aplica a variables. En algún momento esta jerarquía debería empezar
+    // a arreglarse
+    protected boolean initialized;
+
+    public void markAsInitialized() {
+        this.initialized = true;
+    }
+
+    public boolean isInitialized() {
+        return this.initialized;
+    }
+
     /**
      * Las declaraciones de funciones y clases no necesitan ni profunidad de declaracion
      * ni desplazamiento en la memoria ( no se gestionan asi )

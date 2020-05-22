@@ -76,8 +76,7 @@ public class Llamada extends InstruccionTresDirecciones {
             bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, AddressRegister.A6));
             bI.add(new Instruccion(OpCode.SUB, Size.L, Literal.__(4 + callee.getTamanoRetorno()), AddressRegister.A6));
             if (callee.isReturnIsComplexType()) {
-                bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A6), DataRegister.D0));
-                bI.add(new Instruccion(OpCode.MOVE, Size.L, Indireccion.__(4, AddressRegister.A6), AddressRegister.A0));
+                bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A6), AddressRegister.A0));
             } else {
                 bI.add(new Instruccion(OpCode.MOVE, Size.W, Contenido.__(AddressRegister.A6), DataRegister.D5));
             }
@@ -86,7 +85,7 @@ public class Llamada extends InstruccionTresDirecciones {
             bI.add(Instruccion.nuevaInstruccion("\tbsr restore_bp")); // Actualiza BP y AL
 
             if (callee.isReturnIsComplexType()) {
-                bI.add(this.tercero.saveStringDescriptorConstante(DataRegister.D0, AddressRegister.A0));
+                bI.add(this.tercero.saveStringDescriptorConstante(AddressRegister.A0));
             } else {
                 bI.add(this.tercero.save(DataRegister.D5));
             }

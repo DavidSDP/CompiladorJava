@@ -17,7 +17,12 @@ public class SimpleParam extends Param {
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
         bI.add(this.primero.load(DataRegister.D0));
         Declaracion valor = this.primero.getValor();
-        bI.add(Instruccion.nuevaInstruccion("\tPUSH_PARAM " + valor.getDesplazamiento() + "(A6), #" + valor.getOcupacion() + "\n"));
+        // Currently we've got 2 kinds of size handling for variables
+        //  - Word
+        //  - LongWord
+        // We need to use the specific param macro depending on the size
+        String macro =  valor.getOcupacion() <= 2 ? "PUSH_WORD" : "PUSH_LONG";
+        bI.add(Instruccion.nuevaInstruccion("\t" + macro + " " + valor.getDesplazamiento() + "(A6)\n"));
         return bI.toString();
     }
 }

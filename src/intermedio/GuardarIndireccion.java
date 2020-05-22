@@ -29,7 +29,6 @@ public class GuardarIndireccion extends InstruccionTresDirecciones {
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
 
         bI.add(this.segundo.loadStringDescriptorVariable(AddressRegister.A5));
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A5), DataRegister.D0));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Indireccion.__(4, AddressRegister.A5), AddressRegister.A5));
         bI.add(this.tercero.load(DataRegister.D1));
         // TODO Add bounds checking

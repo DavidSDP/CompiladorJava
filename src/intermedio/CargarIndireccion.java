@@ -20,7 +20,7 @@ public class CargarIndireccion extends InstruccionTresDirecciones {
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
         // TODO Esto deberiamos renombrarlo a loadDescriptorVariable
         bI.add(this.primero.loadStringDescriptorVariable(AddressRegister.A5));
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A5), DataRegister.D0));
+        bI.add(new Instruccion(OpCode.MOVE, Size.W, Contenido.__(AddressRegister.A5), DataRegister.D0));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Indireccion.__(4, AddressRegister.A5), AddressRegister.A5));
         bI.add(this.segundo.load(DataRegister.D1));
         // TODO Add bounds checking

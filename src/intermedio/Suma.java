@@ -5,9 +5,9 @@ import CodigoMaquina.DataRegister;
 public class Suma extends InstruccionTresDirecciones {
     public Suma(Operando primero, Operando segundo, Operando tercero) {
         super(OperacionTresDirecciones.SUMA);
-        this.primero = primero;
-        this.segundo = segundo;
-        this.tercero = tercero;
+        this.setPrimero(primero);
+        this.setSegundo(segundo);
+        this.setTercero(tercero);
     }
 
     @Override
@@ -18,10 +18,10 @@ public class Suma extends InstruccionTresDirecciones {
         StringBuilder sb = new StringBuilder();
 
         sb.append(super.toMachineCode());
-        sb.append(this.primero.load(DataRegister.D0))
-                .append(this.segundo.load(DataRegister.D1))
+        sb.append(this.getPrimero().load(DataRegister.D0))
+                .append(this.getSegundo().load(DataRegister.D1))
                 .append("\tadd.w D0, D1\n")
-                .append(this.tercero.save(DataRegister.D1));
+                .append(this.getTercero().save(DataRegister.D1));
 
         return sb.toString();
     }

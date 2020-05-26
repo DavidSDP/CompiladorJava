@@ -12,9 +12,9 @@ public class SaltoCondicional extends InstruccionTresDirecciones {
         // De esta forma podremos vincular la comparación de igualdad de las 
         // variables que nos pasen para poder saltar a la etiqueta
         super(OperacionTresDirecciones.AND);
-        this.primero = primero;
-        this.segundo = segundo;
-        this.tercero = etiqueta;
+        this.setPrimero(primero);
+        this.setSegundo(segundo);
+        this.setTercero(etiqueta);
     } 
 
     @Override

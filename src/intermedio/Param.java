@@ -10,7 +10,7 @@ public abstract class Param extends InstruccionTresDirecciones {
 
     public Param(OperacionTresDirecciones operacion, Operando primero) {
         super(operacion);
-        this.primero = primero;
+        this.setPrimero(primero);
     }
 
     public void markLastParam() {

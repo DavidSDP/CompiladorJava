@@ -9,16 +9,16 @@ public class Llamada extends InstruccionTresDirecciones {
     public Llamada(Operando primero, Operando segundo, Operando tercero) {
         super(OperacionTresDirecciones.LLAMADA);
         // Callee
-        this.primero = primero;
+        this.setPrimero(primero);
         // Caller
-        this.segundo = segundo;
+        this.setSegundo(segundo);
         // Return container
-        this.tercero = tercero;
+        this.setTercero(tercero);
     }
 
     @Override
     public String toMachineCode() {
-        DeclaracionFuncion callee = (DeclaracionFuncion)this.primero.getValor();
+        DeclaracionFuncion callee = (DeclaracionFuncion)this.getPrimero().getValor();
         BloqueInstrucciones bI = new BloqueInstrucciones();
 
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
@@ -34,8 +34,8 @@ public class Llamada extends InstruccionTresDirecciones {
             bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(callee.getTamanoRetorno()), AddressRegister.A6));
         }
 
-        if (this.segundo != null) {
-            DeclaracionFuncion caller = (DeclaracionFuncion)this.segundo.getValor();
+        if (this.getSegundo() != null) {
+            DeclaracionFuncion caller = (DeclaracionFuncion)this.getSegundo().getValor();
             // Determinar el access link que se tiene que almacenar en el nuevo bloque de activación
             // Ojo! Por facilidad de cálculos al acceder a las variables se almacenará el BP en el access link
             // de esa forma siempre trataremos htodo de la misma manera. Esto hace que a la hora de escalar
@@ -72,7 +72,7 @@ public class Llamada extends InstruccionTresDirecciones {
         bI.add(Instruccion.nuevaInstruccion("\tbsr " + callee.getEtiqueta()));
 
         // Puede que la función tenga retorno y que el que llama no lo esté gestionando
-        if (this.tercero != null) {
+        if (this.getTercero() != null) {
             bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, AddressRegister.A6));
             bI.add(new Instruccion(OpCode.SUB, Size.L, Literal.__(4 + callee.getTamanoRetorno()), AddressRegister.A6));
             if (callee.isReturnIsComplexType()) {
@@ -85,9 +85,9 @@ public class Llamada extends InstruccionTresDirecciones {
             bI.add(Instruccion.nuevaInstruccion("\tbsr restore_bp")); // Actualiza BP y AL
 
             if (callee.isReturnIsComplexType()) {
-                bI.add(this.tercero.saveStringDescriptorConstante(AddressRegister.A0));
+                bI.add(this.getTercero().saveStringDescriptorConstante(AddressRegister.A0));
             } else {
-                bI.add(this.tercero.save(DataRegister.D5));
+                bI.add(this.getTercero().save(DataRegister.D5));
             }
         } else {
             bI.add(Instruccion.nuevaInstruccion("\tbsr restore_bp"));

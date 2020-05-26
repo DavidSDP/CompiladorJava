@@ -12,11 +12,11 @@ package intermedio;
 public class Goto extends InstruccionTresDirecciones {
     public Goto(Operando primero) {
         super(OperacionTresDirecciones.GOTO);
-        this.primero = primero;
+        this.setPrimero(primero);
     } 
 
     @Override
     public String toMachineCode() {
-        return "\tbra " + this.primero.toString() + "\n";
+        return "\tbra " + this.getPrimero().toString() + "\n";
     }
 }

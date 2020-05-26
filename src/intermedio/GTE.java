@@ -10,18 +10,18 @@ import CodigoMaquina.especiales.Literal;
 public class GTE extends InstruccionTresDirecciones {
     public GTE(Operando primero, Operando segundo, Operando resultado) {
         super(OperacionTresDirecciones.GTE);
-        this.primero = primero;
-        this.segundo = segundo;
-        this.tercero = resultado;
+        this.setPrimero(primero);
+        this.setSegundo(segundo);
+        this.setTercero(resultado);
     }
 
     public String generateBranch() {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-        bI.add(this.primero.load(DataRegister.D0));
-        bI.add(this.segundo.load(DataRegister.D1));
+        bI.add(this.getPrimero().load(DataRegister.D0));
+        bI.add(this.getSegundo().load(DataRegister.D1));
         bI.add(new Instruccion(OpCode.CMP, DataRegister.D0, DataRegister.D1));
-        bI.add(new Instruccion(OpCode.BGE, new OperandoEspecial(this.tercero.toString())));
+        bI.add(new Instruccion(OpCode.BGE, new OperandoEspecial(this.getTercero().toString())));
         return bI.toString();
     }
 
@@ -45,18 +45,18 @@ public class GTE extends InstruccionTresDirecciones {
     public String generateOperation() {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-        bI.add(this.primero.load(DataRegister.D0));
-        bI.add(this.segundo.load(DataRegister.D1));
+        bI.add(this.getPrimero().load(DataRegister.D0));
+        bI.add(this.getSegundo().load(DataRegister.D1));
         bI.add(new Instruccion(OpCode.CMP, DataRegister.D1, DataRegister.D0));
         bI.add(new Instruccion(OpCode.SGE, DataRegister.D0));
         bI.add(new Instruccion(OpCode.AND, Literal.__(1), DataRegister.D0));
-        bI.add(this.tercero.save(DataRegister.D0));
+        bI.add(this.getTercero().save(DataRegister.D0));
         return bI.toString();
     }
 
     @Override
     public String toMachineCode() {
-        if (this.tercero instanceof OperandoEtiqueta) {
+        if (this.getTercero() instanceof OperandoEtiqueta) {
             return this.generateBranch();
         } else {
             return this.generateOperation();
@@ -64,11 +64,11 @@ public class GTE extends InstruccionTresDirecciones {
     }
 
     public boolean isBranch() {
-        return this.tercero instanceof OperandoEtiqueta;
+        return this.getTercero() instanceof OperandoEtiqueta;
     }
 
     public InstruccionTresDirecciones getComplementario(Goto salto) {
-        return new LT(primero, segundo, salto.getTercero());
+        return new LT(getPrimero(), getSegundo(), salto.getTercero());
     }
 
 }

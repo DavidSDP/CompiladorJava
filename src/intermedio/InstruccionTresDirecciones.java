@@ -19,13 +19,15 @@ interface MachineCodeSerializable {
  */
 public abstract class InstruccionTresDirecciones implements MachineCodeSerializable {
     protected OperacionTresDirecciones operacion;
-    protected Operando primero, segundo, tercero;
+    private Operando primero;
+	private Operando segundo;
+	private Operando tercero;
     
     public InstruccionTresDirecciones(OperacionTresDirecciones operacion) {
         this.operacion = operacion;
-        this.primero = null;
-        this.segundo = null;
-        this.tercero = null;
+        this.setPrimero(null);
+        this.setSegundo(null);
+        this.setTercero(null);
     }
     
     @Override
@@ -33,7 +35,7 @@ public abstract class InstruccionTresDirecciones implements MachineCodeSerializa
         // Probablemente esto lo podamos utilizar para hacer un debug rapido
         // con printazos. Pero probablemente tampoco lo usaría para 
         // hacer el fichero de instrucciones máquina :thinking:
-        return operacion + " - " + primero + " - " + segundo + " - " + tercero;
+        return operacion + " - " + getPrimero() + " - " + getSegundo() + " - " + getTercero();
     }
 
     @Override
@@ -56,4 +58,16 @@ public abstract class InstruccionTresDirecciones implements MachineCodeSerializa
     public Operando getTercero() {
         return tercero;
     }
+
+	public void setPrimero(Operando primero) {
+		this.primero = primero;
+	}
+
+	public void setSegundo(Operando segundo) {
+		this.segundo = segundo;
+	}
+
+	public void setTercero(Operando tercero) {
+		this.tercero = tercero;
+	}
 }

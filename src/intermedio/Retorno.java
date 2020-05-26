@@ -15,9 +15,9 @@ public class Retorno extends InstruccionTresDirecciones {
     public Retorno(Operando primero, Operando segundo) {
         super(OperacionTresDirecciones.RETORNO);
         // Primero es la declaracion de la funcion
-        this.primero = primero;
+        this.setPrimero(primero);
         // Segundo es el parametro que se tiene que retornar en caso de que exista un retorno.
-        this.segundo = segundo;
+        this.setSegundo(segundo);
     }
 
     @Override
@@ -25,24 +25,24 @@ public class Retorno extends InstruccionTresDirecciones {
         BloqueInstrucciones bI = new BloqueInstrucciones();
 
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-        if (this.segundo != null) {
+        if (this.getSegundo() != null) {
             // El offset se calcula desplazando desde BP el access link + el tamano del
             // tipo que retornamos
-            int returnOffset = this.segundo.getValor().getOcupacion() + 4;
+            int returnOffset = this.getSegundo().getValor().getOcupacion() + 4;
 
             bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, AddressRegister.A5));
             bI.add(new Instruccion(OpCode.SUB, Size.L, Literal.__(returnOffset), AddressRegister.A5));
-            if (GlobalVariables.isComplexParam(this.segundo.getValor())) {
-                bI.add(this.segundo.loadStringDescriptorVariable(AddressRegister.A4));
+            if (GlobalVariables.isComplexParam(this.getSegundo().getValor())) {
+                bI.add(this.getSegundo().loadStringDescriptorVariable(AddressRegister.A4));
                 bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A4, Contenido.__(AddressRegister.A5)));
             } else {
-                bI.add(this.segundo.load(DataRegister.D0));
+                bI.add(this.getSegundo().load(DataRegister.D0));
                 bI.add(new Instruccion(OpCode.MOVE, Size.W, DataRegister.D0, Contenido.__(AddressRegister.A5)));
             }
 
         }
 
-        DeclaracionFuncion decl = (DeclaracionFuncion) this.primero.getValor();
+        DeclaracionFuncion decl = (DeclaracionFuncion) this.getPrimero().getValor();
         int memoriaReservada = decl.getTamanoMemoriaNecesaria();
         if (memoriaReservada > 0) {
             // Si hemos reservado memoria para variables locales, se tiene que liberar.

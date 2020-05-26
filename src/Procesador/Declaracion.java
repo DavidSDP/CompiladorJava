@@ -2,7 +2,6 @@ package Procesador;
 
 import java.util.Objects;
 
-import Checkers.Tipo;
 import Checkers.TipoObject;
 
 public class Declaracion {

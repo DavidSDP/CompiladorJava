@@ -48,8 +48,8 @@ public class CommandlineParser {
         }
 
         // De momento los parametros obligatorios solo incluyen el fichero de entrada
-        if (positionalParams.size() != 1) {
-            throw new Exception("Demasiados parametros posicionales. Solo se admite le fichero de entrada");
+        if (positionalParams.size() > 2) {
+            throw new Exception("Demasiados parametros posicionales. Solo se admiten el fichero de entrada y el nivel de optimización");
         } else {
             filepath = positionalParams.get(0);
         }

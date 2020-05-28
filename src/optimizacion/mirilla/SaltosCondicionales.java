@@ -10,104 +10,56 @@ import intermedio.InstruccionTresDirecciones;
 import intermedio.LT;
 import intermedio.LTE;
 import intermedio.NE;
-import optimizacion.OptimizacionMirilla;
+import optimizacion.Optimizador;
 import optimizacion.RetornoOptimizacion;
+import optimizacion.SecuenciaInstrucciones;
 
-public class SaltosCondicionales extends OptimizacionMirilla{
+public class SaltosCondicionales implements Optimizador{
 	
-	public static RetornoOptimizacion optimizar(RetornoOptimizacion optimization) {
-		return optimizarSaltosCondicionales(optimization);
-	}
-	
-	private static RetornoOptimizacion optimizarSaltosCondicionales(RetornoOptimizacion optimization) {
-        ArrayList<InstruccionTresDirecciones> instrucciones = optimization.getInstrucciones();
+	@Override
+	public RetornoOptimizacion optimizar(SecuenciaInstrucciones secuenciaInstrucciones) {
+        ArrayList<InstruccionTresDirecciones> nuevasInstrucciones = new ArrayList<>();
         boolean cambiado = false;
-        
-        ArrayList<InstruccionTresDirecciones> nuevas = new ArrayList<>();
-		int numElementos = instrucciones.size();
-        
-        int i = 0;
-        InstruccionTresDirecciones instruccion, siguienteInstruccion, complementario;
-        while(i < numElementos) {
-            instruccion = instrucciones.get(i);
-            switch (instruccion.getOperacion()) {
-                case GT:
-                    siguienteInstruccion = getSiguiente(instrucciones, i);
-                    if (siguienteInstruccion instanceof Goto) {
+        InstruccionTresDirecciones instruccionActual, instruccionSiguiente, complementario;
+        while(secuenciaInstrucciones.hasNext()) {
+        	instruccionActual = secuenciaInstrucciones.next();
+        	instruccionSiguiente = secuenciaInstrucciones.upcoming();
+            if (instruccionSiguiente instanceof Goto) {
+                Goto salto = (Goto)instruccionSiguiente;
+	            switch (instruccionActual.getOperacion()) {
+	                case GT:
                         cambiado = true;
-                        Goto salto = (Goto)siguienteInstruccion;
-                        complementario = ((GT)instruccion).getComplementario(salto);
-                        nuevas.add(complementario);
-                        i++;
-                    } else {
-                        nuevas.add(instruccion);
-                    }
-                    break;
-                case GTE:
-                    siguienteInstruccion = getSiguiente(instrucciones, i);
-                    if (siguienteInstruccion instanceof Goto) {
+                        complementario = ((GT)instruccionActual).getComplementario(salto);
+	                    break;
+	                case GTE:
                         cambiado = true;
-                        Goto salto = (Goto)siguienteInstruccion;
-                        complementario = ((GTE)instruccion).getComplementario(salto);
-                        nuevas.add(complementario);
-                        i++;
-                    } else {
-                        nuevas.add(instruccion);
-                    }
-                    break;
-                case LT:
-                    siguienteInstruccion = getSiguiente(instrucciones, i);
-                    if (siguienteInstruccion instanceof Goto) {
+                        complementario = ((GTE)instruccionActual).getComplementario(salto);
+	                    break;
+	                case LT:
                         cambiado = true;
-                        Goto salto = (Goto)siguienteInstruccion;
-                        complementario = ((LT)instruccion).getComplementario(salto);
-                        nuevas.add(complementario);
-                        i++;
-                    } else {
-                        nuevas.add(instruccion);
-                    }
-                    break;
-                case LTE:
-                    siguienteInstruccion = getSiguiente(instrucciones, i);
-                    if (siguienteInstruccion instanceof Goto) {
+                        complementario = ((LT)instruccionActual).getComplementario(salto);
+	                    break;
+	                case LTE:
                         cambiado = true;
-                        Goto salto = (Goto)siguienteInstruccion;
-                        complementario = ((LTE)instruccion).getComplementario(salto);
-                        nuevas.add(complementario);
-                        i++;
-                    } else {
-                        nuevas.add(instruccion);
-                    }
-                    break;
-                case EQ:
-                    siguienteInstruccion = getSiguiente(instrucciones, i);
-                    if (siguienteInstruccion instanceof Goto) {
+                        complementario = ((LTE)instruccionActual).getComplementario(salto);
+	                    break;
+	                case EQ:
                         cambiado = true;
-                        Goto salto = (Goto)siguienteInstruccion;
-                        complementario = ((EQ)instruccion).getComplementario(salto);
-                        nuevas.add(complementario);
-                        i++;
-                    } else {
-                        nuevas.add(instruccion);
-                    }
-                    break;
-                case NE:
-                    siguienteInstruccion = getSiguiente(instrucciones, i);
-                    if (siguienteInstruccion instanceof Goto) {
+                        complementario = ((EQ)instruccionActual).getComplementario(salto);
+	                    break;
+	                case NE:
                         cambiado = true;
-                        Goto salto = (Goto)siguienteInstruccion;
-                        complementario = ((NE)instruccion).getComplementario(salto);
-                        nuevas.add(complementario);
-                        i++;
-                    } else {
-                        nuevas.add(instruccion);
-                    }
-                    break;
-                default:
-                    nuevas.add(instruccion);
-            }
-            i++;
+                        complementario = ((NE)instruccionActual).getComplementario(salto);
+	                    break;
+	                default:
+	                	complementario = instruccionActual;
+	                	break;
+	            }
+            	nuevasInstrucciones.add(complementario);
+        	} else {
+        		nuevasInstrucciones.add(instruccionActual);
+        	}
         }
-        return new RetornoOptimizacion(nuevas, cambiado);
+        return new RetornoOptimizacion(nuevasInstrucciones, cambiado);
     }
 }

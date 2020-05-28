@@ -11,54 +11,43 @@ import intermedio.Operando;
 import intermedio.Or;
 import intermedio.Producto;
 import intermedio.Suma;
-import optimizacion.OptimizacionMirilla;
+import optimizacion.Optimizador;
 import optimizacion.RetornoOptimizacion;
+import optimizacion.SecuenciaInstrucciones;
 
-public class NormalizacionOperandos extends OptimizacionMirilla{
-
-	public static RetornoOptimizacion optimizar(RetornoOptimizacion optimizacion) {
-		ArrayList<InstruccionTresDirecciones> instrucciones = optimizacion.getInstrucciones();
-        boolean cambiado = optimizacion.isCambiado();
-        ArrayList<InstruccionTresDirecciones> nuevas = new ArrayList<>();
-		int numElementos = instrucciones.size();
-        int i = 0;
-        InstruccionTresDirecciones instruccion;
-        while(i < numElementos) {
-            boolean cambiadoLocal = false;
-            instruccion = instrucciones.get(i);
-            switch (instruccion.getOperacion()) {
+public class NormalizacionOperandos implements Optimizador{
+	
+	@Override
+	public RetornoOptimizacion optimizar(SecuenciaInstrucciones secuenciaInstrucciones) {
+		ArrayList<InstruccionTresDirecciones> nuevasInstrucciones = new ArrayList<>();
+		Boolean cambiado = false;
+		while(secuenciaInstrucciones.hasNext()) {
+			InstruccionTresDirecciones nuevaInstruccion = secuenciaInstrucciones.next().clone();
+			switch (nuevaInstruccion.getOperacion()) {
 	            case EQ:
-	            	cambiadoLocal = eq((EQ)instruccion);
-	            	nuevas.add(instruccion);
+	            	cambiado = cambiado || eq((EQ)nuevaInstruccion);
 	                break;
 	            case NE:
-	            	cambiadoLocal = ne((NE)instruccion);
-	            	nuevas.add(instruccion);
+	            	cambiado = cambiado || ne((NE)nuevaInstruccion);
 	                break;
 	            case AND:
-	            	cambiadoLocal = and((And)instruccion);
-	            	nuevas.add(instruccion);
+	            	cambiado = cambiado || and((And)nuevaInstruccion);
 	                break;
 	            case OR:
-	            	cambiadoLocal = or((Or)instruccion);
-	            	nuevas.add(instruccion);
+	            	cambiado = cambiado || or((Or)nuevaInstruccion);
 	                break;
 	            case SUMA:
-	            	cambiadoLocal = suma((Suma)instruccion);
-	            	nuevas.add(instruccion);
+	            	cambiado = cambiado || suma((Suma)nuevaInstruccion);
 	                break;
 	            case PRODUCTO:
-	            	cambiadoLocal = producto((Producto)instruccion);
-	            	nuevas.add(instruccion);
+	            	cambiado = cambiado || producto((Producto)nuevaInstruccion);
 	                break;
-                default:
-                    nuevas.add(instruccion);
-                	break;
-            }
-            cambiado = cambiado || cambiadoLocal;
-            i++;
-        }
-        return new RetornoOptimizacion(nuevas, cambiado);
+	            default:
+	            	break;
+			}
+        	nuevasInstrucciones.add(nuevaInstruccion);
+		}
+		return new RetornoOptimizacion(nuevasInstrucciones, cambiado);
 	}
 	
 	private static Boolean suma(Suma instruccion) {

@@ -17,12 +17,12 @@ interface MachineCodeSerializable {
  * Se tendrá que traducir a código máquina en consecuencia
  *. 
  */
-public abstract class InstruccionTresDirecciones implements MachineCodeSerializable {
+public abstract class InstruccionTresDirecciones implements MachineCodeSerializable, Cloneable {
     protected OperacionTresDirecciones operacion;
     private Operando primero;
 	private Operando segundo;
 	private Operando tercero;
-    
+	
     public InstruccionTresDirecciones(OperacionTresDirecciones operacion) {
         this.operacion = operacion;
         this.setPrimero(null);
@@ -70,4 +70,14 @@ public abstract class InstruccionTresDirecciones implements MachineCodeSerializa
 	public void setTercero(Operando tercero) {
 		this.tercero = tercero;
 	}
+	
+    @Override
+    public InstruccionTresDirecciones clone(){
+    	try {
+			return (InstruccionTresDirecciones) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
 }

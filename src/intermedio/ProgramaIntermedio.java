@@ -3,11 +3,13 @@ package intermedio;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import optimizacion.OptimizacionLocal;
+import optimizacion.OptimizacionMirilla;
+import optimizacion.Optimizador;
 import optimizacion.RetornoOptimizacion;
-import optimizacion.mirilla.NormalizacionOperandos;
-import optimizacion.mirilla.SaltosCondicionales;
+import optimizacion.SecuenciaInstrucciones;
 
 /**
  * Un programa intermedio es una secuencia de instrucciones en código de 3
@@ -19,7 +21,7 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
     private static ProgramaIntermedio instance;
 
     private final ArrayList<InstruccionTresDirecciones> instrucciones;
-    private ArrayList<InstruccionTresDirecciones> instruccionesOptimizadas;
+    private List<InstruccionTresDirecciones> instruccionesOptimizadas;
 
     public ProgramaIntermedio() {
         instrucciones = new ArrayList<>();
@@ -38,43 +40,27 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
      * Se puede enfocar tanto como una función como un procedimiento que 
      * modifique el estado del propio programa.
      */
-    public void optimizar() {
-        RetornoOptimizacion retornoOptimizacion;
-        ArrayList<InstruccionTresDirecciones> optimizado = (ArrayList<InstruccionTresDirecciones>)instrucciones.clone();
-        boolean cambiado = false;
-        retornoOptimizacion = new RetornoOptimizacion(optimizado, cambiado);
-        // Mirilla
-        do{
-            retornoOptimizacion = lanzaAlgoritmosMirilla(retornoOptimizacion);
-            if(retornoOptimizacion != null) {
-	            cambiado = retornoOptimizacion.isCambiado();
-	            optimizado = retornoOptimizacion.getInstrucciones();
-            }else {
-            	cambiado = false;
+    @SuppressWarnings("unchecked")
+	public void optimizar() {
+    	
+    	List<Optimizador> optimizadores = new ArrayList<>();
+    	optimizadores.add(new OptimizacionMirilla());
+    	optimizadores.add(new OptimizacionLocal());
+    	RetornoOptimizacion retornoActualizado = new RetornoOptimizacion((List<InstruccionTresDirecciones>) instrucciones.clone(), false);
+    	Iterator<Optimizador> iterador = optimizadores.iterator();
+    	while(iterador.hasNext()) {
+    		SecuenciaInstrucciones secuenciaInstrucciones = new SecuenciaInstrucciones(retornoActualizado.getInstrucciones());
+    		Optimizador optimizador = iterador.next();
+            RetornoOptimizacion retorno = optimizador.optimizar(secuenciaInstrucciones);
+            if(retorno != null) {
+            	retornoActualizado = retorno;
             }
-        }while(cambiado);
-        
-        // Local
-        cambiado = false;
-        do{
-            retornoOptimizacion = OptimizacionLocal.optimiza(optimizado);
-            if(retornoOptimizacion != null) {
-            	optimizado = retornoOptimizacion.getInstrucciones();
-                cambiado = cambiado && retornoOptimizacion.isCambiado();
-            }else {
-            	cambiado = false;
-            }
-        }while(cambiado);
-        instruccionesOptimizadas = optimizado;
-    }
-    
-    public static RetornoOptimizacion lanzaAlgoritmosMirilla(RetornoOptimizacion optimizacion){
-    	RetornoOptimizacion retornoOptimizacion = SaltosCondicionales.optimizar(optimizacion);
-        retornoOptimizacion = NormalizacionOperandos.optimizar(retornoOptimizacion);
-        return retornoOptimizacion;
+    	}
+    	this.instruccionesOptimizadas = retornoActualizado.getInstrucciones();
+    	
     }
 
-    public ArrayList<InstruccionTresDirecciones> optimizado() {
+    public List<InstruccionTresDirecciones> optimizado() {
         return this.instruccionesOptimizadas;
     }
 

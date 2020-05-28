@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import optimizacion.OptimizacionLocal;
-import optimizacion.OptimizacionMirilla;
 import optimizacion.Optimizador;
 import optimizacion.RetornoOptimizacion;
 import optimizacion.SecuenciaInstrucciones;
@@ -22,14 +20,20 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
 
     private final ArrayList<InstruccionTresDirecciones> instrucciones;
     private List<InstruccionTresDirecciones> instruccionesOptimizadas;
+    private List<Optimizador> optimizadores;
 
     public ProgramaIntermedio() {
         instrucciones = new ArrayList<>();
         instruccionesOptimizadas = new ArrayList<>();
+        optimizadores = new ArrayList<>();
     }
 
     public void addInstruccion(InstruccionTresDirecciones instr) {
         instrucciones.add(instr);
+    }
+    
+    public void addOptimizador(Optimizador optimizador) {
+    	optimizadores.add(optimizador);
     }
     
     /**
@@ -43,9 +47,6 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
     @SuppressWarnings("unchecked")
 	public void optimizar() {
     	
-    	List<Optimizador> optimizadores = new ArrayList<>();
-    	optimizadores.add(new OptimizacionMirilla());
-    	optimizadores.add(new OptimizacionLocal());
     	RetornoOptimizacion retornoActualizado = new RetornoOptimizacion((List<InstruccionTresDirecciones>) instrucciones.clone(), false);
     	Iterator<Optimizador> iterador = optimizadores.iterator();
     	while(iterador.hasNext()) {

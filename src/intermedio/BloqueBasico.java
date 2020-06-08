@@ -31,8 +31,7 @@ public class BloqueBasico {
 
     @Override
     public int hashCode() {
-        String str = "" + inicio + "" + fin;
-        return str.hashCode();
+        return inicio;
     }
     
     @Override

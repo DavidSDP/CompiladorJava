@@ -182,7 +182,7 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
 
             if (isUnconditionalBranch(instruccion)) {
                 bloque.setFin(indiceInstruccion);
-                etiqueta = (OperandoEtiqueta)instruccion.getTercero();
+                etiqueta = (OperandoEtiqueta)instruccion.getPrimero();
                 siguienteBloque = etiquetaToLider.get(etiqueta);
                 grafoFlujoBloquesBasicos.addArista(bloque, siguienteBloque);
             } else if (isRetorno(instruccion)) {

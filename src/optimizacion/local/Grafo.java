@@ -51,7 +51,7 @@ public class Grafo {
         ArrayList<Arista> _predecesores = predecesores.getOrDefault(nodoDestino, new ArrayList<>());
         Arista backward = new Arista(nodoDestino, nodoOrigen);
         _predecesores.add(backward);
-        predecesores.put(nodoOrigen, _predecesores);
+        predecesores.put(nodoDestino, _predecesores);
     }
     
     public ArrayList<Nodo> getVertices() {

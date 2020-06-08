@@ -1,31 +1,12 @@
-package intermedio;
+package optimizacion.local;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
-class Nodo {
-    private BloqueBasico bloqueBasico;
-
-    public Nodo(BloqueBasico basico) {
-        bloqueBasico = basico;
-    }
-}
-
-class Arista {
-    private boolean adyacente;
-    private Nodo origen, destino;
-
-    public Arista(Nodo origen, Nodo destino) {
-        this(origen, destino, false);
-    }
-
-    public Arista(Nodo origen, Nodo destino, boolean adyacente) {
-        this.origen = origen;
-        this.destino = destino;
-        this.adyacente = adyacente;
-    }
-
-}
+import intermedio.BloqueBasico;
+import optimizacion.OptimizacionLocal.Arco;
 
 /**
  * Clase del grafo de bloques basicos
@@ -67,9 +48,40 @@ public class Grafo {
         _sucesores.add(forward);
         sucesores.put(nodoOrigen, _sucesores);
 
-        ArrayList<Arista> _predecesores = sucesores.getOrDefault(nodoDestino, new ArrayList<>());
+        ArrayList<Arista> _predecesores = predecesores.getOrDefault(nodoDestino, new ArrayList<>());
         Arista backward = new Arista(nodoDestino, nodoOrigen);
         _predecesores.add(backward);
         predecesores.put(nodoOrigen, _predecesores);
     }
+    
+    public ArrayList<Nodo> getVertices() {
+    	return this.vertices;
+    }
+    
+    public List<BloqueBasico> getBloquesBasicos(){
+    	return this.vertices.stream().map(m -> m.getBloqueBasico()).collect(Collectors.toList());
+    }
+    
+    public List<BloqueBasico> getPredecesores(BloqueBasico bloque) {
+    	if(bloqueToNodo.get(bloque) != null && this.predecesores.get(bloqueToNodo.get(bloque)) != null) {
+    		return this.predecesores.get(bloqueToNodo.get(bloque)).stream().map(m -> m.getOrigen().getBloqueBasico()).collect(Collectors.toList());
+    	}
+    	return new ArrayList<>();
+    }
+    
+    public List<BloqueBasico> getSucesores(BloqueBasico bloque) {
+    	if(bloqueToNodo.get(bloque) != null && this.sucesores.get(bloqueToNodo.get(bloque)) != null) {
+    		return this.sucesores.get(bloqueToNodo.get(bloque)).stream().map(m -> m.getDestino().getBloqueBasico()).collect(Collectors.toList());
+    	}
+    	return new ArrayList<>();
+    }
+
+	public List<Arco> getArcos() {
+		List<Arco> arcos = new ArrayList<>();
+		this.vertices.stream().forEach(v->{
+			this.sucesores.get(v).stream().forEach(s -> arcos.add(new Arco(s.getOrigen().getBloqueBasico(), s.getDestino().getBloqueBasico())));;
+		});
+		return arcos;
+	}
+    
 }

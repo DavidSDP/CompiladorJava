@@ -13,11 +13,11 @@ package intermedio;
 public class Etiqueta extends InstruccionTresDirecciones {
     public Etiqueta(Operando primero) {
         super(OperacionTresDirecciones.ETIQUETA);
-        this.setPrimero(primero);
+        this.primero = primero;
     }  
 
     @Override
     public String toMachineCode() {
-        return this.getPrimero().toString() + ": ;skip ;)\n";
+        return primero.toString() + ": ;skip ;)\n";
     }
 }

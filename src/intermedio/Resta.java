@@ -5,9 +5,9 @@ import CodigoMaquina.DataRegister;
 public class Resta extends InstruccionTresDirecciones {
     public Resta(Operando primero, Operando segundo, Operando tercero) {
         super(OperacionTresDirecciones.RESTA);
-        this.setPrimero(primero);
-        this.setSegundo(segundo);
-        this.setTercero(tercero);
+        this.primero = primero;
+        this.segundo = segundo;
+        this.tercero = tercero;
     }
 
     @Override
@@ -18,10 +18,10 @@ public class Resta extends InstruccionTresDirecciones {
         StringBuilder sb = new StringBuilder();
 
         sb.append(super.toMachineCode());
-        sb.append(this.getPrimero().load(DataRegister.D0))
-                .append(this.getSegundo().load(DataRegister.D1))
+        sb.append(primero.load(DataRegister.D0))
+                .append(segundo.load(DataRegister.D1))
                 .append("\tsub.w D1, D0\n")
-                .append(this.getTercero().save(DataRegister.D0));
+                .append(tercero.save(DataRegister.D0));
 
         return sb.toString();
     }

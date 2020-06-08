@@ -18,7 +18,7 @@ public class ComplexParam extends Param {
     public String toMachineCode() {
         BloqueInstrucciones bI = new BloqueInstrucciones();
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-        bI.add(this.getPrimero().loadAddress(AddressRegister.A6));
+        bI.add(primero.loadAddress(AddressRegister.A6));
         bI.add(Instruccion.nuevaInstruccion("\tPUSH_DESCRIPTOR_PARAM A6\n"));
         return bI.toString();
     }

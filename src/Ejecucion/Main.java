@@ -66,6 +66,9 @@ public class Main {
                 optimizadores.add(new OptimizacionLocal());
                 
                 if (nivelOptimizacion > 0) {
+                	
+                	ProgramaIntermedio.getInstance().desInicializarVariables();
+                	
                 	for(int i = 0; i < nivelOptimizacion && i < optimizadores.size(); i++) {
                 		ProgramaIntermedio.getInstance().addOptimizador(optimizadores.get(i));
                 	}

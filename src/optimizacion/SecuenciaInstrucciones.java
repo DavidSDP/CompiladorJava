@@ -12,7 +12,6 @@ import intermedio.Etiqueta;
 import intermedio.GT;
 import intermedio.GTE;
 import intermedio.Goto;
-import intermedio.Grafo;
 import intermedio.InstruccionTresDirecciones;
 import intermedio.LT;
 import intermedio.LTE;
@@ -20,6 +19,7 @@ import intermedio.NE;
 import intermedio.OperandoEtiqueta;
 import intermedio.Preambulo;
 import intermedio.Retorno;
+import optimizacion.local.Grafo;
 
 public class SecuenciaInstrucciones implements Iterator<InstruccionTresDirecciones>, Cloneable{
 	
@@ -130,8 +130,8 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
         HashMap<OperandoEtiqueta, BloqueBasico> etiquetaToLider = new HashMap<>();
         OperandoEtiqueta etiqueta;
 
-        e = new BloqueBasico(++idBloque);
-        s = new BloqueBasico(++idBloque);
+        e = new BloqueBasico(++idBloque); e.setEs_E(true);
+        s = new BloqueBasico(++idBloque); s.setEs_S(true);
         bloques.add(e);
         bloques.add(s);
         grafoFlujoBloquesBasicos.addVertice(e);

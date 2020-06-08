@@ -11,9 +11,9 @@ import CodigoMaquina.OpCode;
 public class Or extends InstruccionTresDirecciones {
     public Or(Operando primero, Operando segundo, Operando tercero) {
         super(OperacionTresDirecciones.OR);
-        this.setPrimero(primero);
-        this.setSegundo(segundo);
-        this.setTercero(tercero);
+        this.primero = primero;
+        this.segundo = segundo;
+        this.tercero = tercero;
     }
 
     /**
@@ -41,10 +41,10 @@ public class Or extends InstruccionTresDirecciones {
     public String toMachineCode() {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-        bI.add(this.getPrimero().load(DataRegister.D0));
-        bI.add(this.getSegundo().load(DataRegister.D1));
+        bI.add(primero.load(DataRegister.D0));
+        bI.add(segundo.load(DataRegister.D1));
         bI.add(new Instruccion(OpCode.OR, DataRegister.D0, DataRegister.D1));
-        bI.add(this.getTercero().save(DataRegister.D1));
+        bI.add(tercero.save(DataRegister.D1));
         return bI.toString();
     }
 }

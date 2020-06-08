@@ -7,12 +7,12 @@ import Procesador.DeclaracionFuncion;
 public class Preambulo extends InstruccionTresDirecciones {
     public Preambulo(Operando primero) {
         super(OperacionTresDirecciones.PREAMBULO);
-        this.setPrimero(primero);
+        this.primero = primero;
     }
 
     @Override
     public String toMachineCode() {
-        DeclaracionFuncion declaracionFuncion = (DeclaracionFuncion)this.getPrimero().getValor();
+        DeclaracionFuncion declaracionFuncion = (DeclaracionFuncion) primero.getValor();
         int memoria = declaracionFuncion.getTamanoMemoriaNecesaria();
 
         BloqueInstrucciones bI = new BloqueInstrucciones();

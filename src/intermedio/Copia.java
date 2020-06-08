@@ -7,7 +7,12 @@
 package intermedio;
 
 import Checkers.Tipo;
-import CodigoMaquina.*;
+import CodigoMaquina.AddressRegister;
+import CodigoMaquina.BloqueInstrucciones;
+import CodigoMaquina.DataRegister;
+import CodigoMaquina.Instruccion;
+import CodigoMaquina.OpCode;
+import CodigoMaquina.Size;
 import CodigoMaquina.especiales.Indireccion;
 import CodigoMaquina.especiales.Literal;
 import Procesador.DeclaracionArray;
@@ -27,8 +32,8 @@ import Procesador.DeclaracionConstante;
 public class Copia extends InstruccionTresDirecciones {
     public Copia(Operando primero, Operando segundo) {
         super(OperacionTresDirecciones.COPIA);
-        this.setPrimero(primero);
-        this.setSegundo(segundo);
+        this.primero = primero;
+        this.segundo = segundo;
     }
 
     protected BloqueInstrucciones handleReferences(AddressRegister AX, Operando target) {
@@ -57,17 +62,17 @@ public class Copia extends InstruccionTresDirecciones {
          */
     	BloqueInstrucciones bI = new BloqueInstrucciones();
     	bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-        if(this.getPrimero().getValor() instanceof DeclaracionConstante) {
-        	bI.add(this.getPrimero().loadStringDescriptorConstante(AddressRegister.A1));
-        	bI.add(handleReferences(AddressRegister.A1, this.getSegundo()));
-        	bI.add(this.getSegundo().saveStringDescriptorConstante(AddressRegister.A1));
+        if(primero.getValor() instanceof DeclaracionConstante) {
+        	bI.add(primero.loadStringDescriptorConstante(AddressRegister.A1));
+        	bI.add(handleReferences(AddressRegister.A1, segundo));
+        	bI.add(segundo.saveStringDescriptorConstante(AddressRegister.A1));
         } else {
-        	bI.add(this.getPrimero().loadStringDescriptorVariable(AddressRegister.A1));
-            bI.add(handleReferences(AddressRegister.A1, this.getSegundo()));
-        	bI.add(this.getSegundo().saveStringDescriptorVariable(AddressRegister.A1));
+        	bI.add(primero.loadStringDescriptorVariable(AddressRegister.A1));
+            bI.add(handleReferences(AddressRegister.A1, segundo));
+        	bI.add(segundo.saveStringDescriptorVariable(AddressRegister.A1));
         }
-
-        this.getSegundo().getValor().markAsInitialized();
+        if(!segundo.getValor().isInitialized())
+        	segundo.getValor().markAsInitialized();
         return bI.toString();
     }
 
@@ -75,15 +80,15 @@ public class Copia extends InstruccionTresDirecciones {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
 
     	bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-    	bI.add(this.getPrimero().load(DataRegister.D0));
-    	bI.add(this.getSegundo().save(DataRegister.D0));
+    	bI.add(primero.load(DataRegister.D0));
+    	bI.add(segundo.save(DataRegister.D0));
 
         return bI.toString();
     }
 
     @Override
     public String toMachineCode() {
-        if (isComplexArgument(this.getPrimero())) {
+        if (isComplexArgument(primero)) {
             return this.stringToMachineCode();
         } else {
             return this.basicTypeToMachineCode();
@@ -91,6 +96,6 @@ public class Copia extends InstruccionTresDirecciones {
     }
 
     private boolean isComplexArgument(Operando operando) {
-        return Tipo.String.equals(this.getPrimero().getValor().getTipo().getTipo()) || (this.getPrimero().getValor() instanceof DeclaracionArray);
+        return Tipo.String.equals(primero.getValor().getTipo().getTipo()) || (primero.getValor() instanceof DeclaracionArray);
     }
 }

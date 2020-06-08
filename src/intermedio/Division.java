@@ -8,9 +8,9 @@ import CodigoMaquina.OpCode;
 public class Division extends InstruccionTresDirecciones {
     public Division(Operando primero, Operando segundo, Operando tercero) {
         super(OperacionTresDirecciones.DIVISION);
-        this.setPrimero(primero);
-        this.setSegundo(segundo);
-        this.setTercero(tercero);
+        this.primero = primero;
+        this.segundo = segundo;
+        this.tercero = tercero;
     }  
 
     @Override
@@ -25,10 +25,10 @@ public class Division extends InstruccionTresDirecciones {
          * 2. Le div el valor del segundo al registro
          * 3. Copiamos el valor del registro a la variable de destino
          */
-        bI.add(this.getPrimero().load(DataRegister.D0));
-        bI.add(this.getSegundo().load(DataRegister.D1));
+        bI.add(primero.load(DataRegister.D0));
+        bI.add(segundo.load(DataRegister.D1));
         bI.add(new Instruccion(OpCode.DIVS, DataRegister.D1, DataRegister.D0));
-        bI.add(this.getTercero().save(DataRegister.D0));
+        bI.add(tercero.save(DataRegister.D0));
         return bI.toString();
     }
 }

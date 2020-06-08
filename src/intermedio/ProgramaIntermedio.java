@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import Procesador.Declaracion;
 import optimizacion.Optimizador;
 import optimizacion.RetornoOptimizacion;
 import optimizacion.SecuenciaInstrucciones;
@@ -76,4 +77,30 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
         
         return instance;
     }
+
+	public void desInicializarVariables() {
+		this.instrucciones.stream().forEach(x->{
+			Operando actual = x.getPrimero();
+			if(actual != null) {
+				Declaracion declaracion = actual.getValor();
+				if(declaracion != null) {
+					declaracion.desInicializar();
+				}
+			}
+			actual = x.getSegundo();
+			if(actual != null) {
+				Declaracion declaracion = actual.getValor();
+				if(declaracion != null) {
+					declaracion.desInicializar();
+				}
+			}
+			actual = x.getTercero();
+			if(actual != null) {
+				Declaracion declaracion = actual.getValor();
+				if(declaracion != null) {
+					declaracion.desInicializar();
+				}
+			}
+		});
+	}
 }

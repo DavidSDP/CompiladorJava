@@ -15,8 +15,8 @@ public class SimpleParam extends Param {
     public String toMachineCode() {
         BloqueInstrucciones bI = new BloqueInstrucciones();
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-        bI.add(this.getPrimero().load(DataRegister.D0));
-        Declaracion valor = this.getPrimero().getValor();
+        bI.add(primero.load(DataRegister.D0));
+        Declaracion valor = primero.getValor();
         // Currently we've got 2 kinds of size handling for variables
         //  - Word
         //  - LongWord

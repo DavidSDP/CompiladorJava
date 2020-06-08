@@ -115,6 +115,10 @@ public class Declaracion {
     public boolean isParam() {
         return isParam;
     }
+
+	public void desInicializar() {
+		this.initialized = false;
+	}
 }
 
 

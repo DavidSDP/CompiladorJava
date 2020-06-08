@@ -148,12 +148,32 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
                 etiqueta = (OperandoEtiqueta)instruccion.getPrimero();
                 etiquetaToLider.put(etiqueta, bloque);
             } else if (isConditionalBranch(instruccion)) {
-                siguiente = getFollowing(i + 1);
+                siguiente = getFollowing(i);
                 finales = isBranch(siguiente) || isRetorno(siguiente) || isEtiqueta(siguiente);
                 if (!finales) {
                     bloque = new BloqueBasico(++idBloque, i + 1);
                     grafoFlujoBloquesBasicos.addVertice(bloque);
                     bloques.add(bloque);
+
+                }
+            } else if(isRetorno(instruccion)) {
+                /*
+                Cuando nos encontramos con un retorno pueden pasar varias cosas:
+                    1- Que la siguiente sea otro salto (en el caso de los ifs)
+                    2- Que la siguiente sea una instrucción cualquiera (- etiqueta y salto )
+                    3- Que la siguiente sea una etiqueta
+                 En los dos primeros casos tenemos que marcar que lo siguiente es un bloque nuevo, sí o sí.
+                 Si no el algoritmo no será capaz de detectar bloques de código muerto.
+
+                 Por otro lado, si es una etiqueta, se puede dejar gestionar la creación de forma normal
+                 */
+                if ( (i+1) <= rango.getFin()) {
+                    siguiente = getFollowing(i);
+                    if (!isEtiqueta(siguiente)) {
+                        bloque = new BloqueBasico(++idBloque, i + 1);
+                        grafoFlujoBloquesBasicos.addVertice(bloque);
+                        bloques.add(bloque);
+                    }
                 }
             }
         }

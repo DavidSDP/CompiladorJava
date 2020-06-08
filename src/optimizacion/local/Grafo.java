@@ -78,7 +78,9 @@ public class Grafo {
 
 	public List<Arco> getArcos() {
 		List<Arco> arcos = new ArrayList<>();
-		this.vertices.stream().forEach(v->{
+		this.vertices.stream().filter(p -> {
+			return ((this.sucesores.get(p) != null) && (!this.sucesores.get(p).isEmpty()));
+		}).forEach(v->{
 			this.sucesores.get(v).stream().forEach(s -> arcos.add(new Arco(s.getOrigen().getBloqueBasico(), s.getDestino().getBloqueBasico())));;
 		});
 		return arcos;

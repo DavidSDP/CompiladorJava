@@ -32,7 +32,10 @@ public class OptimizacionLocal implements Optimizador{
         
         HashMap<RangoInstruccionesFuncion, IdentificacionBucles> identificacionBucles = new HashMap<>();
         for(RangoInstruccionesFuncion rangoInstruccionesFuncion: funciones) {
-        	identificacionBucles.put(rangoInstruccionesFuncion, new IdentificacionBucles(grafosFunciones.get(rangoInstruccionesFuncion)));
+        	IdentificacionBucles idBucles = new IdentificacionBucles(grafosFunciones.get(rangoInstruccionesFuncion));
+        	System.out.println(rangoInstruccionesFuncion.toString());
+        	idBucles.print();
+        	identificacionBucles.put(rangoInstruccionesFuncion, idBucles);
         }
         return null;
 	}
@@ -49,6 +52,8 @@ public class OptimizacionLocal implements Optimizador{
 		private HashMap<Integer, BloqueBasico> tablaH = new HashMap<>();	// Tabla de Headers
 		private HashMap<Integer, Arco> tablaAXD = new HashMap<>();			// Tabla de Arcos
 		
+		private HashMap<Integer, List<BloqueBasico>> tablaBLC = new HashMap<>();			// Tabla de Bucles Calculados
+		
 		private Integer nh;		// Última posición ocupada en tabla de Headers
 		private Integer naxd;	// Número de arcos x->d tales que d dom x
 		
@@ -57,6 +62,19 @@ public class OptimizacionLocal implements Optimizador{
 			ejecutar();
 		}
 		
+		public void print() {
+			for(int id = 1; id <= this.nh; id++) {
+				System.out.println();
+				System.out.println(" ---> Bucle " + id + " <--- ");
+				List<BloqueBasico> bb = this.tablaBLC.get(id);
+				for(BloqueBasico b: bb) {
+					System.out.println(b.toString());
+				}
+				System.out.println(" ------------------ ");
+				System.out.println();
+			}
+		}
+
 		public void ejecutar() {
 			// Se monta tabla BB
 			grafoBloquesBasicos.getBloquesBasicos().forEach(b->tablaBB.add(b));
@@ -74,6 +92,45 @@ public class OptimizacionLocal implements Optimizador{
 			determinacionDeBucles();
 		}
 		
+		private void determinacionDeBucles() {
+			for(int ib = 1; ib <= this.nh; ib++) {
+				this.tablaBLC.put(ib, new ArrayList<>());
+			}
+			for(int ixd = 1; ixd <= this.naxd; ixd++) {
+				Arco arco = this.tablaAXD.get(ixd);
+				List<BloqueBasico> l = L(arco);
+				if(!l.isEmpty()) {
+					int ib = this.tablaIL.get(arco.getB());
+					List<BloqueBasico> aux = this.tablaBLC.get(ib);
+					for(BloqueBasico bb: l) {
+						if(!aux.contains(bb)) {
+							aux.add(bb);
+						}
+					}
+				}
+			}
+		}
+
+		private List<BloqueBasico> L(Arco arco) {
+			List<BloqueBasico> L = new ArrayList<>(); L.add(arco.getA()); L.add(arco.getB());
+			List<BloqueBasico> PND = new ArrayList<>(); PND.add(arco.getA());
+			while(!PND.isEmpty()) {
+				BloqueBasico y = PND.get(0);
+				PND.remove(0);
+				if(!this.grafoBloquesBasicos.getPredecesores(y).isEmpty()) {
+					for(BloqueBasico z: this.grafoBloquesBasicos.getPredecesores(y)) {
+						if(!L.contains(z)) {
+							L.add(z);
+							if(!PND.contains(z)) {
+								PND.add(z);
+							}
+						}
+					}
+				}
+			}
+			return L;
+		}
+
 		private void rellenarTablaDI() { 
 			// DI(E) = E
 			this.tablaDI.put(getBloqueE(), getBloqueE());
@@ -210,6 +267,17 @@ public class OptimizacionLocal implements Optimizador{
 				}
 			}
 		}
+
+		private boolean domina(BloqueBasico a, BloqueBasico b) {
+			BloqueBasico actual = tablaDI.get(b);
+			Boolean fin = false;
+			while(!actual.equals(a) && !fin) {
+				BloqueBasico siguiente = tablaDI.get(actual);
+				fin = siguiente.equals(actual);
+				actual = siguiente;
+			}
+			return actual.equals(a);
+		}
 		
 	}
 	
@@ -237,6 +305,11 @@ public class OptimizacionLocal implements Optimizador{
 
 		public void setB(BloqueBasico b) {
 			this.b = b;
+		}
+		
+		@Override
+		public int hashCode() {
+			return (a.hashCode() + " " + b.hashCode()).hashCode();
 		}
 		
 	}

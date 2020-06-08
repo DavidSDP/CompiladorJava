@@ -17,4 +17,10 @@ class RangoInstruccionesFuncion {
     public int getFin() {
         return fin;
     }
+    
+    @Override
+    public String toString() {
+    	return " función -> inicio:" + inicio + ", fin:" + fin + " <- ";
+    }
+    
 }

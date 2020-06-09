@@ -25,6 +25,10 @@ public class BloqueBasico {
         return inicio;
     }
 
+    public int getFin() {
+        return fin;
+    }
+
     public void setFin(int fin) {
         this.fin = fin;
     }
@@ -68,5 +72,5 @@ public class BloqueBasico {
 	public void setEs_S(Boolean es_S) {
 		this.es_S = es_S;
 	}
-    
+
 }

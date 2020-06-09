@@ -1,19 +1,24 @@
 package optimizacion;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import Procesador.AlmacenVariables;
+import Procesador.Declaracion;
 import intermedio.BloqueBasico;
+import intermedio.InstruccionTresDirecciones;
 import optimizacion.local.Grafo;
 
 public class OptimizacionLocal implements Optimizador{
 	
 	/**
-     * Las optimizaciones locales solo se aplican sobre las funciones. Así que, para cada una de las funciones
-     * se genera un grafo independiente sobre el cual se puede optimizar el código
-     * @param instrucciones
+     * Las optimizaciones locales solo se aplican sobre las funciones. AsÃ­ que, para cada una de las funciones
+     * se genera un grafo independiente sobre el cual se puede optimizar el cÃ³digo
+     * @param secuenciaInstrucciones
      * @return
      */
 	@Override
@@ -32,7 +37,7 @@ public class OptimizacionLocal implements Optimizador{
         
         HashMap<RangoInstruccionesFuncion, IdentificacionBucles> identificacionBucles = new HashMap<>();
         for(RangoInstruccionesFuncion rangoInstruccionesFuncion: funciones) {
-        	IdentificacionBucles idBucles = new IdentificacionBucles(grafosFunciones.get(rangoInstruccionesFuncion));
+        	IdentificacionBucles idBucles = new IdentificacionBucles(grafosFunciones.get(rangoInstruccionesFuncion), secuenciaInstrucciones);
         	System.out.println(rangoInstruccionesFuncion.toString());
         	idBucles.print();
         	identificacionBucles.put(rangoInstruccionesFuncion, idBucles);
@@ -44,7 +49,7 @@ public class OptimizacionLocal implements Optimizador{
 		
 		private Grafo grafoBloquesBasicos;
 		
-		private List<BloqueBasico> tablaBB = new ArrayList<>();		// Bloques B�sicos
+		private List<BloqueBasico> tablaBB = new ArrayList<>();		// Bloques Básicos
 		private HashMap<BloqueBasico, List<BloqueBasico>> tablaDom = new HashMap<>(); 	// Tabla Dominadores
 		private HashMap<BloqueBasico, BloqueBasico> tablaDI = new HashMap<>();			// Dominadores Inmediatos
 		
@@ -54,11 +59,16 @@ public class OptimizacionLocal implements Optimizador{
 		
 		private HashMap<Integer, List<BloqueBasico>> tablaBLC = new HashMap<>();			// Tabla de Bucles Calculados
 		
-		private Integer nh;		// �ltima posici�n ocupada en tabla de Headers
-		private Integer naxd;	// N�mero de arcos x->d tales que d dom x
+		private Integer nh;		// Última posición ocupada en tabla de Headers
+		private Integer naxd;	// Número de arcos x->d tales que d dom x
+
+		// TODO Temporal, hasta que saquemos el codigo de esta clase
+		private SecuenciaInstrucciones secuenciaInstrucciones;
 		
-		public IdentificacionBucles(Grafo grafoFuncion) {
+		public IdentificacionBucles(Grafo grafoFuncion, SecuenciaInstrucciones instrucciones) {
 			this.grafoBloquesBasicos = grafoFuncion;
+			// TODO Temporary code
+			this.secuenciaInstrucciones = instrucciones;
 			ejecutar();
 		}
 		
@@ -85,11 +95,68 @@ public class OptimizacionLocal implements Optimizador{
 			// Se monta tabla DI
 			rellenarTablaDI();
 			
-			// Algoritmo de identificaci�n de bucles (Rellenado de tablas IL, H, AXD)
+			// Algoritmo de identificación de bucles (Rellenado de tablas IL, H, AXD)
 			identificacionBucles();
 			
-			// Algoritmo de identificaci�n de bucles (Rellenado de tabla BLC)
+			// Algoritmo de identificación de bucles (Rellenado de tabla BLC)
 			determinacionDeBucles();
+
+			// TODO Esto definitivamente no va aquí, pero de momento me va bien para poder
+			//  mantener htodo el código recogido en una sola parte.
+			for(Map.Entry<Integer, List<BloqueBasico>> e : this.tablaBLC.entrySet()) {
+				identificacionDeInvariantes(e.getKey(), e.getValue());
+				// TODO identificacion de invariantes trasladables
+				// TODO traslado de invariantes
+			}
+		}
+
+		private void identificacionDeInvariantes(int indiceBucle, List<BloqueBasico> bloques) {
+			AlmacenVariables almacenVariables = AlmacenVariables.getInstance();
+			// Por si acaso reseteamos el conteo de las variables ( aunque se supone
+			// que ya deberían haberse inicializado )
+			almacenVariables.resetAsignaciones();
+
+			// TODO Esta tabla de modos debería estar en algún otro lado que no fuera aquí.
+			//  Por no hablar de que es bastante explicito. Alomejor una estructura alrededor de esto no nos haría daño
+			HashMap<InstruccionTresDirecciones, Integer> modos = new HashMap<>();
+
+			for (BloqueBasico bloqueBasico : bloques) {
+				// TODO Transformar esta mierda en un iterador
+				for(int idx = bloqueBasico.getInicio(); idx <= bloqueBasico.getFin(); idx++) {
+					InstruccionTresDirecciones i3d = secuenciaInstrucciones.get(idx);
+					Declaracion destino = i3d.getDestino();
+					if (destino != null) {
+						almacenVariables.incrementaAsignaciones(destino);
+						modos.put(i3d, 0);
+					}
+				}
+			}
+
+			ArrayList<InstruccionTresDirecciones> invariantes = new ArrayList<>();
+			boolean hayCambios = true;
+			while(hayCambios) {
+				hayCambios = false;
+				for (BloqueBasico bloqueBasico : bloques) {
+					// TODO Transformar esta mierda en un iterador
+					for(int idx = bloqueBasico.getInicio(); idx <= bloqueBasico.getFin(); idx++) {
+						InstruccionTresDirecciones i3d = secuenciaInstrucciones.get(idx);
+						Declaracion destino = i3d.getDestino();
+						if (almacenVariables.getAsignaciones(destino) == 1 && modos.get(i3d) <= 0) {
+							int nuevoModo = examinaInvariancia(i3d, destino, modos, bloques);
+							modos.put(i3d, nuevoModo);
+							if (nuevoModo > 0) {
+								hayCambios = true;
+								invariantes.add(i3d);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		private int examinaInvariancia(InstruccionTresDirecciones i3d, Declaracion variable, HashMap<InstruccionTresDirecciones, Integer> modos, List<BloqueBasico> bloquesBucle) {
+			// TODO Crear esta mierda
+			return 0;
 		}
 		
 		private void determinacionDeBucles() {
@@ -167,7 +234,7 @@ public class OptimizacionLocal implements Optimizador{
 			List<BloqueBasico> PND = new ArrayList<>();
 			tablaBB.stream().forEach(b->PND.add(b));
 			
-			// Inicializaci�n
+			// Inicialización
 			List<BloqueBasico> todosLosBloquesBasicos = new ArrayList<>();
 			tablaBB.stream().forEach(b->todosLosBloquesBasicos.add(b));
 			for(BloqueBasico b: tablaBB) {
@@ -182,7 +249,7 @@ public class OptimizacionLocal implements Optimizador{
 			
 			// Mientras queden bloques pendientes
 			while(!PND.isEmpty()) {
-				// Escoger un Bloque B�sico de los pendientes, y sacarlo de PND
+				// Escoger un Bloque Básico de los pendientes, y sacarlo de PND
 				BloqueBasico a = PND.get(0);
 				PND.remove(a);
 				

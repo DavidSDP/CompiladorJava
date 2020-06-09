@@ -1,5 +1,7 @@
 package intermedio;
 
+import Procesador.Declaracion;
+
 interface MachineCodeSerializable {
     String toMachineCode();
 }
@@ -70,6 +72,30 @@ public abstract class InstruccionTresDirecciones implements MachineCodeSerializa
 	public void setTercero(Operando tercero) {
 		this.tercero = tercero;
 	}
+
+
+
+	public Declaracion getDestino() {
+        if (this.tercero instanceof OperandoEtiqueta) {
+            return null;
+        }
+
+        if (this.tercero != null) {
+            // Instruccion con 3 operandos cuyo 3er operando debería ser el destino de la operación.
+            // TODO Comprobar carga y guardado de indirecciones -.-
+            return this.tercero.getValor();
+        } else if (this.segundo != null) {
+            // Tal como hemos formado el codigo de 3 direcciones, los operandos solo pueden estar en el 2 o en el 3 operando
+            // Por tanto, si la instruccion no tiene tercer operando, pero si que tiene segundo, este tiene que ser un operando
+            // destino.
+            // TODO Esto no funciona para todas las instrucciones. Probablemente este es el caso generico, pero por ejemplo,
+            //  para la instruccion llamada, no funciona, ya que esa i3d tiene 3 parametros, siendo el 3o el de retorno, pero
+            //  puede no haberse asignado. Así que en este caso estaríamos jodidos.
+            return this.segundo.getValor();
+        }
+
+        return null;
+    }
 	
     @Override
     public InstruccionTresDirecciones clone(){

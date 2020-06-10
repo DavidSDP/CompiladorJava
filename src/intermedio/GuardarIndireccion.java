@@ -9,7 +9,10 @@ import CodigoMaquina.Size;
 import CodigoMaquina.especiales.Contenido;
 import CodigoMaquina.especiales.Indireccion;
 import CodigoMaquina.especiales.Literal;
+import Procesador.Declaracion;
 import Procesador.DeclaracionArray;
+
+import java.util.ArrayList;
 
 public class GuardarIndireccion extends InstruccionTresDirecciones {
     public GuardarIndireccion(Operando primero, Operando segundo, Operando tercero) {
@@ -42,5 +45,23 @@ public class GuardarIndireccion extends InstruccionTresDirecciones {
         //  esta implementación no serviría ya que tendríamos que guardar 2 Longs
         bI.add(new Instruccion(OpCode.MOVE, Size.W, DataRegister.D2, Contenido.__(AddressRegister.A5)));
         return bI.toString();
+    }
+
+    @Override
+    public ArrayList<Declaracion> getArgumentos() {
+        ArrayList<Declaracion> argumentos = new ArrayList<>();
+        argumentos.add(primero.getValor());
+        return argumentos;
+    }
+
+    @Override
+    public Declaracion getDestino() {
+        return this.segundo.getValor();
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        // TODO Comprobar que impacto tendría suponer que es una definición ( que lo es )
+        return false;
     }
 }

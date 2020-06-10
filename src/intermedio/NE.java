@@ -6,6 +6,7 @@ import CodigoMaquina.Instruccion;
 import CodigoMaquina.OpCode;
 import CodigoMaquina.OperandoEspecial;
 import CodigoMaquina.especiales.Literal;
+import Procesador.Declaracion;
 
 public class NE extends InstruccionTresDirecciones {
     public NE(Operando primero, Operando segundo, Operando resultado) {
@@ -52,6 +53,11 @@ public class NE extends InstruccionTresDirecciones {
 
     public InstruccionTresDirecciones getComplementario(Goto salto) {
         return new EQ(primero, segundo, salto.tercero);
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        return !(this.tercero instanceof OperandoEtiqueta);
     }
 
 }

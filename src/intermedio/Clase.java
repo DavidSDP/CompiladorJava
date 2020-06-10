@@ -26,4 +26,9 @@ public class Clase extends InstruccionTresDirecciones {
         bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, new OperandoEspecial("STACK_TOP")));
         return bI.toString();
     }
+
+    @Override
+    public boolean esDefinicion() {
+        return false;
+    }
 }

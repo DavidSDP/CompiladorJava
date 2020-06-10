@@ -77,4 +77,9 @@ public class EQ extends InstruccionTresDirecciones {
     public InstruccionTresDirecciones getComplementario(Goto salto) {
         return new NE(primero, segundo, salto.tercero);
     }
+
+    @Override
+    public boolean esDefinicion() {
+        return !(this.tercero instanceof OperandoEtiqueta);
+    }
 }

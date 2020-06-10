@@ -20,4 +20,9 @@ public class DeclaracionIndireccion extends InstruccionTresDirecciones {
         primero.getValor().markAsInitialized();
         return bI.toString();
     }
+
+    @Override
+    public boolean esDefinicion() {
+        return false;
+    }
 }

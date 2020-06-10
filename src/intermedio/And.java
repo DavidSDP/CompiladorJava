@@ -48,4 +48,9 @@ public class And extends InstruccionTresDirecciones {
         bI.add(tercero.save(DataRegister.D1));
         return bI.toString();
     }
+
+    @Override
+    public boolean esDefinicion() {
+        return true;
+    }
 }

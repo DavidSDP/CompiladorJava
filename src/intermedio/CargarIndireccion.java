@@ -28,6 +28,12 @@ public class CargarIndireccion extends InstruccionTresDirecciones {
         bI.add(new Instruccion(OpCode.ADD, Size.L, DataRegister.D1, AddressRegister.A5));
         bI.add(tercero.save(Contenido.__(AddressRegister.A5)));
         return bI.toString();
+    }
 
+    @Override
+    public boolean esDefinicion() {
+        // TODO Comprobar que impacto tendría suponer que la carga de una dirección es una
+        //  definición ( que lo es )
+        return false;
     }
 }

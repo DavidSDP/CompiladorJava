@@ -3,6 +3,7 @@ package intermedio;
 
 import CodigoMaquina.*;
 import CodigoMaquina.especiales.*;
+import Procesador.Declaracion;
 import Procesador.DeclaracionFuncion;
 
 public class Llamada extends InstruccionTresDirecciones {
@@ -98,5 +99,21 @@ public class Llamada extends InstruccionTresDirecciones {
         // declaracion de la funcion para poder calcular el offset de las variables para poder eliminarlas de la pila
         bI.add(new Instruccion(OpCode.MOVE, Size.L, PostIncremento.__(StackPointer.A7), Variables.STACK_TOP));
         return bI.toString();
+    }
+
+    @Override
+    public Declaracion getDestino() {
+        if (this.tercero != null) {
+            return this.tercero.getValor();
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        // Una llamada a función solo actua como definicion si se le asigna el valor
+        // a una variable.
+        return this.tercero != null;
     }
 }

@@ -30,4 +30,9 @@ public class Producto extends InstruccionTresDirecciones {
 
         return sb.toString();
     }
+
+    @Override
+    public boolean esDefinicion() {
+        return true;
+    }
 }

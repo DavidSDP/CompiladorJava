@@ -55,4 +55,8 @@ public class GT extends InstruccionTresDirecciones {
         return new LTE(primero, segundo, salto.tercero);
     }
 
+    @Override
+    public boolean esDefinicion() {
+        return !(this.tercero instanceof OperandoEtiqueta);
+    }
 }

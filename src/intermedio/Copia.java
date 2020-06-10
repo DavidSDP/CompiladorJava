@@ -15,8 +15,11 @@ import CodigoMaquina.OpCode;
 import CodigoMaquina.Size;
 import CodigoMaquina.especiales.Indireccion;
 import CodigoMaquina.especiales.Literal;
+import Procesador.Declaracion;
 import Procesador.DeclaracionArray;
 import Procesador.DeclaracionConstante;
+
+import java.util.ArrayList;
 
 /**
  * Primero es el origen de la copia. Puede ser una constante o una variable
@@ -96,6 +99,18 @@ public class Copia extends InstruccionTresDirecciones {
     }
 
     private boolean isComplexArgument(Operando operando) {
-        return Tipo.String.equals(primero.getValor().getTipo().getTipo()) || (primero.getValor() instanceof DeclaracionArray);
+        return Tipo.String.equals(operando.getValor().getTipo().getTipo()) || (operando.getValor() instanceof DeclaracionArray);
+    }
+
+    @Override
+    public ArrayList<Declaracion> getArgumentos() {
+        ArrayList<Declaracion> argumentos = new ArrayList<>();
+        argumentos.add(primero.getValor());
+        return argumentos;
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        return true;
     }
 }

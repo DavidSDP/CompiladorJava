@@ -54,4 +54,9 @@ public class Retorno extends InstruccionTresDirecciones {
 
         return bI.toString();
     }
+
+    @Override
+    public boolean esDefinicion() {
+        return false;
+    }
 }

@@ -4,6 +4,9 @@ import CodigoMaquina.BloqueInstrucciones;
 import CodigoMaquina.DataRegister;
 import CodigoMaquina.Instruccion;
 import CodigoMaquina.OpCode;
+import Procesador.Declaracion;
+
+import java.util.ArrayList;
 
 /**
     Mirar comentario en la clase AND
@@ -46,5 +49,10 @@ public class Or extends InstruccionTresDirecciones {
         bI.add(new Instruccion(OpCode.OR, DataRegister.D0, DataRegister.D1));
         bI.add(tercero.save(DataRegister.D1));
         return bI.toString();
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        return true;
     }
 }

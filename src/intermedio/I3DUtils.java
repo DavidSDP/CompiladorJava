@@ -7,6 +7,19 @@ import Procesador.GlobalVariables;
 
 public class I3DUtils {
 
+    // TODO Utilizar estos helpers en donde se detectan declaraciones.
+    public static InstruccionTresDirecciones creaDeclaracion(OperacionTresDirecciones instr, Declaracion source, Declaracion dest) {
+        InstruccionTresDirecciones instruccion = crea(instr, source, dest);
+        Definiciones.getInstance().add(instruccion);
+        return instruccion;
+    }
+
+    public static InstruccionTresDirecciones creaDeclaracion(OperacionTresDirecciones instr, Declaracion primero, Declaracion segundo, Declaracion tercero) {
+        InstruccionTresDirecciones instruccion = crea(instr, primero, segundo, tercero);
+        Definiciones.getInstance().add(instruccion);
+        return instruccion;
+    }
+
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Declaracion source, Declaracion dest) {
         Entorno entorno = GlobalVariables.entornoActual();
         Operando sourceOperator = new Operando(source, entorno.getProfundidad());

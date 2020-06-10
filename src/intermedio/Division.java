@@ -31,4 +31,9 @@ public class Division extends InstruccionTresDirecciones {
         bI.add(tercero.save(DataRegister.D0));
         return bI.toString();
     }
+
+    @Override
+    public boolean esDefinicion() {
+        return true;
+    }
 }

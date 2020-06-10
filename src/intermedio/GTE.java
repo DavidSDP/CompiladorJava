@@ -71,4 +71,8 @@ public class GTE extends InstruccionTresDirecciones {
         return new LT(primero, segundo, salto.tercero);
     }
 
+    @Override
+    public boolean esDefinicion() {
+        return !(this.tercero instanceof OperandoEtiqueta);
+    }
 }

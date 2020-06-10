@@ -23,4 +23,9 @@ public class Preambulo extends InstruccionTresDirecciones {
 
         return bI.toString();
     }
+
+    @Override
+    public boolean esDefinicion() {
+        return false;
+    }
 }

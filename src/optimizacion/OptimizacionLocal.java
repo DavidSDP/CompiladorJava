@@ -58,12 +58,13 @@ public class OptimizacionLocal implements Optimizador{
 		private HashMap<Integer, Arco> tablaAXD = new HashMap<>();			// Tabla de Arcos
 		
 		private HashMap<Integer, List<BloqueBasico>> tablaBLC = new HashMap<>();			// Tabla de Bucles Calculados
-		
+
 		private Integer nh;		// Última posición ocupada en tabla de Headers
 		private Integer naxd;	// Número de arcos x->d tales que d dom x
 
 		// TODO Temporal, hasta que saquemos el codigo de esta clase
 		private SecuenciaInstrucciones secuenciaInstrucciones;
+		private DefinicionesAccesibles definicionesAccesibles;
 		
 		public IdentificacionBucles(Grafo grafoFuncion, SecuenciaInstrucciones instrucciones) {
 			this.grafoBloquesBasicos = grafoFuncion;
@@ -104,6 +105,12 @@ public class OptimizacionLocal implements Optimizador{
 			// TODO Esto definitivamente no va aquí, pero de momento me va bien para poder
 			//  mantener htodo el código recogido en una sola parte.
 			for(Map.Entry<Integer, List<BloqueBasico>> e : this.tablaBLC.entrySet()) {
+
+				this.definicionesAccesibles = new DefinicionesAccesibles(
+						e.getValue(),
+						secuenciaInstrucciones,
+						grafoBloquesBasicos
+				);
 				identificacionDeInvariantes(e.getKey(), e.getValue());
 				// TODO identificacion de invariantes trasladables
 				// TODO traslado de invariantes
@@ -154,9 +161,87 @@ public class OptimizacionLocal implements Optimizador{
 			}
 		}
 
+		/**
+		 * Tabla de modos para las condiciones de invarianza:
+		 * 		1  -> La instruccion es invariante
+		 * 		0  -> La instruccion tiene todos los argumentos variantes
+		 * 		-1 -> El argumento izquierda no es invariante, pero el derecho si
+		 * 		-2 -> El argumento derecho no es invariante, pero el izquierdo si
+		 *
+		 * 	Ojo! Según esta definción el código estaría mal, pero vamos a ver si realmente está mal o no.
+		 *
+		 */
 		private int examinaInvariancia(InstruccionTresDirecciones i3d, Declaracion variable, HashMap<InstruccionTresDirecciones, Integer> modos, List<BloqueBasico> bloquesBucle) {
-			// TODO Crear esta mierda
-			return 0;
+			// Como reza el comentario de arriba, -2 significa que el argumento izquierda no es invariante. Esto tiene pinta
+			// de estar mal.
+			boolean argIzquierdaInvariante = (modos.get(i3d) == 0 || modos.get(i3d) == -2);
+			boolean argDerechaInvariante = (modos.get(i3d) == 0 || modos.get(i3d) == -1);
+
+			if (!argIzquierdaInvariante) {
+				argIzquierdaInvariante = i3d.primeroEsConstante();
+				if (!argIzquierdaInvariante) {
+					boolean extraer = true;
+					// TODO No se debería conocer la estructura del operando aquí fuera
+					for (InstruccionTresDirecciones definicion : definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor())) {
+						// TODO Ahora mismo no tenemos una forma de identificar si una instrucción pertenece al bloque basico.
+						boolean declaracionPerteneceABucle = true;
+						if (declaracionPerteneceABucle) {
+							extraer = false;
+						}
+					}
+					argIzquierdaInvariante = extraer;
+				}
+
+				// Si despues de mirar los usos definicion la variable sigue siendo invariante, tenemos que mirar si
+				// la definicion es única  y si esta es invariante.
+				// Si no se redefine en ningún punto y la definición es invariante, entonces podemos sacarla fuera.
+				if (!argIzquierdaInvariante) {
+					if (definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor()).size() == 1) {
+						for (InstruccionTresDirecciones declaracion : definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor())) {
+							argIzquierdaInvariante = modos.get(declaracion) > 0;
+						}
+					}
+				}
+			}
+
+			// Cuidado! En las instrucciones de copia segundo es el destino, no uno de los parámetros, así
+			// que esto depende de la instrucción. Ojito 2! para las funciones esto tampoco funciona ( menudo chiste )
+			if (!argDerechaInvariante) {
+				argDerechaInvariante = i3d.segundoEsConstante();
+				if (!argDerechaInvariante) {
+					boolean extraer = true;
+					// TODO No se debería conocer la estructura del operando aquí fuera
+					for (InstruccionTresDirecciones definicion : definicionesAccesibles.getDefiniciones(i3d, i3d.getSegundo().getValor())) {
+						// TODO Ahora mismo no tenemos una forma de identificar si una instrucción pertenece al bloque basico.
+						boolean declaracionPerteneceABucle = true;
+						if (declaracionPerteneceABucle) {
+							extraer = false;
+						}
+					}
+					argDerechaInvariante = extraer;
+				}
+
+				// Si despues de mirar los usos definicion la variable sigue siendo invariante, tenemos que mirar si
+				// la definicion es única  y si esta es invariante.
+				// Si no se redefine en ningún punto y la definición es invariante, entonces podemos sacarla fuera.
+				if (!argDerechaInvariante) {
+					if (definicionesAccesibles.getDefiniciones(i3d, i3d.getSegundo().getValor()).size() == 1) {
+						for (InstruccionTresDirecciones declaracion : definicionesAccesibles.getDefiniciones(i3d, i3d.getSegundo().getValor())) {
+							argDerechaInvariante = modos.get(declaracion) > 0;
+						}
+					}
+				}
+			}
+
+			if (argIzquierdaInvariante && argDerechaInvariante) {
+				return 1; // La instruccion es invariante
+			} else if (!argIzquierdaInvariante && !argDerechaInvariante) {
+				return 0; // La instruccion es variante
+			} else if (argIzquierdaInvariante) {
+				return -1;
+			} else { // Despues de htodo esto si llegamos aqui, singifica que el derecho es invariante
+				return -2;
+			}
 		}
 		
 		private void determinacionDeBucles() {

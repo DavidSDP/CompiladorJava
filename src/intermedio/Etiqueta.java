@@ -6,6 +6,10 @@
 
 package intermedio;
 
+import Procesador.Declaracion;
+
+import java.util.ArrayList;
+
 /**
  *
  * @author jesus
@@ -19,5 +23,15 @@ public class Etiqueta extends InstruccionTresDirecciones {
     @Override
     public String toMachineCode() {
         return primero.toString() + ": ;skip ;)\n";
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        return false;
+    }
+
+    @Override
+    public ArrayList<Declaracion> getArgumentos() {
+        return new ArrayList<>();
     }
 }

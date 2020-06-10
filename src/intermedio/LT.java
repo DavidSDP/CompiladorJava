@@ -53,4 +53,9 @@ public class LT extends InstruccionTresDirecciones {
     public InstruccionTresDirecciones getComplementario(Goto salto) {
         return new GTE(primero, segundo, salto.tercero);
     }
+
+    @Override
+    public boolean esDefinicion() {
+        return !(this.tercero instanceof OperandoEtiqueta);
+    }
 }

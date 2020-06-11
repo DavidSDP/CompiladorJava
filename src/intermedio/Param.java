@@ -35,4 +35,9 @@ public abstract class Param extends InstruccionTresDirecciones {
 
         return sb.toString();
     }
+
+    @Override
+    public boolean esDefinicion() {
+        return false;
+    }
 }

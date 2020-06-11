@@ -1,17 +1,33 @@
 package optimizacion;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import CodigoMaquina.Instruccion;
 import Procesador.AlmacenVariables;
 import Procesador.Declaracion;
 import intermedio.BloqueBasico;
 import intermedio.InstruccionTresDirecciones;
 import optimizacion.local.Grafo;
+
+class Invariante {
+	private InstruccionTresDirecciones instruccion;
+	private BloqueBasico bloque;
+
+	public Invariante(InstruccionTresDirecciones instruccion, BloqueBasico bloque) {
+		this.instruccion = instruccion;
+		this.bloque = bloque;
+	}
+
+	public InstruccionTresDirecciones getInstruccion() {
+		return this.instruccion;
+	}
+
+	public BloqueBasico getBloque() {
+		return this.bloque;
+	}
+}
 
 public class OptimizacionLocal implements Optimizador{
 	
@@ -65,6 +81,7 @@ public class OptimizacionLocal implements Optimizador{
 		// TODO Temporal, hasta que saquemos el codigo de esta clase
 		private SecuenciaInstrucciones secuenciaInstrucciones;
 		private DefinicionesAccesibles definicionesAccesibles;
+		private List<InstruccionTresDirecciones> instruccionesBucle;
 		
 		public IdentificacionBucles(Grafo grafoFuncion, SecuenciaInstrucciones instrucciones) {
 			this.grafoBloquesBasicos = grafoFuncion;
@@ -105,26 +122,87 @@ public class OptimizacionLocal implements Optimizador{
 			// TODO Esto definitivamente no va aquí, pero de momento me va bien para poder
 			//  mantener htodo el código recogido en una sola parte.
 			for(Map.Entry<Integer, List<BloqueBasico>> e : this.tablaBLC.entrySet()) {
-
+				// TODO Inversión de bucle.
 				this.definicionesAccesibles = new DefinicionesAccesibles(
 						e.getValue(),
 						secuenciaInstrucciones,
 						grafoBloquesBasicos
 				);
-				identificacionDeInvariantes(e.getKey(), e.getValue());
-				// TODO identificacion de invariantes trasladables
-				// TODO traslado de invariantes
+				this.instruccionesBucle = this.secuenciaInstrucciones.getInstrucciones(e.getValue());
+				List<Invariante> invariantes = identificacionDeInvariantes(e.getKey(), e.getValue());
+				BloqueBasico preencabezado = moverInvariantes(invariantes);
+				// TODO Actualizar el grafo para reflejar el preencabezado que se haya insertado
 			}
 		}
 
-		private void identificacionDeInvariantes(int indiceBucle, List<BloqueBasico> bloques) {
+		/**
+		 * Planteamiento de movimiento de invariantes:
+		 * 	1- Actualizar todos los bloques afectados por el movimiento de algún invariante.
+		 * 		Idealmente estos son todos los bloques hasta el que ha producido el cambio ( los siquientes )
+		 * 		no se ven afectados.
+		 * 		Ojo! Los bloques no tienen porque ser los del bucle, si no en el orden de aparición del código.
+		 * 	2- Añadir los invariantes antes de la primera instrucción del primer bloque del bucle y crear un bloque basico
+		 * 	    que identifique esas instrucciones como preencabezado. ( Esto fuerza a actualizar el grafo )
+		 *
+		 */
+		private BloqueBasico moverInvariantes(List<Invariante> invariantes) {
+			BloqueBasico primerBloque = tablaBB.get(0), bloque, preencabezado;
+			int primeraInstruccion = primerBloque.getInicio();
+			int numInvariantes = invariantes.size();
+			int posicion;
+			Invariante invariante;
+			HashMap<BloqueBasico, Integer> posiciones = new HashMap<>();
+
+			// Esto podría dar problemas ??
+			preencabezado = new BloqueBasico(primerBloque.getInicio(), primerBloque.getInicio() + numInvariantes - 1);
+
+			// Para evitar demasiadas complicaciones vamos a aplicar el offset a todos los bloques y después
+			// actualizaremos aquellos que hayan perdido instrucciones y los posteriores.
+			// De esta forma, el balance será correcto, en tanto que tendremos las siguientes situaciones:
+			//  1. El bloque estaba antes de un cambio; así que le hemos aumentado K instrucciones ( tantas como
+			//		instrucciones se hayan añadido al preencabezado
+			//  2. El bloque es el que contenía la instrucción; Así que hemos aumentado en K instrucciones inicio y fin
+			//		y ahora vamos a quitarle una instrucción, así que restamos por el final. ( Difícil de demostrar en texto
+			//		puedo explicarlo en voz)
+			//  3. El bloque esta despues de un cambio; así que hemos aumentado inicio y fin pero no le afectaba a el ( ya que
+			//     se ha sumado y restado 1 antes de mi posición y eso me deja igual.
+			for (int idx = 0; idx < tablaBB.size(); idx++) {
+				bloque = tablaBB.get(idx);
+				posiciones.put(bloque, idx);
+				bloque.aplicarDesplazamiento(numInvariantes);
+			}
+
+			int fin;
+			for (int idx = 0; idx < numInvariantes; idx++) {
+				invariante = invariantes.get(idx);
+				// Actualizamos el bloque actual
+				fin = invariante.getBloque().getFin();
+				invariante.getBloque().setFin(fin - 1);
+
+				posicion = posiciones.get(invariante.getBloque());
+				for (int bloqueIdx = posicion + 1; bloqueIdx < tablaBB.size(); bloqueIdx++) {
+					bloque = tablaBB.get(bloqueIdx);
+					// Neutralizamos el offset para la instrucción
+					bloque.aplicarDesplazamiento(-1);
+				}
+			}
+
+			List<InstruccionTresDirecciones> instrucciones = invariantes.stream()
+					.map(Invariante::getInstruccion).collect(Collectors.toList());
+			// Modificamos la secuencia de instrucciones.
+			secuenciaInstrucciones.recolocar(instrucciones, primeraInstruccion);
+			return preencabezado;
+		}
+
+		private List<Invariante> identificacionDeInvariantes(int indiceBucle, List<BloqueBasico> bloques) {
 			AlmacenVariables almacenVariables = AlmacenVariables.getInstance();
 			// Por si acaso reseteamos el conteo de las variables ( aunque se supone
 			// que ya deberían haberse inicializado )
 			almacenVariables.resetAsignaciones();
 
 			// TODO Esta tabla de modos debería estar en algún otro lado que no fuera aquí.
-			//  Por no hablar de que es bastante explicito. Alomejor una estructura alrededor de esto no nos haría daño
+			//  Por no hablar de que es bastante explicito.
+			//  Alomejor una estructura alrededor de esto no nos haría daño
 			HashMap<InstruccionTresDirecciones, Integer> modos = new HashMap<>();
 
 			for (BloqueBasico bloqueBasico : bloques) {
@@ -139,9 +217,9 @@ public class OptimizacionLocal implements Optimizador{
 				}
 			}
 
-			ArrayList<InstruccionTresDirecciones> invariantes = new ArrayList<>();
-			boolean hayCambios = true;
-			while(hayCambios) {
+			ArrayList<Invariante> invariantes = new ArrayList<>();
+			boolean hayCambios;
+			do {
 				hayCambios = false;
 				for (BloqueBasico bloqueBasico : bloques) {
 					// TODO Transformar esta mierda en un iterador
@@ -153,20 +231,39 @@ public class OptimizacionLocal implements Optimizador{
 							modos.put(i3d, nuevoModo);
 							if (nuevoModo > 0) {
 								hayCambios = true;
-								invariantes.add(i3d);
+								invariantes.add(new Invariante(i3d, bloqueBasico));
 							}
 						}
 					}
 				}
+			} while(hayCambios);
+
+			// Fase 2: Identificación de las invariantes que se pueden trasladar. El resto no hace
+			// falta ni retornarlas. Total, no las vamos a tocar.
+			Set<InstruccionTresDirecciones> usos;
+			ArrayList<Invariante> invariantesTrasladables = new ArrayList<>();
+			for (Invariante invariante: invariantes) {
+				for (Map.Entry<Declaracion, Set<InstruccionTresDirecciones>> entry: definicionesAccesibles.getDefiniciones(invariante.getInstruccion()).entrySet()) {
+					for(InstruccionTresDirecciones instruccion: entry.getValue()) {
+						// Ojo! La comprobación está hecha ad-hoc así. Creo que impacta menos
+						// 2 llamadas a funciones asintóticamente constantes, que tener que instanciar un hashset
+						// para asegurarse de que es el único elemento en el conjunto.
+						usos = definicionesAccesibles.getUsos(instruccion);
+						if (usos.size() == 1 && usos.contains(invariante)) {
+							invariantesTrasladables.add(invariante);
+						}
+					}
+				}
 			}
+			return invariantesTrasladables;
 		}
 
 		/**
 		 * Tabla de modos para las condiciones de invarianza:
 		 * 		1  -> La instruccion es invariante
 		 * 		0  -> La instruccion tiene todos los argumentos variantes
-		 * 		-1 -> El argumento izquierda no es invariante, pero el derecho si
-		 * 		-2 -> El argumento derecho no es invariante, pero el izquierdo si
+		 * 		-1 -> El argumento izquierdo es invariante
+		 * 		-2 -> El argumento derecho es invariante
 		 *
 		 * 	Ojo! Según esta definción el código estaría mal, pero vamos a ver si realmente está mal o no.
 		 *
@@ -183,11 +280,7 @@ public class OptimizacionLocal implements Optimizador{
 					boolean extraer = true;
 					// TODO No se debería conocer la estructura del operando aquí fuera
 					for (InstruccionTresDirecciones definicion : definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor())) {
-						// TODO Ahora mismo no tenemos una forma de identificar si una instrucción pertenece al bloque basico.
-						boolean declaracionPerteneceABucle = true;
-						if (declaracionPerteneceABucle) {
-							extraer = false;
-						}
+						extraer = !instruccionesBucle.contains(definicion);
 					}
 					argIzquierdaInvariante = extraer;
 				}
@@ -197,9 +290,8 @@ public class OptimizacionLocal implements Optimizador{
 				// Si no se redefine en ningún punto y la definición es invariante, entonces podemos sacarla fuera.
 				if (!argIzquierdaInvariante) {
 					if (definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor()).size() == 1) {
-						for (InstruccionTresDirecciones declaracion : definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor())) {
-							argIzquierdaInvariante = modos.get(declaracion) > 0;
-						}
+						InstruccionTresDirecciones declaracion = definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor()).iterator().next();
+						argIzquierdaInvariante = modos.get(declaracion) > 0;
 					}
 				}
 			}
@@ -212,11 +304,7 @@ public class OptimizacionLocal implements Optimizador{
 					boolean extraer = true;
 					// TODO No se debería conocer la estructura del operando aquí fuera
 					for (InstruccionTresDirecciones definicion : definicionesAccesibles.getDefiniciones(i3d, i3d.getSegundo().getValor())) {
-						// TODO Ahora mismo no tenemos una forma de identificar si una instrucción pertenece al bloque basico.
-						boolean declaracionPerteneceABucle = true;
-						if (declaracionPerteneceABucle) {
-							extraer = false;
-						}
+						extraer = !instruccionesBucle.contains(definicion);
 					}
 					argDerechaInvariante = extraer;
 				}
@@ -226,9 +314,8 @@ public class OptimizacionLocal implements Optimizador{
 				// Si no se redefine en ningún punto y la definición es invariante, entonces podemos sacarla fuera.
 				if (!argDerechaInvariante) {
 					if (definicionesAccesibles.getDefiniciones(i3d, i3d.getSegundo().getValor()).size() == 1) {
-						for (InstruccionTresDirecciones declaracion : definicionesAccesibles.getDefiniciones(i3d, i3d.getSegundo().getValor())) {
-							argDerechaInvariante = modos.get(declaracion) > 0;
-						}
+						InstruccionTresDirecciones declaracion = definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor()).iterator().next();
+						argDerechaInvariante = modos.get(declaracion) > 0;
 					}
 				}
 			}

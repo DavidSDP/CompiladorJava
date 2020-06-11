@@ -33,6 +33,11 @@ public class BloqueBasico {
         this.fin = fin;
     }
 
+    public void aplicarDesplazamiento(int numInstrucciones) {
+        this.inicio += numInstrucciones;
+        this.fin += numInstrucciones;
+    }
+
     @Override
     public int hashCode() {
         return inicio;

@@ -54,10 +54,6 @@ public class Grafo {
         predecesores.put(nodoDestino, _predecesores);
     }
     
-    public ArrayList<Nodo> getVertices() {
-    	return this.vertices;
-    }
-    
     public List<BloqueBasico> getBloquesBasicos(){
     	return this.vertices.stream().map(m -> m.getBloqueBasico()).collect(Collectors.toList());
     }
@@ -71,7 +67,9 @@ public class Grafo {
     
     public List<BloqueBasico> getSucesores(BloqueBasico bloque) {
     	if(bloqueToNodo.get(bloque) != null && this.sucesores.get(bloqueToNodo.get(bloque)) != null) {
-    		return this.sucesores.get(bloqueToNodo.get(bloque)).stream().map(m -> m.getDestino().getBloqueBasico()).collect(Collectors.toList());
+    		return this.sucesores.get(bloqueToNodo.get(bloque)).stream()
+                    .map(m -> m.getDestino().getBloqueBasico())
+                    .collect(Collectors.toList());
     	}
     	return new ArrayList<>();
     }

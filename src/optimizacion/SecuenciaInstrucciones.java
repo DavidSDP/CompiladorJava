@@ -72,6 +72,14 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
 	public List<InstruccionTresDirecciones> getInstrucciones() {
 		return instrucciones;
 	}
+
+    public List<InstruccionTresDirecciones> getInstrucciones(List<BloqueBasico> bloques) {
+        ArrayList<InstruccionTresDirecciones> instruccionesBloques = new ArrayList<>();
+        for (BloqueBasico bloque : bloques) {
+            instruccionesBloques.addAll(instrucciones.subList(bloque.getInicio(), bloque.getFin()));
+        }
+        return instruccionesBloques;
+    }
 	
 	@Override
 	public SecuenciaInstrucciones clone(){
@@ -222,6 +230,19 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
         }
 
         return grafoFlujoBloquesBasicos;
+    }
+
+    public void recolocar(List<InstruccionTresDirecciones> instrucciones, int instruccionReferencia) {
+	    assert instruccionReferencia > 0 && instruccionReferencia < this.instrucciones.size();
+
+	    InstruccionTresDirecciones referencia = this.instrucciones.get(instruccionReferencia);
+	    // Se obtiene la posicion aqui por que si la instruccion de referencia formara parte del conjunto de instrucciones
+        // a recolocar, la borrariamos y no podríamos saber donde tenemos que insertar los elementos.
+	    int posicion = this.instrucciones.indexOf(referencia);
+	    this.instrucciones.removeAll(instrucciones);
+
+	    assert posicion > -1;
+	    this.instrucciones.addAll(posicion, instrucciones);
     }
 
 	private static boolean esEtiquetaBloquePropio(InstruccionTresDirecciones instruccion, BloqueBasico bloque, HashMap<OperandoEtiqueta, BloqueBasico> etiquetaToLider) {

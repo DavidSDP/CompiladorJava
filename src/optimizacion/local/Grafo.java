@@ -31,6 +31,8 @@ public class Grafo {
         Nodo nodo = new Nodo(origen);
         bloqueToNodo.put(origen, nodo);
         vertices.add(nodo);
+        predecesores.put(nodo, new ArrayList<>());
+        sucesores.put(nodo, new ArrayList<>());
     }
 
     // Los vertices tienen que existir
@@ -60,7 +62,7 @@ public class Grafo {
     
     public List<BloqueBasico> getPredecesores(BloqueBasico bloque) {
     	if(bloqueToNodo.get(bloque) != null && this.predecesores.get(bloqueToNodo.get(bloque)) != null) {
-    		return this.predecesores.get(bloqueToNodo.get(bloque)).stream().map(m -> m.getOrigen().getBloqueBasico()).collect(Collectors.toList());
+    		return this.predecesores.get(bloqueToNodo.get(bloque)).stream().map(m -> m.getDestino().getBloqueBasico()).collect(Collectors.toList());
     	}
     	return new ArrayList<>();
     }
@@ -83,5 +85,42 @@ public class Grafo {
 		});
 		return arcos;
 	}
-    
+
+    public void removeArista(BloqueBasico origen, BloqueBasico destino) {
+        Nodo nodoOrigen = bloqueToNodo.get(origen);
+        Nodo nodoDestino = bloqueToNodo.get(destino);
+
+        Arista arista = sucesores.get(nodoOrigen).stream().filter(ar -> ar.getDestino() == nodoDestino).findFirst().orElse(null);
+        assert arista != null;
+        sucesores.get(nodoOrigen).remove(arista);
+
+        arista = predecesores.get(nodoDestino).stream().filter(ar -> ar.getDestino() == nodoOrigen).findFirst().orElse(null);
+        assert arista != null;
+        predecesores.get(nodoDestino).remove(arista);
+    }
+
+    public List<BloqueBasico> getVerticesInconnexos() {
+        paintGraph();
+        return this.vertices.stream().filter(Nodo::isUnvisited).map(Nodo::getBloqueBasico).collect(Collectors.toList());
+    }
+
+    private void paintGraph() {
+        for (Nodo vertice: vertices) {
+            vertice.markUnvisited();
+        }
+        // Suponemos que el vertice de inicio es el primero #PorqueYoLoValgo
+        visit(vertices.get(0));
+    }
+
+    private void visit(Nodo vertice) {
+        Nodo legitimoSucesor;
+        vertice.markVisiting();
+        for (Arista sucesor: sucesores.get(vertice)) {
+            legitimoSucesor = sucesor.getDestino();
+            if (legitimoSucesor.isUnvisited()) {
+                visit(legitimoSucesor);
+            }
+        }
+        vertice.markVisited();
+    }
 }

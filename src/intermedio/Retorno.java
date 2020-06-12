@@ -4,10 +4,13 @@ import CodigoMaquina.*;
 import CodigoMaquina.especiales.Contenido;
 import CodigoMaquina.especiales.Indireccion;
 import CodigoMaquina.especiales.Literal;
+import Procesador.Declaracion;
 import Procesador.DeclaracionFuncion;
 import Procesador.GlobalVariables;
 
 import javax.xml.crypto.Data;
+
+import java.util.ArrayList;
 
 import static CodigoMaquina.Variables.STACK_TOP;
 
@@ -53,6 +56,10 @@ public class Retorno extends InstruccionTresDirecciones {
         bI.add(new Instruccion(OpCode.RTS));
 
         return bI.toString();
+    }
+
+    public ArrayList<Declaracion> getArgumentos() {
+        return new ArrayList<>();
     }
 
     @Override

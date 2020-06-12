@@ -248,6 +248,11 @@ public class Operando {
         return profundidad;
     }
 
+    @Override
+    public int hashCode() {
+        return valor.hashCode();
+    }
+
     private int mapBooleanValue(String value) {
         return value.equals("true") ? 1 : 0;
     }

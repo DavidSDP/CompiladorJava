@@ -1,9 +1,6 @@
 package optimizacion;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import intermedio.BloqueBasico;
 import intermedio.Clase;
@@ -243,6 +240,17 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
 
 	    assert posicion > -1;
 	    this.instrucciones.addAll(posicion, instrucciones);
+    }
+
+    public void eliminaCodigoMuerto(Grafo grafo) {
+        List<BloqueBasico> shootemDown = grafo.getVerticesInconnexos();
+        for (BloqueBasico bloque: shootemDown) {
+            for (int idx = bloque.getInicio(); idx <= bloque.getFin(); idx++) {
+                instrucciones.set(idx, null);
+            }
+        }
+
+        instrucciones.removeIf(Objects::isNull);
     }
 
 	private static boolean esEtiquetaBloquePropio(InstruccionTresDirecciones instruccion, BloqueBasico bloque, HashMap<OperandoEtiqueta, BloqueBasico> etiquetaToLider) {

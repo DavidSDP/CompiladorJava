@@ -3,14 +3,7 @@ package optimizacion.mirilla;
 import java.util.ArrayList;
 
 import Procesador.DeclaracionConstante;
-import intermedio.And;
-import intermedio.EQ;
-import intermedio.InstruccionTresDirecciones;
-import intermedio.NE;
-import intermedio.Operando;
-import intermedio.Or;
-import intermedio.Producto;
-import intermedio.Suma;
+import intermedio.*;
 import optimizacion.Optimizador;
 import optimizacion.RetornoOptimizacion;
 import optimizacion.SecuenciaInstrucciones;
@@ -46,6 +39,11 @@ public class NormalizacionOperandos implements Optimizador{
 	            	break;
 			}
         	nuevasInstrucciones.add(nuevaInstruccion);
+			if (nuevaInstruccion.esDefinicion()) {
+				// TODO No se si esto es lo correcto. Pero por el momento, si esto fuera una declaración, lo deberíamos
+				//  añadir al conjunto de declaraciones. ( No se si pueda crear inconsistencia con el resto del código )
+				Definiciones.getInstance().add(nuevaInstruccion);
+			}
 		}
 		return new RetornoOptimizacion(nuevasInstrucciones, cambiado);
 	}
@@ -88,7 +86,7 @@ public class NormalizacionOperandos implements Optimizador{
 			instruccion.setSegundo(op1);
 			cambiado = true;
 		}else if(!op1Constante && !op2Constante) {
-			// Ordenamos seg�n valor nv
+			// Ordenamos seg�n valor nv
 			if(op1.getValor().getId().getNv() > op2.getValor().getId().getNv()) {
 				// Invertimos operandos
 				instruccion.setPrimero(op2);
@@ -96,7 +94,7 @@ public class NormalizacionOperandos implements Optimizador{
 				cambiado = true;
 			}
 		}else {
-			// TODO: Aplicar optimizaci�n de constantes
+			// TODO: Aplicar optimizaci�n de constantes
 		}
 		return cambiado;
 	}

@@ -119,7 +119,6 @@ public class DefinicionesAccesibles {
         HashSet<InstruccionTresDirecciones> tempG;
         HashSet<InstruccionTresDirecciones> tempK;
         int cantidadBloques = bloques.size();
-        // E y S no están dentro del algoritmo, por tanto, los obviamos.
         for (int idx = 2; idx < cantidadBloques; idx++) {
             actual = this.bloques.get(idx);
             // Inicializamos G / K a vacío
@@ -143,6 +142,8 @@ public class DefinicionesAccesibles {
         // Si nos fijamos en la segunda fase del algoritmo, el único bloque que excluimos es el de inicio
         // por tanto, a pesar de que hemos excluido S de la inicialización, debemos inizializarlo a vacio
         // Puede que esto nos de problemas, ya lo veremos.
+        g.put(bloques.get(0), new HashSet<>());
+        k.put(bloques.get(0), new HashSet<>());
         g.put(bloques.get(1), new HashSet<>());
         k.put(bloques.get(1), new HashSet<>());
     }
@@ -157,11 +158,9 @@ public class DefinicionesAccesibles {
 
         // Ojo! Solo excluimos E. Se ha tenido que retocar la función rellenarGK debido
         // a esta peculiaridad
-        int cantidadBloques = bloques.size();
-        for (int idx = 1; idx < cantidadBloques; idx++) {
-            actual = bloques.get(idx);
-            tempOut = new HashSet<>(g.get(actual));
-            out.put(actual, tempOut);
+        for (BloqueBasico bloque : bloques) {
+            tempOut = new HashSet<>(g.get(bloque));
+            out.put(bloque, tempOut);
         }
 
         List<BloqueBasico> predecesores;

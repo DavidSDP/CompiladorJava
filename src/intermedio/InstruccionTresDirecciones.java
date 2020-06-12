@@ -134,4 +134,44 @@ public abstract class InstruccionTresDirecciones implements MachineCodeSerializa
         argumentos.add(segundo.getValor());
         return argumentos;
     }
+
+    @Override
+    public int hashCode() {
+        String str = operacion.toString();
+        if (this.primero != null) {
+            str += " " + this.primero.hashCode();
+        }
+
+        if (this.segundo != null) {
+            str += " " + this.segundo.hashCode();
+        }
+
+        if (this.tercero != null) {
+            str += " " + this.tercero.hashCode();
+        }
+
+//        System.out.print(this);
+//        System.out.print(" ");
+//        System.out.print(str);
+//        System.out.print(" ");
+//        System.out.println(str.hashCode());
+
+        return str.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof InstruccionTresDirecciones)) {
+            return false;
+        }
+
+        InstruccionTresDirecciones other = (InstruccionTresDirecciones)obj;
+
+        if (other.operacion != operacion) {
+            return false;
+        }
+
+        // Primer intento ... Vamos a empezar comprobando solo si los punteros de los operandos son los mismos.
+        return other.primero == primero && other.segundo == segundo && other.tercero == tercero;
+    }
 }

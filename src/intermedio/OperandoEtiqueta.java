@@ -30,7 +30,6 @@ public class OperandoEtiqueta extends Operando {
 
     @Override
     public int hashCode() {
-        System.out.println(this.etiqueta + " " + this.etiqueta.hashCode());
         return this.etiqueta.hashCode();
     }
 

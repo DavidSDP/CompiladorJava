@@ -43,22 +43,30 @@ public class OptimizacionLocal implements Optimizador{
         ArrayList<RangoInstruccionesFuncion> funciones = new ArrayList<>();
         HashMap<RangoInstruccionesFuncion, Grafo> grafosFunciones = new HashMap<>();
         Grafo grafoFuncion;
-        RangoInstruccionesFuncion rangoInstrucciones = secuenciaInstrucciones.getSiguienteFuncion(0);
+        int instruccionInicial = 0;
+        RangoInstruccionesFuncion rangoInstrucciones = secuenciaInstrucciones.getSiguienteFuncion(instruccionInicial);
+
         while (rangoInstrucciones != null) {
+
             grafoFuncion = secuenciaInstrucciones.getGrafoFlujoFuncion(rangoInstrucciones);
+            secuenciaInstrucciones.eliminaCodigoMuerto(grafoFuncion);
+            // Ni el grafo ni el rango de instrucciones es fiable ya, así que tenemos que recalcularlo de nuevo.
+			rangoInstrucciones = secuenciaInstrucciones.getSiguienteFuncion(instruccionInicial);
+			grafoFuncion = secuenciaInstrucciones.getGrafoFlujoFuncion(rangoInstrucciones);
+			instruccionInicial = rangoInstrucciones.getFin() + 1;
+
+
             funciones.add(rangoInstrucciones);
             grafosFunciones.put(rangoInstrucciones, grafoFuncion);
-            rangoInstrucciones = secuenciaInstrucciones.getSiguienteFuncion(rangoInstrucciones.getFin() + 1);
+            rangoInstrucciones = secuenciaInstrucciones.getSiguienteFuncion(instruccionInicial);
         }
         
         HashMap<RangoInstruccionesFuncion, IdentificacionBucles> identificacionBucles = new HashMap<>();
         for(RangoInstruccionesFuncion rangoInstruccionesFuncion: funciones) {
         	IdentificacionBucles idBucles = new IdentificacionBucles(grafosFunciones.get(rangoInstruccionesFuncion), secuenciaInstrucciones);
-        	System.out.println(rangoInstruccionesFuncion.toString());
-        	idBucles.print();
         	identificacionBucles.put(rangoInstruccionesFuncion, idBucles);
         }
-        return null;
+        return new RetornoOptimizacion(secuenciaInstrucciones.getInstrucciones(), true);
 	}
 	
 	public static class IdentificacionBucles {
@@ -119,19 +127,39 @@ public class OptimizacionLocal implements Optimizador{
 			// Algoritmo de identificación de bucles (Rellenado de tabla BLC)
 			determinacionDeBucles();
 
+			this.definicionesAccesibles = new DefinicionesAccesibles(
+					tablaBB,
+					secuenciaInstrucciones,
+					grafoBloquesBasicos
+			);
 			// TODO Esto definitivamente no va aquí, pero de momento me va bien para poder
 			//  mantener htodo el código recogido en una sola parte.
 			for(Map.Entry<Integer, List<BloqueBasico>> e : this.tablaBLC.entrySet()) {
+
 				// TODO Inversión de bucle.
-				this.definicionesAccesibles = new DefinicionesAccesibles(
-						e.getValue(),
-						secuenciaInstrucciones,
-						grafoBloquesBasicos
-				);
 				this.instruccionesBucle = this.secuenciaInstrucciones.getInstrucciones(e.getValue());
 				List<Invariante> invariantes = identificacionDeInvariantes(e.getKey(), e.getValue());
-				BloqueBasico preencabezado = moverInvariantes(invariantes);
-				// TODO Actualizar el grafo para reflejar el preencabezado que se haya insertado
+				BloqueBasico preencabezado = moverInvariantes(invariantes, e.getValue());
+
+				/*
+				Un encabezado puede tener dos tipos de predecesores:
+					1- Los que son ajenos al bucle
+					2- Todos los bloques finales del bucle que provocan una vuelta al encabezado.
+				Cuando insertamos el preencabezado, nos interesa que lo ajenos al bucle representen que
+				el punto de entrada es ese.
+				Mientras que, en el caso de los finales del bucle, lo que nos interesa es que salten al encabezado. Obviando,
+				de esta forma, cualquier tipo de calculo invariante.
+				 */
+				grafoBloquesBasicos.addVertice(preencabezado);
+				BloqueBasico encabezado = this.tablaH.get(e.getKey());
+				for(BloqueBasico predecesor: grafoBloquesBasicos.getPredecesores(encabezado)) {
+					if(!domina(encabezado, predecesor)) {
+						// TODO ¿Deberíamos poner esta arista como una arista adyacente?
+						grafoBloquesBasicos.addArista(predecesor, preencabezado);
+						grafoBloquesBasicos.removeArista(predecesor, encabezado);
+					}
+				}
+				grafoBloquesBasicos.addArista(preencabezado, encabezado);
 			}
 		}
 
@@ -145,8 +173,8 @@ public class OptimizacionLocal implements Optimizador{
 		 * 	    que identifique esas instrucciones como preencabezado. ( Esto fuerza a actualizar el grafo )
 		 *
 		 */
-		private BloqueBasico moverInvariantes(List<Invariante> invariantes) {
-			BloqueBasico primerBloque = tablaBB.get(0), bloque, preencabezado;
+		private BloqueBasico moverInvariantes(List<Invariante> invariantes, List<BloqueBasico> bloquesBucle) {
+			BloqueBasico primerBloque = bloquesBucle.get(0), bloque, preencabezado;
 			int primeraInstruccion = primerBloque.getInicio();
 			int numInvariantes = invariantes.size();
 			int posicion;
@@ -225,8 +253,9 @@ public class OptimizacionLocal implements Optimizador{
 					// TODO Transformar esta mierda en un iterador
 					for(int idx = bloqueBasico.getInicio(); idx <= bloqueBasico.getFin(); idx++) {
 						InstruccionTresDirecciones i3d = secuenciaInstrucciones.get(idx);
+						// TODO Probablemente aqui recibamos que no son
 						Declaracion destino = i3d.getDestino();
-						if (almacenVariables.getAsignaciones(destino) == 1 && modos.get(i3d) <= 0) {
+						if (destino != null && almacenVariables.getAsignaciones(destino) == 1 && modos.get(i3d) <= 0) {
 							int nuevoModo = examinaInvariancia(i3d, destino, modos, bloques);
 							modos.put(i3d, nuevoModo);
 							if (nuevoModo > 0) {
@@ -271,8 +300,8 @@ public class OptimizacionLocal implements Optimizador{
 		private int examinaInvariancia(InstruccionTresDirecciones i3d, Declaracion variable, HashMap<InstruccionTresDirecciones, Integer> modos, List<BloqueBasico> bloquesBucle) {
 			// Como reza el comentario de arriba, -2 significa que el argumento izquierda no es invariante. Esto tiene pinta
 			// de estar mal.
-			boolean argIzquierdaInvariante = (modos.get(i3d) == 0 || modos.get(i3d) == -2);
-			boolean argDerechaInvariante = (modos.get(i3d) == 0 || modos.get(i3d) == -1);
+			boolean argIzquierdaInvariante = (modos.get(i3d) == 0 || modos.get(i3d) == -1);
+			boolean argDerechaInvariante = (modos.get(i3d) == 0 || modos.get(i3d) == -2);
 
 			if (!argIzquierdaInvariante) {
 				argIzquierdaInvariante = i3d.primeroEsConstante();
@@ -380,7 +409,9 @@ public class OptimizacionLocal implements Optimizador{
 				List<BloqueBasico> dominadoresDeXsinX = getSubListaSinBloque(this.dominadores(x), x);
 				for(BloqueBasico d: dominadoresDeXsinX) {
 					Boolean d_esDominadorInmediatoDe_x = true;
-					for(BloqueBasico c: getSubListaSinBloque(getSubListaSinBloque(this.dominadores(x), x), d)) {
+					List<BloqueBasico> candidatos = getSubListaSinBloque(dominadoresDeXsinX, d);
+
+					for(BloqueBasico c: candidatos) {
 						if(this.dominadores(c).contains(d)) {
 							d_esDominadorInmediatoDe_x = false;
 							break;
@@ -391,6 +422,17 @@ public class OptimizacionLocal implements Optimizador{
 						break;
 					}
 				}
+			}
+
+			// Fixus Horribilus!. Resulta que tal cual está el algoritmo, a la hora de rellenar los dominadores
+			// y los dominadores inmediatos, si existe código muerto, pues detecta que S es el dominador de dicho código.
+			// El problema no acaba aquí, si no que identifica de forma errónea bucles dando falsos positivos.
+			// Por tanto, toca arremangarse y sacar la basura.
+			BloqueBasico S = getBloqueS();
+			for(Map.Entry<BloqueBasico, BloqueBasico> entry : tablaDI.entrySet().stream().filter(entry -> entry.getValue().equals(S)).collect(Collectors.toSet())) {
+				// ¿Tiene sentido borrar estas mierdas de las tablas de denominadores?
+				tablaDI.remove(entry.getKey());
+				tablaDom.put(entry.getKey(), new ArrayList<>());
 			}
 			
 		}
@@ -405,12 +447,11 @@ public class OptimizacionLocal implements Optimizador{
 			
 			List<BloqueBasico> PND = new ArrayList<>();
 			tablaBB.stream().forEach(b->PND.add(b));
-			
 			// Inicialización
-			List<BloqueBasico> todosLosBloquesBasicos = new ArrayList<>();
+			ArrayList<BloqueBasico> todosLosBloquesBasicos = new ArrayList<>();
 			tablaBB.stream().forEach(b->todosLosBloquesBasicos.add(b));
 			for(BloqueBasico b: tablaBB) {
-				tablaDom.put(b, todosLosBloquesBasicos);
+				tablaDom.put(b, (ArrayList<BloqueBasico>)todosLosBloquesBasicos.clone());
 			}
 			
 			// Dominador de E
@@ -428,7 +469,6 @@ public class OptimizacionLocal implements Optimizador{
 				// D = BB
 				List<BloqueBasico> conjuntoD = new ArrayList<>();
 				tablaBB.stream().forEach(b->conjuntoD.add(b));
-				
 				if(this.grafoBloquesBasicos.getPredecesores(a) != null) {
 					this.grafoBloquesBasicos.getPredecesores(a).stream().forEach(c->{
 						List<BloqueBasico> new_conjuntoD = interseccion(conjuntoD, dominadores(c));
@@ -451,9 +491,7 @@ public class OptimizacionLocal implements Optimizador{
 					}
 					tablaDom.put(a, conjuntoD);
 				}
-				
 			}
-			
 		}
 		
 		private Boolean sonIguales(List<BloqueBasico> a, List<BloqueBasico> b){
@@ -490,6 +528,10 @@ public class OptimizacionLocal implements Optimizador{
 			return this.tablaBB.stream().filter(p->p.getEs_E()).findFirst().get();
 		}
 
+		private BloqueBasico getBloqueS() {
+			return this.tablaBB.stream().filter(p->p.getEs_S()).findFirst().get();
+		}
+
 		private void identificacionBucles() {
 			nh = 0;
 			naxd = 0;
@@ -508,14 +550,15 @@ public class OptimizacionLocal implements Optimizador{
 		}
 
 		private boolean domina(BloqueBasico a, BloqueBasico b) {
-			BloqueBasico actual = tablaDI.get(b);
-			Boolean fin = false;
-			while(!actual.equals(a) && !fin) {
-				BloqueBasico siguiente = tablaDI.get(actual);
-				fin = siguiente.equals(actual);
-				actual = siguiente;
-			}
-			return actual.equals(a);
+			return this.tablaDom.get(b).indexOf(a) > -1;
+//			BloqueBasico actual = tablaDI.get(b);
+//			Boolean fin = false;
+//			while(!actual.equals(a) && !fin) {
+//				BloqueBasico siguiente = tablaDI.get(actual);
+//				fin = siguiente.equals(actual);
+//				actual = siguiente;
+//			}
+//			return actual.equals(a);
 		}
 		
 	}

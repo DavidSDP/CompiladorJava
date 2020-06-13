@@ -28,4 +28,17 @@ public class OperandoEtiqueta extends Operando {
         return etiqueta; 
     }
 
+    @Override
+    public int hashCode() {
+        return this.etiqueta.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        OperandoEtiqueta other = (OperandoEtiqueta)obj;
+        return this.etiqueta.equals(other.etiqueta);
+    }
 }

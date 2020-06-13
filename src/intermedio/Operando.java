@@ -49,13 +49,6 @@ public class Operando {
     /**
      * Utilidad para generar el código relacionado con la busqueda de las variables a traves de los
      * bloques de activación
-     * <p>
-     * Esto NO esta bien hecho. Ahora mismo escalamos por los diferentes bloques de activación
-     * que son los inmediatamente superiores en el orden de llamada. Pero esto no refleja
-     * los ambitos de ejecución.
-     * <p>
-     * Para arreglarlo, realmente se tiene que escalar por los access links que realmente contienen
-     * el puntero al entorno contenedor ( no tiene porque ser el bloque de activacion anterior )
      */
     public BloqueInstrucciones putActivationBlockAddressInRegister() {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
@@ -101,31 +94,75 @@ public class Operando {
         return bI;
     }
 
-    public BloqueInstrucciones createDescriptor(DataRegister DX, AddressRegister AX) {
-        int size;
-
-        if (this.valor instanceof DeclaracionConstante) {
-            size = ((String)((DeclaracionConstante) this.valor).getValor()).length();
-        } else {
-            size = ((DeclaracionArray)this.valor).getLongitudArray();
-        }
-
+    /**
+     * Places the variable address in the specified register
+     */
+    public BloqueInstrucciones loadAddress(AddressRegister AX) {
         BloqueInstrucciones bI = new BloqueInstrucciones();
-        bI.add(new Instruccion(OpCode.JSR, new OperandoEspecial("DMMALLOC")));
-        bI.add(new Instruccion(OpCode.CLR, Size.L, DX));
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(size), DX));
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, AX));
+        bI.add(this.putActivationBlockAddressInRegister());
+        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(valor.getDesplazamiento()), AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AX));
         return bI;
     }
 
-    public BloqueInstrucciones loadStringDescriptorConstante(DataRegister DX, AddressRegister AX) {
+    /**
+     * Creating a descriptor modifies the next registers:
+     *  - Data:    D0
+     *  - Address: A0, A1
+     */
+    private BloqueInstrucciones createDescriptor(AddressRegister AX) {
+        int length, size;
+
+        if (this.valor instanceof DeclaracionConstante) {
+            DeclaracionConstante desc = (DeclaracionConstante) this.valor;
+            length = ((String)desc.getValor()).length();
+            // TODO 2 hard-coded para evitar una avalancha de cambios antes de comprobar que
+            //  funciona.
+            size = 2 * length;
+        } else {
+            DeclaracionArray desc = (DeclaracionArray)this.valor;
+            length = desc.getLongitudArray();
+            size = desc.getTipoDato().getSize() * length;
+        }
+
+        BloqueInstrucciones bI = new BloqueInstrucciones();
+        /*
+            Request a DM block for the container descriptor itself.
+            This block is organized as follows:
+            ------------------------------
+            |  ContentSize  |  RefCount  |
+            ------------------------------
+            |      Content address       |
+            ------------------------------
+            In order to access every single part we can use relative shifts as follows:
+                - 0(DescriptorAddress).W = ContentSize
+                - 2(DescriptorAddress).W = RefCount
+                - 4(DescriptorAddress).L = ContentAddress
+        */
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(8), DataRegister.D0));
+        bI.add(new Instruccion(OpCode.JSR, new OperandoEspecial("DMMALLOC")));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, AddressRegister.A1));
+        // Save the ContentSize
+        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(length), Contenido.__(AddressRegister.A1)));
+        // Initialize the RefCount
+        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(0), Indireccion.__(2, AddressRegister.A1)));
+        // Request memory for the content itself.
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(size), DataRegister.D0));
+        bI.add(new Instruccion(OpCode.JSR, new OperandoEspecial("DMMALLOC")));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, Indireccion.__(4, AddressRegister.A1)));
+        bI.add(new Instruccion(OpCode.MOVEA, Size.L, AddressRegister.A1, AX));
+        return bI;
+    }
+
+    public BloqueInstrucciones loadStringDescriptorConstante(AddressRegister AX) {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
     	
         DeclaracionConstante constante = (DeclaracionConstante) this.getValor();
         String text = (String) constante.getValor();
         int size = text.length();
         bI.add(new Instruccion(OpCode.MOVEM, Size.L, Restore.__(AddressRegister.A0), PreDecremento.__(StackPointer.A7)));
-        bI.add(createDescriptor(DX, AX));
+        bI.add(createDescriptor(AX));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Indireccion.__(4, AX), AddressRegister.A0));
         for (int idx = 0; idx < size; idx++) {
 	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__((int)text.charAt(idx)), PostIncremento.__(AddressRegister.A0)));
         }
@@ -138,8 +175,8 @@ public class Operando {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), AddressRegister.A6));
         bI.add(this.putActivationBlockAddressInRegister());
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AX));
-        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AX));
+        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A6), AX));
         return bI;
     }
     /**
@@ -148,16 +185,16 @@ public class Operando {
      * is not present for the arrays at the time being. Thus, we need another
      * way of initializing it.
      */
-    public BloqueInstrucciones assignDynamicMemory() {
+    public BloqueInstrucciones assignDynamicMemory(AddressRegister AX) {
         BloqueInstrucciones bI = new BloqueInstrucciones();
-        bI.add(new Instruccion(OpCode.MOVEM, Size.L, Restore.__(DataRegister.D0, AddressRegister.A0, AddressRegister.A6), PreDecremento.__(StackPointer.A7)));
-        bI.add(createDescriptor(DataRegister.D0, AddressRegister.A0));
+        bI.add(new Instruccion(OpCode.MOVEM, Size.L, Restore.__(DataRegister.D0, AddressRegister.A1, AddressRegister.A6), PreDecremento.__(StackPointer.A7)));
+        bI.add(createDescriptor(AddressRegister.A1));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), AddressRegister.A6));
         bI.add(this.putActivationBlockAddressInRegister());
         bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A6));
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, DataRegister.D0, Contenido.__(AddressRegister.A6)));
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, Indireccion.__(4, AddressRegister.A6)));
-        bI.add(new Instruccion(OpCode.MOVEM, Size.L, PostIncremento.__(StackPointer.A7), Restore.__(DataRegister.D0, AddressRegister.A0, AddressRegister.A6)));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A1, Contenido.__(AddressRegister.A6)));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A1, AX));
+        bI.add(new Instruccion(OpCode.MOVEM, Size.L, PostIncremento.__(StackPointer.A7), Restore.__(DataRegister.D0, AddressRegister.A1, AddressRegister.A6)));
         return bI;
     }
 
@@ -182,21 +219,14 @@ public class Operando {
         return bI;
     }
     
-    /*
-     * 1000 BP XXXX
-     * 1004 STRING #
-     * 1008 STRING @
-     * 100C
-     */
-    public BloqueInstrucciones saveStringDescriptorConstante(DataRegister DX, AddressRegister AX) {
+
+    public BloqueInstrucciones saveStringDescriptorConstante(AddressRegister AX) {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
         bI.add(new Instruccion(OpCode.MOVE, Size.L, AX, AddressRegister.A0));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), AddressRegister.A6));
         bI.add(this.putActivationBlockAddressInRegister());
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AddressRegister.A1));
-        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A1));
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, DX, Contenido.__(AddressRegister.A1)));
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, Indireccion.__(4, AddressRegister.A1)));
+        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, Contenido.__(AddressRegister.A6)));
         return bI;
     }
     
@@ -205,10 +235,8 @@ public class Operando {
         bI.add(new Instruccion(OpCode.MOVE, Size.L, AX, AddressRegister.A0));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), AddressRegister.A6));
         bI.add(this.putActivationBlockAddressInRegister());
-        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AddressRegister.A1));
-		bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A1));
-		bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A0), Contenido.__(AddressRegister.A1)));
-		bI.add(new Instruccion(OpCode.MOVE, Size.L, Indireccion.__(4, AddressRegister.A0), Indireccion.__(4, AddressRegister.A1)));
+		bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A6));
+		bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, Contenido.__(AddressRegister.A6)));
         return bI;
     }
 
@@ -218,6 +246,11 @@ public class Operando {
 
     public int getProfundidad() {
         return profundidad;
+    }
+
+    @Override
+    public int hashCode() {
+        return valor.hashCode();
     }
 
     private int mapBooleanValue(String value) {

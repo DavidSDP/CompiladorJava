@@ -569,15 +569,8 @@ class CUP$parser$actions {
 						declResultado = GlobalVariables.asignaArray(i,t,a);
 						if(init.getSimboloOperacion()!=null) {
 							TypeCheck.lanzaErrorArrayNoInicializable();
-
-						// Nota: Si quisieramos gestionar los vectores de forma dinamica, en este punto solo tendriamos
-						// que asignar una variable que contuviese el puntero al heap.
-						// Por simplificar las cosas, de momento dejamos esto de forma estatica
-						// y por tanto no hace falta que hagamos nada. Ya que el array solo es una variable de elementos
-						// contiguos. La variable ya se ha definido aqui y el espacio de memoria ya esta reservado para
-						// las operaciones porque se tiene en cuenta a la hora de asignar desplazamiento en la tabla
-						// de simbolos
 						}						
+						I3DUtils.crea(OperacionTresDirecciones.DECLARAR_INDIRECCION, declResultado);
 					} else {
 						// Declaracion simple
 						declResultado = GlobalVariables.asignaID(i,t);
@@ -1450,13 +1443,14 @@ class CUP$parser$actions {
 								// TODO Esto no esta implementado. ¿Como debemos gestionarlo?
 								// Si usaramos memoria dinamica ( heap ) esto seria tan sencillo
 								// como asignar un valor a otro.
+								RESULT = new SimboloFactor(decl);
 						} else {
 								DeclaracionArray declArray = (DeclaracionArray) decl;
 								Declaracion variable = GlobalVariables.crearVariableTemporal(declArray.getTipoDato());
 								DeclaracionConstante indice = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), a.getNumero());
 								// Estamos accediendo a un array
 								I3DUtils.crea(OperacionTresDirecciones.CARGAR_INDIRECCION, declArray, indice, variable);
-								RESULT = new SimboloFactor(declArray, a.getNumero());
+								RESULT = new SimboloFactor(declArray, a.getNumero(), variable);
 						}
 				}catch(ErrorSemantico e){
 						ErrorHandler.reportaError(e);
@@ -1476,7 +1470,7 @@ class CUP$parser$actions {
 		int nright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String n = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), n);
+			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), Integer.parseInt(n));
 				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer));
 				I3DUtils.crea(OperacionTresDirecciones.COPIA, decl, varDecl);
 				// TODO Aqui se ha quitado el parametro que pasaba el número. Probablemente se debería
@@ -1568,7 +1562,13 @@ class CUP$parser$actions {
 		SimboloParams n = (SimboloParams)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 
 				// Generamos las instrucciones para empilar cada uno de los parametros.
-				Param param = (Param)I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				Param param;
+				Declaracion variable = o.getDeclaracionResultado();
+				if (GlobalVariables.isComplexParam(variable)) {
+					param = (Param)I3DUtils.crea(OperacionTresDirecciones.COMPLEX_PARAM, o.getDeclaracionResultado());
+				} else {
+					param = (Param)I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				}
 				RESULT = new SimboloParams(o,n,true, param); 
 		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("params",23, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1595,7 +1595,13 @@ class CUP$parser$actions {
 		int nright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		SimboloParams n = (SimboloParams)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 
-				Param param = (Param)I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				Param param;
+				Declaracion variable = o.getDeclaracionResultado();
+				if (GlobalVariables.isComplexParam(variable)) {
+					param = (Param)I3DUtils.crea(OperacionTresDirecciones.COMPLEX_PARAM, o.getDeclaracionResultado());
+				} else {
+					param = (Param)I3DUtils.crea(OperacionTresDirecciones.PARAM, o.getDeclaracionResultado());
+				}
 				RESULT = new SimboloParams(o,n,false, param); 
 		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("nextParam",24, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

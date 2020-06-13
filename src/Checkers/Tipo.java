@@ -37,7 +37,7 @@ public enum Tipo {
                 // Tanto string como array ocupan dos palabras.
                 // la primera contiene el puntero a memoria dinámica y el segundo el número
                 // de elementos en el vector ( Spoiler: el string es un array de caracteres )
-                return new TipoObject(tipo, 8);
+                return new TipoObject(tipo, 4);
             case Boolean:
                 return new TipoObject(Tipo.Boolean, 2);
             case Void:
@@ -70,9 +70,9 @@ public enum Tipo {
             case "Char":
                 return new TipoObject(Tipo.Char, 2);
             case "array":
-                return new TipoObject(Tipo.Array, 8);
+                return new TipoObject(Tipo.Array, 4);
             case "String":
-                return new TipoObject(Tipo.String, 8);
+                return new TipoObject(Tipo.String, 4);
             case "int":
                 return new TipoObject(Tipo.Integer, 2);
             case "boolean":

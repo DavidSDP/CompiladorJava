@@ -39,8 +39,8 @@ STREQUALS
 ;			- A1.L -> Puntero a descriptor 2
 ; OUTPUT	- D0.L -> #0 si falso, #1 si verdadero
 ; ============================================================
-        	MOVE.L	(A0),D0
-        	CMP.L	(A1),D0
+        	MOVE.W	(A0),D0
+        	CMP.W	(A1),D0
         	BNE		.STRNOTEQ
         	SUBQ 	#1, D0
 			MOVE.L	4(A0),A0
@@ -58,6 +58,23 @@ STREQUALS
 .STREND 
 			RTS
 
+; ============================================================
+DECREASEREF
+; ============================================================
+; INPUT		- A0.L -> Puntero a descriptor
+; OUTPUT	- 
+; ============================================================
+                MOVE.W  2(A0), D0
+                SUBQ.W  #1, D0
+                CMP     #0, D0
+                BNE     .UPDATE_REF
+                JSR     DMMFREE
+                MOVE.L  #0, A0
+                BRA     .END
+.UPDATE_REF:
+                MOVE.W  D0, 2(A0)
+.END:
+                RTS
 
 *~Font name~Courier New~
 *~Font size~10~

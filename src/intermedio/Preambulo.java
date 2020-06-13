@@ -2,7 +2,10 @@ package intermedio;
 
 import CodigoMaquina.*;
 import CodigoMaquina.especiales.Literal;
+import Procesador.Declaracion;
 import Procesador.DeclaracionFuncion;
+
+import java.util.ArrayList;
 
 public class Preambulo extends InstruccionTresDirecciones {
     public Preambulo(Operando primero) {
@@ -12,7 +15,7 @@ public class Preambulo extends InstruccionTresDirecciones {
 
     @Override
     public String toMachineCode() {
-        DeclaracionFuncion declaracionFuncion = (DeclaracionFuncion)this.primero.getValor();
+        DeclaracionFuncion declaracionFuncion = (DeclaracionFuncion) primero.getValor();
         int memoria = declaracionFuncion.getTamanoMemoriaNecesaria();
 
         BloqueInstrucciones bI = new BloqueInstrucciones();
@@ -22,5 +25,19 @@ public class Preambulo extends InstruccionTresDirecciones {
         bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A5, Variables.STACK_TOP));
 
         return bI.toString();
+    }
+
+    /**
+     * Por norma general el primer y segundo argumentos se consideran no destino.
+     * Obviamente, esto depende de la instrucción, así que se tiene que sobreescribir en esos
+     * casos donde esta condición no es cierta.
+     */
+    public ArrayList<Declaracion> getArgumentos() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        return false;
     }
 }

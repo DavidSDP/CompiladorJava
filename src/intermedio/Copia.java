@@ -11,7 +11,15 @@ import CodigoMaquina.AddressRegister;
 import CodigoMaquina.BloqueInstrucciones;
 import CodigoMaquina.DataRegister;
 import CodigoMaquina.Instruccion;
+import CodigoMaquina.OpCode;
+import CodigoMaquina.Size;
+import CodigoMaquina.especiales.Indireccion;
+import CodigoMaquina.especiales.Literal;
+import Procesador.Declaracion;
+import Procesador.DeclaracionArray;
 import Procesador.DeclaracionConstante;
+
+import java.util.ArrayList;
 
 /**
  * Primero es el origen de la copia. Puede ser una constante o una variable
@@ -31,23 +39,23 @@ public class Copia extends InstruccionTresDirecciones {
         this.segundo = segundo;
     }
 
+    protected BloqueInstrucciones handleReferences(AddressRegister AX, Operando target) {
+        BloqueInstrucciones bI = new BloqueInstrucciones();
+        // Increase source refcount
+        bI.add(new Instruccion(OpCode.MOVE, Size.W, Indireccion.__(2, AX), DataRegister.D0));
+        bI.add(new Instruccion(OpCode.ADDQ, Size.W, Literal.__(1), DataRegister.D0));
+        bI.add(new Instruccion(OpCode.MOVE, Size.W, DataRegister.D0, Indireccion.__(2, AX)));
+
+        if (target.getValor().isInitialized()) {
+            // Decrease target refcount
+            bI.add(target.loadStringDescriptorVariable(AddressRegister.A0));
+            bI.add(Instruccion.nuevaInstruccion("\tjsr DECREASEREF"));
+        }
+        return bI;
+    }
+
     public String stringToMachineCode() {
         /*
-         * Para poder realizar la copia de un string podemos plantearnos dos tipos de forma de trabajar:
-         *      - Usar el heap
-         *      - Usar el bloque de activacion
-         *
-         * En el caso de utilizar el bloque de activación, no podríamos manejar asignaciones de un string de dimensiones
-         * diferentes ya que no se puede transformar el tamaño en el bloque de activación.
-         *
-         * Por otro lado, si utilizamos el heap, necesitamos utilizar el bloque de activación para almacenar el tamaño del string
-         * y la dirección al heap. Esto sería lo ideal pero necesitamos instrucciones ad-hoc para poder gestionar las operaciones
-         * de copia:
-         *      - 1. Copiar de origen a nueva memoria en heap
-         *      - 2. Copiar la nueva dirección del heap al bloque de activación
-         *      - 3. Actualizar el tamaño en el bloque de activación
-         */
-        /**
          * 1. Reservar memoria dinámica
          * 2. Poner contenido en la memoria
          * 3. Contar numero de caracteres
@@ -55,17 +63,19 @@ public class Copia extends InstruccionTresDirecciones {
          *      - En offset 0 está la dirección
          *      - En offset 16 está el tamaño
          */
-        // guardar A0
-    	
     	BloqueInstrucciones bI = new BloqueInstrucciones();
     	bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-        if(this.primero.getValor() instanceof DeclaracionConstante) {
-        	bI.add(this.primero.loadStringDescriptorConstante(DataRegister.D0, AddressRegister.A1));
-        	bI.add(this.segundo.saveStringDescriptorConstante(DataRegister.D0, AddressRegister.A1));
+        if(primero.getValor() instanceof DeclaracionConstante) {
+        	bI.add(primero.loadStringDescriptorConstante(AddressRegister.A1));
+        	bI.add(handleReferences(AddressRegister.A1, segundo));
+        	bI.add(segundo.saveStringDescriptorConstante(AddressRegister.A1));
         } else {
-        	bI.add(this.primero.loadStringDescriptorVariable(AddressRegister.A1));
-        	bI.add(this.segundo.saveStringDescriptorVariable(AddressRegister.A1));
+        	bI.add(primero.loadStringDescriptorVariable(AddressRegister.A1));
+            bI.add(handleReferences(AddressRegister.A1, segundo));
+        	bI.add(segundo.saveStringDescriptorVariable(AddressRegister.A1));
         }
+        if(!segundo.getValor().isInitialized())
+        	segundo.getValor().markAsInitialized();
         return bI.toString();
     }
 
@@ -73,18 +83,34 @@ public class Copia extends InstruccionTresDirecciones {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
 
     	bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
-    	bI.add(this.primero.load(DataRegister.D0));
-    	bI.add(this.segundo.save(DataRegister.D0));
+    	bI.add(primero.load(DataRegister.D0));
+    	bI.add(segundo.save(DataRegister.D0));
 
         return bI.toString();
     }
 
     @Override
     public String toMachineCode() {
-        if (Tipo.String.equals(this.primero.getValor().getTipo().getTipo())) {
+        if (isComplexArgument(primero)) {
             return this.stringToMachineCode();
         } else {
             return this.basicTypeToMachineCode();
         }
+    }
+
+    private boolean isComplexArgument(Operando operando) {
+        return Tipo.String.equals(operando.getValor().getTipo().getTipo()) || (operando.getValor() instanceof DeclaracionArray);
+    }
+
+    @Override
+    public ArrayList<Declaracion> getArgumentos() {
+        ArrayList<Declaracion> argumentos = new ArrayList<>();
+        argumentos.add(primero.getValor());
+        return argumentos;
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        return true;
     }
 }

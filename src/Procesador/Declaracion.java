@@ -2,7 +2,6 @@ package Procesador;
 
 import java.util.Objects;
 
-import Checkers.Tipo;
 import Checkers.TipoObject;
 
 public class Declaracion {
@@ -15,6 +14,18 @@ public class Declaracion {
     protected Entorno entorno;
 
     protected boolean isParam;
+
+    // Este flag solo aplica a variables. En algún momento esta jerarquía debería empezar
+    // a arreglarse
+    protected boolean initialized;
+
+    public void markAsInitialized() {
+        this.initialized = true;
+    }
+
+    public boolean isInitialized() {
+        return this.initialized;
+    }
 
     /**
      * Las declaraciones de funciones y clases no necesitan ni profunidad de declaracion
@@ -104,6 +115,10 @@ public class Declaracion {
     public boolean isParam() {
         return isParam;
     }
+
+	public void desInicializar() {
+		this.initialized = false;
+	}
 }
 
 

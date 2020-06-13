@@ -18,11 +18,16 @@ public class Resta extends InstruccionTresDirecciones {
         StringBuilder sb = new StringBuilder();
 
         sb.append(super.toMachineCode());
-        sb.append(this.primero.load(DataRegister.D0))
-                .append(this.segundo.load(DataRegister.D1))
+        sb.append(primero.load(DataRegister.D0))
+                .append(segundo.load(DataRegister.D1))
                 .append("\tsub.w D1, D0\n")
-                .append(this.tercero.save(DataRegister.D0));
+                .append(tercero.save(DataRegister.D0));
 
         return sb.toString();
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        return true;
     }
 }

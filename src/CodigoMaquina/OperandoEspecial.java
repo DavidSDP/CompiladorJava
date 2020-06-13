@@ -12,5 +12,9 @@ public class OperandoEspecial implements Operando{
 	public String toString() {
 		return this.operandoEspecial;
 	}
-	
+
+	@Override
+	public int hashCode() {
+		return operandoEspecial.hashCode();
+	}
 }

@@ -1,11 +1,25 @@
 package intermedio;
 
+import Procesador.AlmacenVariables;
 import Procesador.Declaracion;
 import Procesador.Entorno;
 import Procesador.GlobalVariables;
 
 
 public class I3DUtils {
+
+    // TODO Utilizar estos helpers en donde se detectan declaraciones.
+    public static InstruccionTresDirecciones creaDeclaracion(OperacionTresDirecciones instr, Declaracion source, Declaracion dest) {
+        InstruccionTresDirecciones instruccion = crea(instr, source, dest);
+        Definiciones.getInstance().add(instruccion);
+        return instruccion;
+    }
+
+    public static InstruccionTresDirecciones creaDeclaracion(OperacionTresDirecciones instr, Declaracion primero, Declaracion segundo, Declaracion tercero) {
+        InstruccionTresDirecciones instruccion = crea(instr, primero, segundo, tercero);
+        Definiciones.getInstance().add(instruccion);
+        return instruccion;
+    }
 
     public static InstruccionTresDirecciones crea(OperacionTresDirecciones instr, Declaracion source, Declaracion dest) {
         Entorno entorno = GlobalVariables.entornoActual();
@@ -50,89 +64,92 @@ public class I3DUtils {
     }
 
     private static InstruccionTresDirecciones crearInstruccion(OperacionTresDirecciones instr, Operando primero, Operando segundo, Operando tercero) {
-        InstruccionTresDirecciones c3d;
+        InstruccionTresDirecciones i3d;
         switch(instr) {
             case COPIA:
-                c3d = new Copia(primero, segundo);
+                i3d = new Copia(primero, segundo);
                 break;
             case GOTO:
-                c3d = new Goto(primero);
+                i3d = new Goto(primero);
                 break;
             case ETIQUETA:
-                c3d = new Etiqueta(primero);
+                i3d = new Etiqueta(primero);
                 break;
             case DECLARAR_INDIRECCION:
-                c3d = new DeclaracionIndireccion(primero);
+                i3d = new DeclaracionIndireccion(primero);
                 break;
             case CARGAR_INDIRECCION:
-                c3d = new CargarIndireccion(primero, segundo, tercero);
+                i3d = new CargarIndireccion(primero, segundo, tercero);
                 break;
             case GUARDAR_INDIRECCION:
-                c3d = new GuardarIndireccion(primero, segundo, tercero);
+                i3d = new GuardarIndireccion(primero, segundo, tercero);
                 break;
             case PARAM:
-                c3d = new SimpleParam(primero);
+                i3d = new SimpleParam(primero);
                 break;
             case COMPLEX_PARAM:
-                c3d = new ComplexParam(primero);
+                i3d = new ComplexParam(primero);
                 break;
             case LLAMADA:
-                c3d = new Llamada(primero, segundo, tercero);
+                i3d = new Llamada(primero, segundo, tercero);
                 break;
             case PREAMBULO:
-                c3d = new Preambulo(primero); // primero es el numero de procedimiento/funcion
+                i3d = new Preambulo(primero); // primero es el numero de procedimiento/funcion
                 break;
             case RETORNO:
-                c3d = new Retorno(primero, segundo); // primero es el numero de procedimiento/funcion
+                i3d = new Retorno(primero, segundo); // primero es el numero de procedimiento/funcion
                 break;
             case SUMA:
-                c3d = new Suma(primero, segundo, tercero);
+                i3d = new Suma(primero, segundo, tercero);
                 break;
             case RESTA:
-                c3d = new Resta(primero, segundo, tercero);
+                i3d = new Resta(primero, segundo, tercero);
                 break;
             case PRODUCTO:
-                c3d = new Producto(primero, segundo, tercero);
+                i3d = new Producto(primero, segundo, tercero);
                 break;
             case DIVISION:
-                c3d = new Division(primero, segundo, tercero);
+                i3d = new Division(primero, segundo, tercero);
                 break;
             case GT:
-                c3d = new GT(primero, segundo, tercero);
+                i3d = new GT(primero, segundo, tercero);
                 break;
             case GTE:
-                c3d = new GTE(primero, segundo, tercero);
+                i3d = new GTE(primero, segundo, tercero);
                 break;
             case LT:
-                c3d = new LT(primero, segundo, tercero);
+                i3d = new LT(primero, segundo, tercero);
                 break;
             case LTE:
-                c3d = new LTE(primero, segundo, tercero);
+                i3d = new LTE(primero, segundo, tercero);
                 break;
             case AND:
-                c3d = new And(primero, segundo, tercero);
+                i3d = new And(primero, segundo, tercero);
                 break;
             case OR:
-                c3d = new Or(primero, segundo, tercero);
+                i3d = new Or(primero, segundo, tercero);
                 break;
             case EQ:
-                c3d = new EQ(primero, segundo, tercero);
+                i3d = new EQ(primero, segundo, tercero);
                 break;
             case NE:
-                c3d = new NE(primero, segundo, tercero);
+                i3d = new NE(primero, segundo, tercero);
                 break;
             case CLASE:
-                c3d = new Clase(primero);
+                i3d = new Clase(primero);
                 break;
             case ENTRY_POINT:
-                c3d = new EntryPoint(primero, segundo);
+                i3d = new EntryPoint(primero, segundo);
                 break;
             default:
                 throw new AssertionError(instr.name());
         }
 
-        ProgramaIntermedio.getInstance().addInstruccion(c3d);
-        return c3d;
+        ProgramaIntermedio.getInstance().addInstruccion(i3d);
+        if (i3d.esDefinicion()) {
+            Definiciones.getInstance().add(i3d);
+        }
+        return i3d;
     }
 
     public static OperacionTresDirecciones getTipoOperacion(String simboloOperacion) throws Exception {
@@ -179,6 +196,5 @@ public class I3DUtils {
         }
         return op;
     }
-    
     
 }

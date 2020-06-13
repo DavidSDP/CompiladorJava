@@ -25,10 +25,15 @@ public class Division extends InstruccionTresDirecciones {
          * 2. Le div el valor del segundo al registro
          * 3. Copiamos el valor del registro a la variable de destino
          */
-        bI.add(this.primero.load(DataRegister.D0));
-        bI.add(this.segundo.load(DataRegister.D1));
+        bI.add(primero.load(DataRegister.D0));
+        bI.add(segundo.load(DataRegister.D1));
         bI.add(new Instruccion(OpCode.DIVS, DataRegister.D1, DataRegister.D0));
-        bI.add(this.tercero.save(DataRegister.D0));
+        bI.add(tercero.save(DataRegister.D0));
         return bI.toString();
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        return true;
     }
 }

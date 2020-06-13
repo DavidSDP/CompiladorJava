@@ -1,8 +1,11 @@
 package Ejecucion;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import Errores.ErrorHandler;
 import Errores.ErrorProcesador;
@@ -11,11 +14,11 @@ import analisisLexico.Scanner;
 import analisisSintactico.parser;
 import analisisSintactico.arbol.ArbolSintactico;
 import intermedio.ProgramaIntermedio;
-
-import java.io.File;
-
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.Symbol;
+import optimizacion.OptimizacionLocal;
+import optimizacion.OptimizacionMirilla;
+import optimizacion.Optimizador;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -55,14 +58,27 @@ public class Main {
                 // Sin optimizaciones
                 FicheroIntermedio.escribirInstrucciones(ProgramaIntermedio.getInstance());
                 FicheroMaquina.escribirInstrucciones(ProgramaIntermedio.getInstance());
-
-                if (clparser.getNivelOptimizacion() > 0) {
+                
+                Integer nivelOptimizacion = clparser.getNivelOptimizacion();
+                
+                List<Optimizador> optimizadores = new ArrayList<>();
+                optimizadores.add(new OptimizacionMirilla());
+                optimizadores.add(new OptimizacionLocal());
+                
+                if (nivelOptimizacion > 0) {
+                	
+                	ProgramaIntermedio.getInstance().desInicializarVariables();
+                	
+                	for(int i = 0; i < nivelOptimizacion && i < optimizadores.size(); i++) {
+                		ProgramaIntermedio.getInstance().addOptimizador(optimizadores.get(i));
+                	}
+                	
                     ProgramaIntermedio.getInstance().optimizar();
                     // Optimizado
                     FicheroIntermedioOptimizado.escribirInstrucciones(ProgramaIntermedio.getInstance());
                     FicheroMaquinaOptimizado.escribirInstrucciones(ProgramaIntermedio.getInstance());
                 }
-
+                
             }
         } catch (FileNotFoundException e) {
             ErrorHandler.reportaError("El fichero de entrada '" + args[0] + "' no existe");

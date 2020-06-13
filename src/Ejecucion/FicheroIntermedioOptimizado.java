@@ -32,11 +32,10 @@ public class FicheroIntermedioOptimizado {
 		}
 	}
 	
-        
-        public static void escribirInstrucciones(ProgramaIntermedio programa) throws IOException {
-                for(InstruccionTresDirecciones instr : programa.optimizado()) {
-                    fileWriter.write(instr.toString());
-                    fileWriter.write(System.lineSeparator());
-                }
-        }
+    public static void escribirInstrucciones(ProgramaIntermedio programa) throws IOException {
+            for(InstruccionTresDirecciones instr : programa.optimizado()) {
+                fileWriter.write(instr.toString());
+                fileWriter.write(System.lineSeparator());
+            }
+    }
 }

@@ -5,6 +5,10 @@
  */
 package intermedio;
 
+import Procesador.Declaracion;
+
+import java.util.ArrayList;
+
 /**
  *
  * @author jesus
@@ -17,6 +21,16 @@ public class Goto extends InstruccionTresDirecciones {
 
     @Override
     public String toMachineCode() {
-        return "\tbra " + this.primero.toString() + "\n";
+        return "\tbra " + primero.toString() + "\n";
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        return false;
+    }
+
+    @Override
+    public ArrayList<Declaracion> getArgumentos() {
+        return new ArrayList<>();
     }
 }

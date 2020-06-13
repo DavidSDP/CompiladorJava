@@ -99,6 +99,7 @@ public class Entorno {
         nuevaDeclaracion.setEntorno(this);
         this.tablaIDs.put(name, nuevaDeclaracion);
         this.ids.add(nuevaDeclaracion);
+        AlmacenVariables.getInstance().add(nuevaDeclaracion);
         return nuevaDeclaracion;
     }
 
@@ -111,6 +112,7 @@ public class Entorno {
         declArray.setEntorno(this);
         this.tablaIDs.put(id, declArray);
         this.ids.add(declArray);
+        AlmacenVariables.getInstance().add(declArray);
         return declArray;
     }
 

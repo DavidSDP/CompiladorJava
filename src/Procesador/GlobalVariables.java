@@ -1,6 +1,8 @@
 package Procesador;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
@@ -10,9 +12,6 @@ import Errores.ErrorSemantico;
 import SimbolosNoTerminales.SimboloArgDecl;
 import SimbolosNoTerminales.SimboloArgs;
 import SimbolosNoTerminales.SimboloArray;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class GlobalVariables {
 
@@ -38,6 +37,8 @@ public class GlobalVariables {
     private static Integer _idnodoIncremental = 0;
     private static Integer CONTADOR = 1;
     private static Stack<Entorno> pilaEntornos = new Stack<>();
+    
+    public static Integer contadorNV = 0;
     
     // Memory Management related constants
     public static final int MEMORY_DATA_BLOCK_SIZE_BYTES = 256;

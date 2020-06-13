@@ -3,6 +3,7 @@ package intermedio;
 
 import CodigoMaquina.*;
 import CodigoMaquina.especiales.*;
+import Procesador.Declaracion;
 import Procesador.DeclaracionFuncion;
 
 public class Llamada extends InstruccionTresDirecciones {
@@ -18,7 +19,7 @@ public class Llamada extends InstruccionTresDirecciones {
 
     @Override
     public String toMachineCode() {
-        DeclaracionFuncion callee = (DeclaracionFuncion)this.primero.getValor();
+        DeclaracionFuncion callee = (DeclaracionFuncion) primero.getValor();
         BloqueInstrucciones bI = new BloqueInstrucciones();
 
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
@@ -34,8 +35,8 @@ public class Llamada extends InstruccionTresDirecciones {
             bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(callee.getTamanoRetorno()), AddressRegister.A6));
         }
 
-        if (this.segundo != null) {
-            DeclaracionFuncion caller = (DeclaracionFuncion)this.segundo.getValor();
+        if (segundo != null) {
+            DeclaracionFuncion caller = (DeclaracionFuncion) segundo.getValor();
             // Determinar el access link que se tiene que almacenar en el nuevo bloque de activación
             // Ojo! Por facilidad de cálculos al acceder a las variables se almacenará el BP en el access link
             // de esa forma siempre trataremos htodo de la misma manera. Esto hace que a la hora de escalar
@@ -72,12 +73,11 @@ public class Llamada extends InstruccionTresDirecciones {
         bI.add(Instruccion.nuevaInstruccion("\tbsr " + callee.getEtiqueta()));
 
         // Puede que la función tenga retorno y que el que llama no lo esté gestionando
-        if (this.tercero != null) {
+        if (tercero != null) {
             bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, AddressRegister.A6));
             bI.add(new Instruccion(OpCode.SUB, Size.L, Literal.__(4 + callee.getTamanoRetorno()), AddressRegister.A6));
             if (callee.isReturnIsComplexType()) {
-                bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A6), DataRegister.D0));
-                bI.add(new Instruccion(OpCode.MOVE, Size.L, Indireccion.__(4, AddressRegister.A6), AddressRegister.A0));
+                bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A6), AddressRegister.A0));
             } else {
                 bI.add(new Instruccion(OpCode.MOVE, Size.W, Contenido.__(AddressRegister.A6), DataRegister.D5));
             }
@@ -86,9 +86,9 @@ public class Llamada extends InstruccionTresDirecciones {
             bI.add(Instruccion.nuevaInstruccion("\tbsr restore_bp")); // Actualiza BP y AL
 
             if (callee.isReturnIsComplexType()) {
-                bI.add(this.tercero.saveStringDescriptorConstante(DataRegister.D0, AddressRegister.A0));
+                bI.add(tercero.saveStringDescriptorConstante(AddressRegister.A0));
             } else {
-                bI.add(this.tercero.save(DataRegister.D5));
+                bI.add(tercero.save(DataRegister.D5));
             }
         } else {
             bI.add(Instruccion.nuevaInstruccion("\tbsr restore_bp"));
@@ -99,5 +99,21 @@ public class Llamada extends InstruccionTresDirecciones {
         // declaracion de la funcion para poder calcular el offset de las variables para poder eliminarlas de la pila
         bI.add(new Instruccion(OpCode.MOVE, Size.L, PostIncremento.__(StackPointer.A7), Variables.STACK_TOP));
         return bI.toString();
+    }
+
+    @Override
+    public Declaracion getDestino() {
+        if (this.tercero != null) {
+            return this.tercero.getValor();
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        // Una llamada a función solo actua como definicion si se le asigna el valor
+        // a una variable.
+        return this.tercero != null;
     }
 }

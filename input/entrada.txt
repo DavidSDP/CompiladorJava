@@ -20,8 +20,9 @@ class ClasePrincipal {
 		int idx = 0;
 		int elemento;
 		boolean found = false;
-		while ( idx < tamano && found == false) {
-			elemento = vector[0];
+		int variableexterna = 10;
+		while ( idx < tamano && (found == false)) {
+			elemento = variableexterna;
 			found = elemento == valor;
 			idx = idx + 1;
 		} 
@@ -33,17 +34,34 @@ class ClasePrincipal {
 		}
 	}
 
+	function void pruebaLiberacion() {
+		int cosas[1];
+		int cosas2[1];
+		cosas[0] = 10;
+		cosas2 = cosas;
+	}
+
 	function String getNombre(String nombre) {
 		return nombre;
 	}
 	
 	function void main() {
+		// Prueba de asignacion de valores a elementos almacenados en memoria dinamica
 		int vectorNumeros[3];
 		vectorNumeros[0] = 5;
 		vectorNumeros[1] = 50;
 		vectorNumeros[2] = 60;
+
+		// Prueba de paso por parametro de elementos de memoria dinamica
 		int idx = encuentra(vectorNumeros, 3, 5);
+
+		// Prueba de retorno de elementos de memoria dinamica
 		String str = getNombre("uep");
+
+		// Prueba de liberacion de memoria
+		pruebaLiberacion();
+
+		// Pruebas generales
 		boolean esIgual = (str == "uep");
 		int resultado = multiplica(2, 10);
 		resultado = resultado + a;

@@ -41,15 +41,15 @@ public class Instruccion {
 			stringMachineCode.append(etiqueta);
 		}else if(op2 != null) {
 			if(size != null) {
-				stringMachineCode.append(TAB+TAB+TAB+opCode + "." + size + TAB + " " + op1 + ", " + op2);
+				stringMachineCode.append(TAB+TAB+TAB+opCode + "." + size + " " + TAB + op1 + ", " + op2);
 			}else {
-				stringMachineCode.append(TAB+TAB+TAB+opCode + TAB + op1 + ", " + op2);
+				stringMachineCode.append(TAB+TAB+TAB+opCode + " " + TAB + op1 + ", " + op2);
 			}
 		}else if(op1 != null) {
 			if(size != null) {
 				stringMachineCode.append(TAB+TAB+TAB+opCode + "." + size + TAB + op1);
 			}else {
-				stringMachineCode.append(TAB+TAB+TAB+opCode + TAB + op1);
+				stringMachineCode.append(TAB+TAB+TAB+opCode + " " + TAB + op1);
 			}
 		} else {
 			// Hay instrucciones que solo es el opcode ( rts )

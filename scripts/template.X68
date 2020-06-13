@@ -23,7 +23,7 @@ START		JSR 	DMMINIT									; Initialize dynamic memory
 			MOVE.L 	STACK_TOP, A6							; Setup initial state of the activation block stack
 			ADDQ.L 	#4, A6
 			MOVE.L 	A6, BP
-    	MOVE.L 	A6, STACK_TOP
+            MOVE.L 	A6, STACK_TOP
 
 			;{Generate Code here}
 			
@@ -31,9 +31,9 @@ START		JSR 	DMMINIT									; Initialize dynamic memory
 
 STACK_BASE 				DC.L 	0
 STACK_TOP 				DC.L 	0
-BP 								DC.L	0
+BP 						DC.L	0
 
-ACTIVATION_BLOCK_STACK 	DS.L 0								; Act as start of stack
+ACTIVATION_BLOCK_STACK 	DS.L 0								; Acts as start of stack
 			
 			ORG 	$70000									; leave space between the activation blocks and the heap
             

@@ -4,6 +4,8 @@ import CodigoMaquina.BloqueInstrucciones;
 import CodigoMaquina.DataRegister;
 import Procesador.Declaracion;
 
+import java.util.ArrayList;
+
 public abstract class Param extends InstruccionTresDirecciones {
 
     private boolean isLast;
@@ -34,5 +36,17 @@ public abstract class Param extends InstruccionTresDirecciones {
         }
 
         return sb.toString();
+    }
+
+    @Override
+    public ArrayList<Declaracion> getArgumentos() {
+        ArrayList<Declaracion> argumentos = new ArrayList<>();
+        argumentos.add(primero.getValor());
+        return argumentos;
+    }
+
+    @Override
+    public boolean esDefinicion() {
+        return false;
     }
 }

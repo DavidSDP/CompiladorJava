@@ -1,10 +1,15 @@
 package optimizacion.local;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import Errores.ErrorProcesador;
+import Procesador.GlobalVariables;
 import intermedio.BloqueBasico;
 import optimizacion.OptimizacionLocal.Arco;
 
@@ -21,10 +26,10 @@ public class Grafo {
     private HashMap<BloqueBasico, Nodo> bloqueToNodo;
 
     public Grafo() {
-        vertices =  new ArrayList<>();
-        predecesores =  new HashMap<>();
-        sucesores =  new HashMap<>();
-        bloqueToNodo =  new HashMap<>();
+        vertices = new ArrayList<>();
+        predecesores = new HashMap<>();
+        sucesores = new HashMap<>();
+        bloqueToNodo = new HashMap<>();
     }
 
     public void addVertice(BloqueBasico origen) {
@@ -55,36 +60,37 @@ public class Grafo {
         _predecesores.add(backward);
         predecesores.put(nodoDestino, _predecesores);
     }
-    
-    public List<BloqueBasico> getBloquesBasicos(){
-    	return this.vertices.stream().map(m -> m.getBloqueBasico()).collect(Collectors.toList());
-    }
-    
-    public List<BloqueBasico> getPredecesores(BloqueBasico bloque) {
-    	if(bloqueToNodo.get(bloque) != null && this.predecesores.get(bloqueToNodo.get(bloque)) != null) {
-    		return this.predecesores.get(bloqueToNodo.get(bloque)).stream().map(m -> m.getDestino().getBloqueBasico()).collect(Collectors.toList());
-    	}
-    	return new ArrayList<>();
-    }
-    
-    public List<BloqueBasico> getSucesores(BloqueBasico bloque) {
-    	if(bloqueToNodo.get(bloque) != null && this.sucesores.get(bloqueToNodo.get(bloque)) != null) {
-    		return this.sucesores.get(bloqueToNodo.get(bloque)).stream()
-                    .map(m -> m.getDestino().getBloqueBasico())
-                    .collect(Collectors.toList());
-    	}
-    	return new ArrayList<>();
+
+    public List<BloqueBasico> getBloquesBasicos() {
+        return this.vertices.stream().map(m -> m.getBloqueBasico()).collect(Collectors.toList());
     }
 
-	public List<Arco> getArcos() {
-		List<Arco> arcos = new ArrayList<>();
-		this.vertices.stream().filter(p -> {
-			return ((this.sucesores.get(p) != null) && (!this.sucesores.get(p).isEmpty()));
-		}).forEach(v->{
-			this.sucesores.get(v).stream().forEach(s -> arcos.add(new Arco(s.getOrigen().getBloqueBasico(), s.getDestino().getBloqueBasico())));;
-		});
-		return arcos;
-	}
+    public List<BloqueBasico> getPredecesores(BloqueBasico bloque) {
+        if (bloqueToNodo.get(bloque) != null && this.predecesores.get(bloqueToNodo.get(bloque)) != null) {
+            return this.predecesores.get(bloqueToNodo.get(bloque)).stream().map(m -> m.getDestino().getBloqueBasico()).collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    public List<BloqueBasico> getSucesores(BloqueBasico bloque) {
+        if (bloqueToNodo.get(bloque) != null && this.sucesores.get(bloqueToNodo.get(bloque)) != null) {
+            return this.sucesores.get(bloqueToNodo.get(bloque)).stream()
+                    .map(m -> m.getDestino().getBloqueBasico())
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Arco> getArcos() {
+        List<Arco> arcos = new ArrayList<>();
+        this.vertices.stream().filter(p -> {
+            return ((this.sucesores.get(p) != null) && (!this.sucesores.get(p).isEmpty()));
+        }).forEach(v -> {
+            this.sucesores.get(v).stream().forEach(s -> arcos.add(new Arco(s.getOrigen().getBloqueBasico(), s.getDestino().getBloqueBasico())));
+            ;
+        });
+        return arcos;
+    }
 
     public void removeArista(BloqueBasico origen, BloqueBasico destino) {
         Nodo nodoOrigen = bloqueToNodo.get(origen);
@@ -104,8 +110,70 @@ public class Grafo {
         return this.vertices.stream().filter(Nodo::isUnvisited).map(Nodo::getBloqueBasico).collect(Collectors.toList());
     }
 
+    public void exportToFile(String filename) throws ErrorProcesador, IOException {
+        File file;
+        FileWriter fileWriter;
+        try {
+            file = new File(GlobalVariables.outputDir.resolve(filename).toString());
+            fileWriter = new FileWriter(file);
+        } catch (IOException e) {
+            throw new ErrorProcesador("Se ha producido un error al abrir el fichero de código intermedio");
+        }
+
+        fileWriter.write(this.getPrintableGraph());
+
+        try {
+            System.out.println("Se ha generado el fichero de código intermedio en: "+file.getAbsolutePath());
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new ErrorProcesador("Se ha producido un error al cerrar el fichero de código intermedio");
+        }
+    }
+
+    private String getPrintableGraph() {
+
+        // Duplicidad de codigo para evitar tener que pasar un función acción y tener que hacer
+        // retornos en el algoritmo de coloreado
+        for (Nodo vertice : vertices) {
+            vertice.markUnvisited();
+        }
+
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph G {");
+        // Suponemos que el vertice de inicio es el primero #PorqueYoLoValgo
+        sb.append(printNode(vertices.get(0)));
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    private StringBuilder printNode(Nodo vertice) {
+        StringBuilder str = new StringBuilder();
+        Nodo legitimoSucesor;
+        vertice.markVisiting();
+        // Imprimimos el nodo actual
+        str.append(vertice.getId())
+                .append(" [color=lightgrey,style=filled,label=\"")
+                .append(vertice.getName())
+                .append("\"]")
+                .append(System.lineSeparator());
+
+        // Y Ahora imprimimos las aristas a los sucesores
+        for (Arista sucesor : sucesores.get(vertice)) {
+            legitimoSucesor = sucesor.getDestino();
+            str.append(vertice.getId()).append(" -> ").append(legitimoSucesor.getId()).append(System.lineSeparator());
+            if (legitimoSucesor.isUnvisited()) {
+                str.append(printNode(legitimoSucesor));
+            }
+        }
+        vertice.markVisited();
+
+        return str;
+    }
+
     private void paintGraph() {
-        for (Nodo vertice: vertices) {
+        for (Nodo vertice : vertices) {
             vertice.markUnvisited();
         }
         // Suponemos que el vertice de inicio es el primero #PorqueYoLoValgo
@@ -115,7 +183,7 @@ public class Grafo {
     private void visit(Nodo vertice) {
         Nodo legitimoSucesor;
         vertice.markVisiting();
-        for (Arista sucesor: sucesores.get(vertice)) {
+        for (Arista sucesor : sucesores.get(vertice)) {
             legitimoSucesor = sucesor.getDestino();
             if (legitimoSucesor.isUnvisited()) {
                 visit(legitimoSucesor);

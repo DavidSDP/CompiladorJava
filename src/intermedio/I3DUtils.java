@@ -1,5 +1,6 @@
 package intermedio;
 
+import Procesador.AlmacenVariables;
 import Procesador.Declaracion;
 import Procesador.Entorno;
 import Procesador.GlobalVariables;

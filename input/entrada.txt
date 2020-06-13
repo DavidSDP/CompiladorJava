@@ -20,8 +20,9 @@ class ClasePrincipal {
 		int idx = 0;
 		int elemento;
 		boolean found = false;
+		int variableexterna = 10;
 		while ( idx < tamano && (found == false)) {
-			elemento = vector[0];
+			elemento = variableexterna;
 			found = elemento == valor;
 			idx = idx + 1;
 		} 

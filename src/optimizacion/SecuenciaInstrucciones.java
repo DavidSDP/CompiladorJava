@@ -126,7 +126,6 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
     }
 
 	public Grafo getGrafoFlujoFuncion(RangoInstruccionesFuncion rango) {
-        int idBloque = 0;
         boolean finales;
         BloqueBasico e, s, bloque, siguienteBloque;
         InstruccionTresDirecciones instruccion, siguiente;
@@ -135,8 +134,8 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
         HashMap<OperandoEtiqueta, BloqueBasico> etiquetaToLider = new HashMap<>();
         OperandoEtiqueta etiqueta;
 
-        e = new BloqueBasico(++idBloque); e.setEs_E(true);
-        s = new BloqueBasico(++idBloque); s.setEs_S(true);
+        e = new BloqueBasico(); e.setEs_E(true);
+        s = new BloqueBasico(); s.setEs_S(true);
         bloques.add(e);
         bloques.add(s);
         grafoFlujoBloquesBasicos.addVertice(e);
@@ -147,7 +146,7 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
             instruccion = instrucciones.get(i);
 
             if (isEtiqueta(instruccion)) {
-                bloque = new BloqueBasico(++idBloque, i);
+                bloque = new BloqueBasico(i);
                 grafoFlujoBloquesBasicos.addVertice(bloque);
                 bloques.add(bloque);
                 etiqueta = (OperandoEtiqueta)instruccion.getPrimero();
@@ -156,7 +155,7 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
                 siguiente = getFollowing(i);
                 finales = isBranch(siguiente) || isRetorno(siguiente) || isEtiqueta(siguiente);
                 if (!finales) {
-                    bloque = new BloqueBasico(++idBloque, i + 1);
+                    bloque = new BloqueBasico(i + 1);
                     grafoFlujoBloquesBasicos.addVertice(bloque);
                     bloques.add(bloque);
 
@@ -175,7 +174,7 @@ public class SecuenciaInstrucciones implements Iterator<InstruccionTresDireccion
                 if ( (i+1) <= rango.getFin()) {
                     siguiente = getFollowing(i);
                     if (!isEtiqueta(siguiente)) {
-                        bloque = new BloqueBasico(++idBloque, i + 1);
+                        bloque = new BloqueBasico(i + 1);
                         grafoFlujoBloquesBasicos.addVertice(bloque);
                         bloques.add(bloque);
                     }

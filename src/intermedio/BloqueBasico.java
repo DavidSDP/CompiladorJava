@@ -1,20 +1,21 @@
 package intermedio;
 
 public class BloqueBasico {
+    private static int ID_SEQ = 0;
     private int id, inicio, fin;
     private Boolean es_E, es_S;
 
-    public BloqueBasico(int id, int inicio, int fin) {
-        this(id, inicio);
+    public BloqueBasico(int inicio, int fin) {
+        this(inicio);
         this.fin = fin;
     }
 
-    public BloqueBasico(int id) {
-        this(id, -1);
+    public BloqueBasico() {
+        this(-1);
     }
 
-    public BloqueBasico(int id, int inicio) {
-        this.id = id;
+    public BloqueBasico(int inicio) {
+        this.id = ID_SEQ++;
         this.inicio = inicio;
         this.fin = -1;
         this.es_E = false;
@@ -40,7 +41,7 @@ public class BloqueBasico {
 
     @Override
     public int hashCode() {
-        return inicio;
+        return id;
     }
     
     @Override
@@ -54,12 +55,12 @@ public class BloqueBasico {
     @Override
     public String toString() {
     	if(es_E) {
-        	return "-> E id:"+id+" desde:"+inicio+" hasta:"+fin+" <-";
+        	return "-> E id:"+id+" ["+inicio+", "+fin+"] <-";
     	}
     	if(es_S) {
-        	return "-> S id:"+id+" desde:"+inicio+" hasta:"+fin+" <-";
+        	return "-> S id:"+id+" ["+inicio+", "+fin+"] <-";
     	}
-    	return "-> B"+id+" desde:"+inicio+" hasta:"+fin+" <-";
+    	return "-> B"+id+" ["+inicio+", "+fin+"] <-";
     }
 
 	public Boolean getEs_E() {
@@ -78,4 +79,7 @@ public class BloqueBasico {
 		this.es_S = es_S;
 	}
 
+    public int getId() {
+        return this.id;
+    }
 }

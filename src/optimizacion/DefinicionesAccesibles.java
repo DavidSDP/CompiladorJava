@@ -96,8 +96,8 @@ public class DefinicionesAccesibles {
                         if (definicion.getDestino().equals(argumento)) {
                             definicionUsoVariable = definicionUso.get(definicion);
                             definicionUsoVariable.add(instruccion);
+                            definiciones.add(definicion);
                         }
-                        definiciones.add(definicion);
                     }
                     variables = usoDefinicion.getOrDefault(instruccion, new HashMap<>());
                     variables.put(argumento, definiciones);

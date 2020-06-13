@@ -32,4 +32,20 @@ class Nodo {
     public boolean isUnvisited() {
         return Color.WHITE.equals(color);
     }
+
+    public String getName() {
+        return bloqueBasico.toString();
+    }
+
+    public String toString() {
+        return bloqueBasico.toString() + " - " + color.toString();
+    }
+
+    /*
+     * Como este ID de momento solo es para proppositos de impresion podemos utilizar el id del bloque basico.
+     * No es del todo correcto, pero bueno, tampoco está horriblemente mal
+     */
+    public int getId() {
+        return bloqueBasico.getId();
+    }
 }

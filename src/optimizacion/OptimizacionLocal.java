@@ -1,10 +1,12 @@
 package optimizacion;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import CodigoMaquina.Instruccion;
+import Errores.ErrorProcesador;
 import Procesador.AlmacenVariables;
 import Procesador.Declaracion;
 import intermedio.BloqueBasico;
@@ -60,15 +62,34 @@ public class OptimizacionLocal implements Optimizador{
             grafosFunciones.put(rangoInstrucciones, grafoFuncion);
             rangoInstrucciones = secuenciaInstrucciones.getSiguienteFuncion(instruccionInicial);
         }
-        
+
+        String filename;
         HashMap<RangoInstruccionesFuncion, IdentificacionBucles> identificacionBucles = new HashMap<>();
         for(RangoInstruccionesFuncion rangoInstruccionesFuncion: funciones) {
-        	IdentificacionBucles idBucles = new IdentificacionBucles(grafosFunciones.get(rangoInstruccionesFuncion), secuenciaInstrucciones);
+        	grafoFuncion = grafosFunciones.get(rangoInstruccionesFuncion);
+        	// No se si el handling de esto se debería llevar a cabo aquí
+			filename = String.format("grafo-%d-%d-original.dot", rangoInstruccionesFuncion.getInicio(), rangoInstruccionesFuncion.getFin());
+			exportarGrafo(filename, grafoFuncion);
+			IdentificacionBucles idBucles = new IdentificacionBucles(grafoFuncion, secuenciaInstrucciones);
+
+			filename = String.format("grafo-%d-%d-optimizado.dot", rangoInstruccionesFuncion.getInicio(), rangoInstruccionesFuncion.getFin());
+			exportarGrafo(filename, grafoFuncion);
+
         	identificacionBucles.put(rangoInstruccionesFuncion, idBucles);
         }
         return new RetornoOptimizacion(secuenciaInstrucciones.getInstrucciones(), true);
 	}
-	
+
+	private static void exportarGrafo(String filename, Grafo grafo) {
+		// No se si el handling de esto se debería llevar a cabo aquí
+		try {
+			grafo.exportToFile(filename);
+		} catch (ErrorProcesador errorProcesador) {
+			errorProcesador.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	public static class IdentificacionBucles {
 		
 		private Grafo grafoBloquesBasicos;
@@ -134,32 +155,37 @@ public class OptimizacionLocal implements Optimizador{
 			);
 			// TODO Esto definitivamente no va aquí, pero de momento me va bien para poder
 			//  mantener htodo el código recogido en una sola parte.
+			BloqueBasico encabezado;
 			for(Map.Entry<Integer, List<BloqueBasico>> e : this.tablaBLC.entrySet()) {
-
+				e.getValue().sort(Comparator.comparingInt(BloqueBasico::getId));
 				// TODO Inversión de bucle.
 				this.instruccionesBucle = this.secuenciaInstrucciones.getInstrucciones(e.getValue());
-				List<Invariante> invariantes = identificacionDeInvariantes(e.getKey(), e.getValue());
-				BloqueBasico preencabezado = moverInvariantes(invariantes, e.getValue());
+				List<Invariante> invariantes = identificacionDeInvariantes(e.getValue());
 
-				/*
-				Un encabezado puede tener dos tipos de predecesores:
-					1- Los que son ajenos al bucle
-					2- Todos los bloques finales del bucle que provocan una vuelta al encabezado.
-				Cuando insertamos el preencabezado, nos interesa que lo ajenos al bucle representen que
-				el punto de entrada es ese.
-				Mientras que, en el caso de los finales del bucle, lo que nos interesa es que salten al encabezado. Obviando,
-				de esta forma, cualquier tipo de calculo invariante.
-				 */
-				grafoBloquesBasicos.addVertice(preencabezado);
-				BloqueBasico encabezado = this.tablaH.get(e.getKey());
-				for(BloqueBasico predecesor: grafoBloquesBasicos.getPredecesores(encabezado)) {
-					if(!domina(encabezado, predecesor)) {
-						// TODO ¿Deberíamos poner esta arista como una arista adyacente?
-						grafoBloquesBasicos.addArista(predecesor, preencabezado);
-						grafoBloquesBasicos.removeArista(predecesor, encabezado);
+				// No invariantes no party.
+				if (invariantes.size() > 0) {
+					encabezado = this.tablaH.get(e.getKey());
+					BloqueBasico preencabezado = moverInvariantes(invariantes, e.getValue(), encabezado);
+					/*
+					Un encabezado puede tener dos tipos de predecesores:
+						1- Los que son ajenos al bucle
+						2- Todos los bloques finales del bucle que provocan una vuelta al encabezado.
+					Cuando insertamos el preencabezado, nos interesa que lo ajenos al bucle representen que
+					el punto de entrada es ese.
+					Mientras que, en el caso de los finales del bucle, lo que nos interesa es que salten al encabezado. Obviando,
+					de esta forma, cualquier tipo de calculo invariante.
+					 */
+					grafoBloquesBasicos.addVertice(preencabezado);
+
+					for(BloqueBasico predecesor: grafoBloquesBasicos.getPredecesores(encabezado)) {
+						if(!domina(encabezado, predecesor)) {
+							// TODO ¿Deberíamos poner esta arista como una arista adyacente?
+							grafoBloquesBasicos.addArista(predecesor, preencabezado);
+							grafoBloquesBasicos.removeArista(predecesor, encabezado);
+						}
 					}
+					grafoBloquesBasicos.addArista(preencabezado, encabezado);
 				}
-				grafoBloquesBasicos.addArista(preencabezado, encabezado);
 			}
 		}
 
@@ -173,19 +199,20 @@ public class OptimizacionLocal implements Optimizador{
 		 * 	    que identifique esas instrucciones como preencabezado. ( Esto fuerza a actualizar el grafo )
 		 *
 		 */
-		private BloqueBasico moverInvariantes(List<Invariante> invariantes, List<BloqueBasico> bloquesBucle) {
-			BloqueBasico primerBloque = bloquesBucle.get(0), bloque, preencabezado;
-			int primeraInstruccion = primerBloque.getInicio();
+		private BloqueBasico moverInvariantes(List<Invariante> invariantes, List<BloqueBasico> bloquesBucle, BloqueBasico encabezado) {
+			BloqueBasico bloque, preencabezado;
+			int primeraInstruccion = encabezado.getInicio();
 			int numInvariantes = invariantes.size();
 			int posicion;
 			Invariante invariante;
 			HashMap<BloqueBasico, Integer> posiciones = new HashMap<>();
 
 			// Esto podría dar problemas ??
-			preencabezado = new BloqueBasico(primerBloque.getInicio(), primerBloque.getInicio() + numInvariantes - 1);
+			preencabezado = new BloqueBasico(encabezado.getInicio(), encabezado.getInicio() + numInvariantes - 1);
 
-			// Para evitar demasiadas complicaciones vamos a aplicar el offset a todos los bloques y después
-			// actualizaremos aquellos que hayan perdido instrucciones y los posteriores.
+			// Para evitar demasiadas complicaciones vamos a aplicar el offset a todos los bloques afectados por desplazamientos
+			// de instrucciones del bucle, es decir, desde el primer bloque del bucle hasta el final de la función.
+			// Después actualizaremos los bloques que han sufrido algún cambio de instrucciones y sus bloques posteriores.
 			// De esta forma, el balance será correcto, en tanto que tendremos las siguientes situaciones:
 			//  1. El bloque estaba antes de un cambio; así que le hemos aumentado K instrucciones ( tantas como
 			//		instrucciones se hayan añadido al preencabezado
@@ -194,7 +221,7 @@ public class OptimizacionLocal implements Optimizador{
 			//		puedo explicarlo en voz)
 			//  3. El bloque esta despues de un cambio; así que hemos aumentado inicio y fin pero no le afectaba a el ( ya que
 			//     se ha sumado y restado 1 antes de mi posición y eso me deja igual.
-			for (int idx = 0; idx < tablaBB.size(); idx++) {
+			for (int idx = tablaBB.indexOf(encabezado); idx < tablaBB.size(); idx++) {
 				bloque = tablaBB.get(idx);
 				posiciones.put(bloque, idx);
 				bloque.aplicarDesplazamiento(numInvariantes);
@@ -207,7 +234,8 @@ public class OptimizacionLocal implements Optimizador{
 				fin = invariante.getBloque().getFin();
 				invariante.getBloque().setFin(fin - 1);
 
-				posicion = posiciones.get(invariante.getBloque());
+				bloque = invariante.getBloque();
+				posicion = posiciones.get(bloque);
 				for (int bloqueIdx = posicion + 1; bloqueIdx < tablaBB.size(); bloqueIdx++) {
 					bloque = tablaBB.get(bloqueIdx);
 					// Neutralizamos el offset para la instrucción
@@ -222,7 +250,7 @@ public class OptimizacionLocal implements Optimizador{
 			return preencabezado;
 		}
 
-		private List<Invariante> identificacionDeInvariantes(int indiceBucle, List<BloqueBasico> bloques) {
+		private List<Invariante> identificacionDeInvariantes(List<BloqueBasico> bloques) {
 			AlmacenVariables almacenVariables = AlmacenVariables.getInstance();
 			// Por si acaso reseteamos el conteo de las variables ( aunque se supone
 			// que ya deberían haberse inicializado )
@@ -272,16 +300,28 @@ public class OptimizacionLocal implements Optimizador{
 			Set<InstruccionTresDirecciones> usos;
 			ArrayList<Invariante> invariantesTrasladables = new ArrayList<>();
 			for (Invariante invariante: invariantes) {
+				boolean extract = true;
 				for (Map.Entry<Declaracion, Set<InstruccionTresDirecciones>> entry: definicionesAccesibles.getDefiniciones(invariante.getInstruccion()).entrySet()) {
 					for(InstruccionTresDirecciones instruccion: entry.getValue()) {
 						// Ojo! La comprobación está hecha ad-hoc así. Creo que impacta menos
 						// 2 llamadas a funciones asintóticamente constantes, que tener que instanciar un hashset
 						// para asegurarse de que es el único elemento en el conjunto.
 						usos = definicionesAccesibles.getUsos(instruccion);
-						if (usos.size() == 1 && usos.contains(invariante)) {
-							invariantesTrasladables.add(invariante);
-						}
+						extract = extract && usos.size() == 1 && usos.contains(invariante.getInstruccion());
 					}
+
+
+				}
+				/*
+					Hay dos casos principales:
+						1- Existen definiciones para este uso y cada una de las definiciones solo aplica a este uso ( no me cuadra)
+						2- No existen definiciones para este uso y entonces estamos ante dos posibles entidades:
+							2.1- Una constante
+							2.2- Un parámetro de una función ( Ojo! no se ha comprobado que pasaría si pusieramos una asignación a
+								 un parámetro de función ).
+					 */
+				if (extract) {
+					invariantesTrasladables.add(invariante);
 				}
 			}
 			return invariantesTrasladables;
@@ -300,8 +340,8 @@ public class OptimizacionLocal implements Optimizador{
 		private int examinaInvariancia(InstruccionTresDirecciones i3d, Declaracion variable, HashMap<InstruccionTresDirecciones, Integer> modos, List<BloqueBasico> bloquesBucle) {
 			// Como reza el comentario de arriba, -2 significa que el argumento izquierda no es invariante. Esto tiene pinta
 			// de estar mal.
-			boolean argIzquierdaInvariante = (modos.get(i3d) == 0 || modos.get(i3d) == -1);
-			boolean argDerechaInvariante = (modos.get(i3d) == 0 || modos.get(i3d) == -2);
+			boolean argIzquierdaInvariante = (modos.get(i3d) == 1 || modos.get(i3d) == -1);
+			boolean argDerechaInvariante = (modos.get(i3d) == 1 || modos.get(i3d) == -2);
 
 			if (!argIzquierdaInvariante) {
 				argIzquierdaInvariante = i3d.primeroEsConstante();
@@ -309,7 +349,7 @@ public class OptimizacionLocal implements Optimizador{
 					boolean extraer = true;
 					// TODO No se debería conocer la estructura del operando aquí fuera
 					for (InstruccionTresDirecciones definicion : definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor())) {
-						extraer = !instruccionesBucle.contains(definicion);
+						extraer = extraer && !instruccionesBucle.contains(definicion);
 					}
 					argIzquierdaInvariante = extraer;
 				}
@@ -325,6 +365,8 @@ public class OptimizacionLocal implements Optimizador{
 				}
 			}
 
+			argDerechaInvariante = argDerechaInvariante || i3d.getArgumentos().size() < 2;
+
 			// Cuidado! En las instrucciones de copia segundo es el destino, no uno de los parámetros, así
 			// que esto depende de la instrucción. Ojito 2! para las funciones esto tampoco funciona ( menudo chiste )
 			if (!argDerechaInvariante) {
@@ -333,7 +375,7 @@ public class OptimizacionLocal implements Optimizador{
 					boolean extraer = true;
 					// TODO No se debería conocer la estructura del operando aquí fuera
 					for (InstruccionTresDirecciones definicion : definicionesAccesibles.getDefiniciones(i3d, i3d.getSegundo().getValor())) {
-						extraer = !instruccionesBucle.contains(definicion);
+						extraer = extraer && !instruccionesBucle.contains(definicion);
 					}
 					argDerechaInvariante = extraer;
 				}
@@ -343,7 +385,7 @@ public class OptimizacionLocal implements Optimizador{
 				// Si no se redefine en ningún punto y la definición es invariante, entonces podemos sacarla fuera.
 				if (!argDerechaInvariante) {
 					if (definicionesAccesibles.getDefiniciones(i3d, i3d.getSegundo().getValor()).size() == 1) {
-						InstruccionTresDirecciones declaracion = definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor()).iterator().next();
+						InstruccionTresDirecciones declaracion = definicionesAccesibles.getDefiniciones(i3d, i3d.getSegundo().getValor()).iterator().next();
 						argDerechaInvariante = modos.get(declaracion) > 0;
 					}
 				}

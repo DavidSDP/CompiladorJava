@@ -102,7 +102,6 @@ precedence left OPLOGICO, COMPARADOR;
 start with programa;
 
 programa ::=  												{: GlobalVariables.entraBloqueClase(null);
- 																GlobalVariables.declaraBuiltInFunctions((EntornoClase)GlobalVariables.entornoActual());
 															:}
 			clase:c
 															{: GlobalVariables.saleBloqueClase();
@@ -137,6 +136,7 @@ clase	::=	clase_primera_parte:cpp cuerpo:c	LLAVEDER
 clase_primera_parte ::= clase_firma:cf declaraciones:decls
 			{:
 					I3DUtils.crea(OperacionTresDirecciones.GOTO, cf.getEtiquetaPostInicializacion());
+					GlobalVariables.declaraBuiltInFunctions();
 					RESULT = new SimboloClase(cf, decls);
 			:};
 

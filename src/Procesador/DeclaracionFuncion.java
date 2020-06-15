@@ -18,6 +18,10 @@ public class DeclaracionFuncion extends Declaracion {
         return this.etiqueta;
     }
 
+    public void setEtiqueta(String etiqueta) {
+        this.etiqueta = etiqueta;
+    }
+
     @Override
     public String toString() {
         return tipo.toString() + " " + identificador.toString() + "(" + this.etiqueta + ")";

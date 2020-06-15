@@ -33,6 +33,57 @@ RESTORE_BP
 			RTS
 
 ; ============================================================
+READ
+; ============================================================
+; INPUT		- NADA
+; MODIFICA  - NADA
+; OUTPUT	- A1.L: Direccion del Descriptor del String leido.
+; ============================================================
+            MOVEM.L D0-D1/A1-A2, -(A7)
+            
+            MOVE.B  #2, D0      ; Lectura de input (Task 2, TRAP 15)
+            TRAP    #15         ; D1.W -> length
+            MOVE.L  A1, A2      ; A2.L -> @ String
+            
+            MOVE.L  #8, D0
+            JSR     DMMALLOC
+            MOVE.L  A0, A1
+            MOVE.W  D1, (A1)
+            MOVE.W  #0, 2(A1)
+            ADD.W   #1, D1
+            MOVE.L  D1, D0
+            JSR     DMMALLOC
+            MOVE.L  A0, 4(A1)   ; A1 -> @ String Descriptor
+            SUB.W   #1, D1
+.READCNT
+            MOVE.B  (A2)+, (A0)+
+            DBRA.W  D1, .READCNT
+            MOVE.B  #0, (A0)+
+            MOVE.L  A1, A0
+            MOVE.L  BP, A1
+            SUB.L   #8, A1
+            MOVE.L  A0, (A1)
+            MOVEM.L (A7)+, D0-D1/A1-A2
+            RTS
+            
+; ============================================================
+STRWRITE
+; ============================================================
+; INPUT		- A0.L -> Puntero a descriptor de String
+; MODIFICA  - NADA
+; OUTPUT	- NADA
+; ============================================================
+            MOVEM.L D0-D1/A1, -(A7)
+        	MOVE.W	(A0), D1    ; Tamanyo String
+            
+            MOVE.B  #0, D0
+            MOVE.L  4(A0), A1
+            TRAP    #15         ; Escritura por pantalla (Task 0, TRAP 15)
+            
+            MOVEM.L (A7)+, D0-D1/A1
+            RTS
+            
+; ============================================================
 STREQUALS
 ; ============================================================
 ; INPUT		- A0.L -> Puntero a descriptor 1
@@ -46,7 +97,7 @@ STREQUALS
 			MOVE.L	4(A0),A0
 			MOVE.L	4(A1),A1
 .LOOPSTR
-        	CMP.W	(A0)+, (A1)+
+        	CMP.B	(A0)+, (A1)+
         	BNE 	.STRNOTEQ
         	DBRA.W 	D0, .LOOPSTR
         	BRA		.STREQUAL

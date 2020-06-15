@@ -61,11 +61,28 @@ public class GlobalVariables {
         }
     }
 
-    public static void declaraBuiltInFunctions(EntornoClase raiz) throws ErrorSemantico, IOException {
-        asignaBuiltInFuncionID("read", Tipo.getTipo(Tipo.String), null);
-        asignaBuiltInFuncionID("write", Tipo.getTipo(Tipo.Void), new SimboloArgs(new SimboloArgDecl("input", Tipo.getTipo(Tipo.String), null), null, true));
+    public static void declaraBuiltInFunctions() throws ErrorSemantico, IOException {
+        declaraBuiltInFunctionWrite();
+        declaraBuiltInFunctionRead();
         asignaBuiltInFuncionID("integerToString", Tipo.getTipo(Tipo.String), new SimboloArgs(new SimboloArgDecl("numero", Tipo.getTipo(Tipo.Integer), null), null, true));
         asignaBuiltInFuncionID("stringToInteger", Tipo.getTipo(Tipo.Integer), new SimboloArgs(new SimboloArgDecl("string", Tipo.getTipo(Tipo.String), null), null, true));
+    }
+    
+    public static void declaraBuiltInFunctionWrite() throws ErrorSemantico, IOException {
+        DeclaracionFuncion declaracion = asignaFuncionID("write", Tipo.getTipo(Tipo.Void));
+        declaracion.setEtiqueta("STRWRITE");
+        entraBloqueFuncion(declaracion);
+        asignaEntornoFuncionID("write");
+		asignaFuncionArg("input", "String");
+        saleBloqueFuncion(true);
+    }
+    
+    public static void declaraBuiltInFunctionRead() throws ErrorSemantico, IOException {
+        DeclaracionFuncion declaracion = asignaFuncionID("read", Tipo.getTipo(Tipo.String));
+        declaracion.setEtiqueta("READ");
+        entraBloqueFuncion(declaracion);
+        asignaEntornoFuncionID("read");
+        saleBloqueFuncion(true);
     }
 
     private static void asignaBuiltInFuncionID(String idFuncion, TipoObject tipoRetorno, SimboloArgs args) throws ErrorSemantico, IOException {

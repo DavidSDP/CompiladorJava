@@ -104,7 +104,6 @@ public class Operando {
         bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AX));
         return bI;
     }
-
     /**
      * Creating a descriptor modifies the next registers:
      *  - Data:    D0
@@ -116,9 +115,10 @@ public class Operando {
         if (this.valor instanceof DeclaracionConstante) {
             DeclaracionConstante desc = (DeclaracionConstante) this.valor;
             length = ((String)desc.getValor()).length();
-            // TODO 2 hard-coded para evitar una avalancha de cambios antes de comprobar que
+            // TODO 1 hard-coded para evitar una avalancha de cambios antes de comprobar que
             //  funciona.
-            size = 2 * length;
+//            size = 2 * length;
+            size = length + 1;
         } else {
             DeclaracionArray desc = (DeclaracionArray)this.valor;
             length = desc.getLongitudArray();
@@ -164,8 +164,11 @@ public class Operando {
         bI.add(createDescriptor(AX));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Indireccion.__(4, AX), AddressRegister.A0));
         for (int idx = 0; idx < size; idx++) {
-	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__((int)text.charAt(idx)), PostIncremento.__(AddressRegister.A0)));
+	        bI.add(new Instruccion(OpCode.MOVE, Size.B, Literal.__((int)text.charAt(idx)), PostIncremento.__(AddressRegister.A0)));
         }
+        // TESTEANDO STRINGS TERMINADOS EN 0 ->
+        bI.add(new Instruccion(OpCode.MOVE, Size.B, Literal.__(0), PostIncremento.__(AddressRegister.A0)));
+        // <-
         bI.add(new Instruccion(OpCode.MOVEM, Size.L, PostIncremento.__(StackPointer.A7), Restore.__(AddressRegister.A0)));
         
         return bI;

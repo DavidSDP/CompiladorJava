@@ -9,7 +9,6 @@ import java.util.Stack;
 import Checkers.Tipo;
 import Checkers.TipoObject;
 import Errores.ErrorSemantico;
-import SimbolosNoTerminales.SimboloArgDecl;
 import SimbolosNoTerminales.SimboloArgs;
 import SimbolosNoTerminales.SimboloArray;
 
@@ -60,41 +59,23 @@ public class GlobalVariables {
             return null;
         }
     }
-
+    
     public static void declaraBuiltInFunctions() throws ErrorSemantico, IOException {
-        declaraBuiltInFunctionWrite();
-        declaraBuiltInFunctionRead();
-        asignaBuiltInFuncionID("integerToString", Tipo.getTipo(Tipo.String), new SimboloArgs(new SimboloArgDecl("numero", Tipo.getTipo(Tipo.Integer), null), null, true));
-        asignaBuiltInFuncionID("stringToInteger", Tipo.getTipo(Tipo.Integer), new SimboloArgs(new SimboloArgDecl("string", Tipo.getTipo(Tipo.String), null), null, true));
+        declaraBuiltInFunction("writeString", "WRITESTR", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
+        declaraBuiltInFunction("writeInt", "WRITEINT", Tipo.getTipo(Tipo.Void), new String[] {"input", "int"});
+        declaraBuiltInFunction("writeStringLine", "WRTSTRLN", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
+        declaraBuiltInFunction("read", "READ", Tipo.getTipo(Tipo.String));
     }
     
-    public static void declaraBuiltInFunctionWrite() throws ErrorSemantico, IOException {
-        DeclaracionFuncion declaracion = asignaFuncionID("write", Tipo.getTipo(Tipo.Void));
-        declaracion.setEtiqueta("STRWRITE");
-        entraBloqueFuncion(declaracion);
-        asignaEntornoFuncionID("write");
-		asignaFuncionArg("input", "String");
-        saleBloqueFuncion(true);
-    }
-    
-    public static void declaraBuiltInFunctionRead() throws ErrorSemantico, IOException {
-        DeclaracionFuncion declaracion = asignaFuncionID("read", Tipo.getTipo(Tipo.String));
-        declaracion.setEtiqueta("READ");
-        entraBloqueFuncion(declaracion);
-        asignaEntornoFuncionID("read");
-        saleBloqueFuncion(true);
-    }
-
-    private static void asignaBuiltInFuncionID(String idFuncion, TipoObject tipoRetorno, SimboloArgs args) throws ErrorSemantico, IOException {
+    private static void declaraBuiltInFunction(String idFuncion, String etiqueta, TipoObject tipoRetorno, String[]... args) throws ErrorSemantico, IOException {
         DeclaracionFuncion declaracion = asignaFuncionID(idFuncion, tipoRetorno);
+        declaracion.setEtiqueta(etiqueta);
         entraBloqueFuncion(declaracion);
-
         asignaEntornoFuncionID(idFuncion);
-        if (args != null) {
-            for (SimboloArgs a = args; a != null; a = a.getNextArg()) {
-                GlobalVariables.asignaID(a.getId(), a.getTipo());
+        if(args != null) {
+            for(String[] arg: args) {
+            	asignaFuncionArg(arg[0], arg[1]);
             }
-            asignaFuncionArgs(idFuncion, args);
         }
         saleBloqueFuncion(true);
     }

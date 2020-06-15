@@ -47,9 +47,9 @@ class ClasePrincipal {
 	
 	function void main() {
 		// Prueba de escritura por pantalla
-		write("Escriba una frase y presione INTRO...");
+		writeStringLine("Escriba una frase y presione INTRO...");
 		String probando = read();
-		write(probando);
+		writeStringLine(probando);
 		// Prueba de asignacion de valores a elementos almacenados en memoria dinamica
 		int vectorNumeros[3];
 		vectorNumeros[0] = 5;
@@ -68,10 +68,14 @@ class ClasePrincipal {
 		// Pruebas generales
 		boolean esIgual = (str == "uep");
 		if(esIgual){
-			write("SI PUEDES LEER ESTO SIGNIFICA QUE STREQUALS FUNCIONA");
+			writeStringLine("SI PUEDES LEER ESTO SIGNIFICA QUE STREQUALS FUNCIONA");
 		}
+		writeString("h");
+		writeString("o");
+		writeString("l");
+		writeString("a");
 		if(probando == getNombre("esto funsiona")){
-			write("Aparentemente has escrito 'esto funsiona', por lo tanto esto funciona.");
+			writeStringLine("Aparentemente has escrito 'esto funsiona', por lo tanto esto funciona.");
 		}
 		int resultado = multiplica(2, 10);
 		resultado = resultado + a;

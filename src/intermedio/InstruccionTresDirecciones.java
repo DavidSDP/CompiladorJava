@@ -20,8 +20,8 @@ interface MachineCodeSerializable {
  * -------------------------------------------
  * 
  * El tercer operador se utiliza a modo de operador de destino
- * Se tendrá que traducir a código máquina en consecuencia
- *. 
+ * Se tendrá que traducir a código máquina en consecuencia.
+ * 
  */
 public abstract class InstruccionTresDirecciones implements MachineCodeSerializable, Cloneable {
     protected OperacionTresDirecciones operacion;

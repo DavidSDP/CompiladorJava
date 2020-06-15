@@ -67,7 +67,7 @@ READ
             RTS
             
 ; ============================================================
-STRWRITE
+WRTSTRLN
 ; ============================================================
 ; INPUT		- A0.L -> Puntero a descriptor de String
 ; MODIFICA  - NADA
@@ -81,6 +81,39 @@ STRWRITE
             TRAP    #15         ; Escritura por pantalla (Task 0, TRAP 15)
             
             MOVEM.L (A7)+, D0-D1/A1
+            RTS
+; ============================================================
+WRITESTR
+; ============================================================
+; INPUT		- A0.L -> Puntero a descriptor de String
+; MODIFICA  - NADA
+; OUTPUT	- NADA
+; ============================================================
+            MOVEM.L D0-D1/A1, -(A7)
+        	MOVE.W	(A0), D1    ; Tamanyo String
+            
+            MOVE.B  #14, D0
+            MOVE.L  4(A0), A1
+            TRAP    #15         ; Escritura por pantalla (Task 14, TRAP 15)
+            
+            MOVEM.L (A7)+, D0-D1/A1
+            RTS
+; ============================================================
+WRITEINT
+; ============================================================
+; INPUT		- D0.W -> Valor entero
+; MODIFICA  - NADA
+; OUTPUT	- NADA
+; ============================================================
+            MOVEM.L D1-D2, -(A7)
+            
+            AND.L   #$0000FFFF, D0
+            MOVE.L  D0, D1
+            MOVE.B  #10, D2
+            MOVE.W  #15, D0
+            TRAP    #15         ; Escritura por pantalla (Task 15, TRAP 15)
+            
+            MOVEM.L (A7)+, D1-D2
             RTS
             
 ; ============================================================

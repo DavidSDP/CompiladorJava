@@ -60,10 +60,17 @@ public class GlobalVariables {
         }
     }
     
+<<<<<<< HEAD
     public static void declaraBuiltInFunctions() throws ErrorSemantico, IOException {
         declaraBuiltInFunction("write", "WRITESTR", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
         declaraBuiltInFunction("write", "WRITEINT", Tipo.getTipo(Tipo.Void), new String[] {"input", "int"});
         declaraBuiltInFunction("writeln", "WRTSTRLN", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
+=======
+    public static void declaraBuiltInFunctions() throws ErrorSemantico, IOException {
+        declaraBuiltInFunction("write", "WRITESTR", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
+        declaraBuiltInFunction("write", "WRITEINT", Tipo.getTipo(Tipo.Void), new String[] {"input", "int"});
+        declaraBuiltInFunction("writeln", "WRTSTRLN", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
+>>>>>>> branch 'codigo_tres_direcciones' of https://github.com/DavidSDP/CompiladorJava.git
         declaraBuiltInFunction("read", "READ", Tipo.getTipo(Tipo.String));
     }
     
@@ -75,8 +82,13 @@ public class GlobalVariables {
             for(String[] arg: args) {
             	asignaFuncionArg(arg[0], arg[1]);
             }
+<<<<<<< HEAD
         }
         declaracion.finalizar();
+=======
+        }
+        declaracion.finalizar();
+>>>>>>> branch 'codigo_tres_direcciones' of https://github.com/DavidSDP/CompiladorJava.git
         saleBloqueFuncion(true);
     }
 

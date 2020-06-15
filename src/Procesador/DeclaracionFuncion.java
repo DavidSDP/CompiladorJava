@@ -2,16 +2,22 @@ package Procesador;
 
 import Checkers.Tipo;
 import Checkers.TipoObject;
+import Errores.ErrorSemantico;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DeclaracionFuncion extends Declaracion {
 
     private String etiqueta;
     // Entorno vinculado a esta funcion
     private EntornoFuncion entornoDependiente;
+    private boolean construyendose;
 
     public DeclaracionFuncion(Identificador identificador, TipoObject tipo, String etiqueta) {
         super(identificador, tipo);
         this.etiqueta = etiqueta;
+        this.construyendose = true;
     }
 
     public String getEtiqueta() {
@@ -60,4 +66,67 @@ public class DeclaracionFuncion extends Declaracion {
     public boolean hasParams() {
         return entornoDependiente.getListaArgumentos().size() > 0;
     }
+
+    @Override
+    public int hashCode() {
+        return this.etiqueta.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof DeclaracionFuncion)) {
+            return false;
+        }
+
+        DeclaracionFuncion other = (DeclaracionFuncion)obj;
+        // En este caso, suponemos que dos iguales si coinciden en nombre y parámetros.
+        if (!other.identificador.getNombre().equals(identificador.getNombre())) {
+            return false;
+        }
+
+        // En el caso de que las funciones estén en proceso de construcción las consideraremos como
+        // si fueran diferentes. Cuando se marquen como finalizadas es cuando probablemente tengamos que comprobar si
+        // hemos dejado los entornos del compilador en un estado coherente.
+        // De otra forma no podemos soportar la sobrecarga de parámetros.
+        if (other.construyendose || construyendose) {
+            return false;
+        }
+
+        return coincidenParams(other.getTipoArgumentos());
+    }
+
+    public boolean coincidenParams(List<TipoObject> argumentoOther) {
+        List<TipoObject> argumentosPropios = this.getTipoArgumentos();
+        if (argumentoOther.size() != argumentosPropios.size()) {
+            return false;
+        }
+
+        // TODO Esta comprobación no se lleva bien con tipos complejos ( arrays, ¿Strings?)
+        TipoObject tipoDeclaracionPropia;
+        TipoObject tipoDeclaracionOther;
+        int numParams = argumentosPropios.size();
+        boolean iguales = true;
+        for(int idx = 0; idx < numParams && iguales; ++idx) {
+            tipoDeclaracionPropia = argumentosPropios.get(idx);
+            tipoDeclaracionOther = argumentoOther.get(idx);
+            iguales = tipoDeclaracionOther.equals(tipoDeclaracionPropia);
+        }
+
+        return iguales;
+    }
+
+    public void finalizar() throws ErrorSemantico {
+        this.construyendose = false;
+        this.entornoDependiente.firmaCompletada();
+    }
+
+    public EntornoFuncion getEntorno() {
+        return entornoDependiente;
+    }
+
+    protected List<TipoObject> getTipoArgumentos() {
+        return this.entornoDependiente.getDeclaracionArgumentos().stream().map(Declaracion::getTipo).collect(Collectors.toList());
+    }
+
+
 }

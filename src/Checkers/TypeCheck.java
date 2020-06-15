@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Errores.ErrorSemantico;
-import Procesador.Declaracion;
-import Procesador.DeclaracionArray;
-import Procesador.Entorno;
-import Procesador.EntornoFuncion;
-import Procesador.GlobalVariables;
+import Procesador.*;
 import SimbolosNoTerminales.SimboloOperacion;
 import SimbolosNoTerminales.SimboloParams;
 
@@ -62,18 +58,14 @@ public class TypeCheck {
 	
 	public static void parameterMatch(String idFuncion, SimboloParams p) throws ErrorSemantico {
 		Entorno entorno = GlobalVariables.entornoActual();
-		EntornoFuncion entornoFuncion = entorno.fullGetFuncionEntorno(idFuncion);
-		List<String> argumentos = entornoFuncion.getArgs();
 		List<TipoObject> parametros = new ArrayList<>();
 		for(SimboloParams param = p; param != null; param = param.getNextParam()) {
 			parametros.add(param.getTipoSubyacente());
 		}
-		if(argumentos.size() != parametros.size())
-			lanzaErrorParamNumberMismatch(idFuncion);
-		if(!argumentos.isEmpty()) {
-			for(int i = 0; i < argumentos.size(); i++) {
-				paramTypesMatch(idFuncion, entornoFuncion.fullGet(argumentos.get(i)).getTipo(), parametros.get(i));
-			}
+		DeclaracionFuncion funcion = entorno.fullGetFuncion(idFuncion, parametros);
+
+		if (funcion == null) {
+			throw new ErrorSemantico("La función "+idFuncion+" no existe ( Revisar los parámetros ).");
 		}
 	}
 	

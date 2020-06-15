@@ -3,6 +3,7 @@ package analisisSintactico;
 // External dependencies
 import java_cup.runtime.Symbol;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import java.util.ArrayList;
 
 // Module dependencies
 import intermedio.Param;
@@ -10,6 +11,7 @@ import Checkers.Tipo;
 import Checkers.TipoOperador;
 import Checkers.TypeCheck;
 import Checkers.OverflowCheck;
+import Checkers.TipoObject;
 import Errores.ErrorHandler;
 import Errores.ErrorSemantico;
 import Errores.ErrorSintactico;
@@ -26,6 +28,7 @@ import SimbolosNoTerminales.*;
 import intermedio.I3DUtils;
 import intermedio.OperacionTresDirecciones;
 import intermedio.InstruccionTresDirecciones;
+
 
 parser code {:
 
@@ -282,6 +285,7 @@ funchead ::= funcname:fn PARENIZQ args:a PARENDER
   {:  
       // Propagate the args upwards
       fn.setArgs(a);
+			fn.finalizar();
       RESULT = fn; 
   :}; 
 
@@ -296,7 +300,6 @@ funcname ::= FUNCTION TVAR:t VID:i
 
 			// Mismas consideraciones que en la siguiente produccion
       GlobalVariables.entraBloqueFuncion(decl);
-      GlobalVariables.asignaEntornoFuncionID(i);
 
 			// Genera lo necesario para poder dirigir las llamadas al procedimiento
 			I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiqueta());
@@ -322,7 +325,6 @@ funcname ::= FUNCTION TVAR:t VID:i
 			// observar es que no deja redeclarar los parametros de las funciones
 			// Esto funciona asi en java. Ahora mismo lo dejo tal cual.
       GlobalVariables.entraBloqueFuncion(decl);
-      GlobalVariables.asignaEntornoFuncionID(i);
    
 			// Genera lo necesario para poder dirigir las llamadas al procedimiento
 			I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiqueta());
@@ -338,23 +340,24 @@ funcionInvk ::= VID:i PARENIZQ params:p PARENDER
 			DeclaracionFuncion funcionInvocada = null;
 			DeclaracionFuncion funcionInvocadora = null;
 			try{
-					funcionInvocada = GlobalVariables.compruebaFuncionID(i);
-					TypeCheck.parameterMatch(i,p);
-
-					EntornoFuncion entorno = (EntornoFuncion)GlobalVariables.entornoFuncionActual();
-					funcionInvocadora = (DeclaracionFuncion)entorno.getIdentificador();
-
+					ArrayList<TipoObject> paramTypes = new ArrayList<>();
 					SimboloParams previous = null;
 					SimboloParams param = p;
 					while(param != null) {							
+							paramTypes.add(param.getTipoSubyacente());
 							previous = param;
 							param = param.getNextParam();
 					}
-				
+
 					if (previous != null) {
 							previous.markLastParam();
 					}
 
+					funcionInvocada = GlobalVariables.compruebaFuncionID(i, paramTypes);
+					TypeCheck.parameterMatch(i,p);
+
+					EntornoFuncion entorno = (EntornoFuncion)GlobalVariables.entornoFuncionActual();
+					funcionInvocadora = (DeclaracionFuncion)entorno.getIdentificador();
 			}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 			}

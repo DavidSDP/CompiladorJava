@@ -7,11 +7,13 @@ package analisisSintactico;
 
 import java_cup.runtime.Symbol;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import java.util.ArrayList;
 import intermedio.Param;
 import Checkers.Tipo;
 import Checkers.TipoOperador;
 import Checkers.TypeCheck;
 import Checkers.OverflowCheck;
+import Checkers.TipoObject;
 import Errores.ErrorHandler;
 import Errores.ErrorSemantico;
 import Errores.ErrorSintactico;
@@ -368,7 +370,6 @@ class CUP$parser$actions {
             {
               SimboloPrograma RESULT =null;
  GlobalVariables.entraBloqueClase(null);
- 																GlobalVariables.declaraBuiltInFunctions((EntornoClase)GlobalVariables.entornoActual());
 															
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$0",34, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -437,6 +438,7 @@ class CUP$parser$actions {
 		SimboloDeclaraciones decls = (SimboloDeclaraciones)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
 					I3DUtils.crea(OperacionTresDirecciones.GOTO, cf.getEtiquetaPostInicializacion());
+					GlobalVariables.declaraBuiltInFunctions();
 					RESULT = new SimboloClase(cf, decls);
 			
               CUP$parser$result = parser.getSymbolFactory().newSymbol("clase_primera_parte",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -746,6 +748,7 @@ class CUP$parser$actions {
 		  
       // Propagate the args upwards
       fn.setArgs(a);
+			fn.finalizar();
       RESULT = fn; 
   
               CUP$parser$result = parser.getSymbolFactory().newSymbol("funchead",17, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -772,7 +775,6 @@ class CUP$parser$actions {
 
 			// Mismas consideraciones que en la siguiente produccion
       GlobalVariables.entraBloqueFuncion(decl);
-      GlobalVariables.asignaEntornoFuncionID(i);
 
 			// Genera lo necesario para poder dirigir las llamadas al procedimiento
 			I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiqueta());
@@ -808,7 +810,6 @@ class CUP$parser$actions {
 			// observar es que no deja redeclarar los parametros de las funciones
 			// Esto funciona asi en java. Ahora mismo lo dejo tal cual.
       GlobalVariables.entraBloqueFuncion(decl);
-      GlobalVariables.asignaEntornoFuncionID(i);
    
 			// Genera lo necesario para poder dirigir las llamadas al procedimiento
 			I3DUtils.crea(OperacionTresDirecciones.ETIQUETA, decl.getEtiqueta());
@@ -835,23 +836,24 @@ class CUP$parser$actions {
 			DeclaracionFuncion funcionInvocada = null;
 			DeclaracionFuncion funcionInvocadora = null;
 			try{
-					funcionInvocada = GlobalVariables.compruebaFuncionID(i);
-					TypeCheck.parameterMatch(i,p);
-
-					EntornoFuncion entorno = (EntornoFuncion)GlobalVariables.entornoFuncionActual();
-					funcionInvocadora = (DeclaracionFuncion)entorno.getIdentificador();
-
+					ArrayList<TipoObject> paramTypes = new ArrayList<>();
 					SimboloParams previous = null;
 					SimboloParams param = p;
 					while(param != null) {							
+							paramTypes.add(param.getTipoSubyacente());
 							previous = param;
 							param = param.getNextParam();
 					}
-				
+
 					if (previous != null) {
 							previous.markLastParam();
 					}
 
+					funcionInvocada = GlobalVariables.compruebaFuncionID(i, paramTypes);
+					TypeCheck.parameterMatch(i,p);
+
+					EntornoFuncion entorno = (EntornoFuncion)GlobalVariables.entornoFuncionActual();
+					funcionInvocadora = (DeclaracionFuncion)entorno.getIdentificador();
 			}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 			}

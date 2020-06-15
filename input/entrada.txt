@@ -14,7 +14,7 @@ class ClasePrincipal {
 		}
 
 		return resultado;
-  	}
+  }
 
 	function int encuentra(int vector[], int tamano, int valor) {
 		int idx = 0;
@@ -47,9 +47,10 @@ class ClasePrincipal {
 	
 	function void main() {
 		// Prueba de escritura por pantalla
-		writeStringLine("Escriba una frase y presione INTRO...");
+		write("Sys: ");
+		writeLine("Escriba una frase y presione INTRO...");
 		String probando = read();
-		writeStringLine(probando);
+		writeLine(probando);
 		// Prueba de asignacion de valores a elementos almacenados en memoria dinamica
 		int vectorNumeros[3];
 		vectorNumeros[0] = 5;
@@ -68,11 +69,11 @@ class ClasePrincipal {
 		// Pruebas generales
 		boolean esIgual = (str == "uep");
 		if(esIgual){
-			writeStringLine("SI PUEDES LEER ESTO SIGNIFICA QUE STREQUALS FUNCIONA");
+			writeLine("SI PUEDES LEER ESTO SIGNIFICA QUE STREQUALS FUNCIONA");
 		}
-		writeInt(0);
+		write(0);
 		if(probando == getNombre("esto funsiona")){
-			writeStringLine("Aparentemente has escrito 'esto funsiona', por lo tanto esto funciona.");
+			writeLine("Aparentemente has escrito 'esto funsiona', por lo tanto esto funciona.");
 		}
 		int resultado = multiplica(2, 10);
 		resultado = resultado + a;

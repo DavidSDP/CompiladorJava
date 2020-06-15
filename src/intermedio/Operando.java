@@ -143,7 +143,7 @@ public class Operando {
         bI.add(new Instruccion(OpCode.JSR, new OperandoEspecial("DMMALLOC")));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, AddressRegister.A1));
         // Save the ContentSize
-        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(length), Contenido.__(AddressRegister.A1)));
+        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(size), Contenido.__(AddressRegister.A1)));
         // Initialize the RefCount
         bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(0), Indireccion.__(2, AddressRegister.A1)));
         // Request memory for the content itself.

@@ -27,20 +27,6 @@ public class EntornoFuncion extends Entorno {
 	}
 	
 	////////*	IDENTIFICADORES DE FUNCIONES/ARGUMENTOS		*////////
-	
-	// Especifica los argumentos de la función
-	public void putFuncionArgs(String funcionID, String argumentoID) throws ErrorSemantico {
-		if(!((EntornoClase)this.getEntornoPadre()).containsFuncion(funcionID))
-			throw new ErrorSemantico("La función con identificador: '"+funcionID+"' no ha sido declarada en la tabla de funciones del entorno");
-		
-		if(!this.containsSoloPropioEntorno(argumentoID))
-			throw new ErrorSemantico("El identificador: '"+argumentoID+"' no ha sido declarado en la tabla de identificadores del entorno");
-		
-		if(this.getListaArgumentos().contains(argumentoID))
-			throw new ErrorSemantico("Se ha definido el argumento: '"+argumentoID+"' duplicado para la función '"+funcionID+"'");
-		
-		this.getListaArgumentos().add(argumentoID);
-	}
 
 	// Especifica los argumentos de la función
 	public void putFuncionArg(String name, TipoObject tipo) throws ErrorSemantico {
@@ -72,6 +58,10 @@ public class EntornoFuncion extends Entorno {
 	
 	public List<String> getListaArgumentos() {
 		return listaArgumentos;
+	}
+
+	public List<Declaracion> getDeclaracionArgumentos() {
+		return this.ids.stream().filter( x -> x.isParam()).collect(Collectors.toList());
 	}
 
 	public void setListaArgumentos(List<String> listaArgumentos) {
@@ -159,7 +149,7 @@ public class EntornoFuncion extends Entorno {
 	}
 
 	protected int getDesplazamientoParametro(Declaracion decl) {
-		List<Declaracion> params = this.ids.stream().filter( x -> x.isParam()).collect(Collectors.toList());
+		List<Declaracion> params = getDeclaracionArgumentos();
 		int offset = this.getDesplazamientoElemento(decl, params);
 		DeclaracionFuncion declaracion = (DeclaracionFuncion)identificador;
 
@@ -180,4 +170,16 @@ public class EntornoFuncion extends Entorno {
 		return desplazamiento;
 	}
 
+	/**
+	 * Se le notifica al entorno de la función que la firma ya está completa.
+	 * Esto nos sirve para poder lanzar las comprobaciones de coherencia necesarias en el entorno de la clase.
+	 */
+	public void firmaCompletada() throws ErrorSemantico {
+		EntornoClase clase = (EntornoClase)this.getEntornoPadre();
+		DeclaracionFuncion declaracion = (DeclaracionFuncion)this.identificador;
+		if (clase.existenDuplicidades(declaracion)) {
+			throw new ErrorSemantico("Función " + this.identificador.getId().getNombre() + " duplicada");
+		}
+
+	}
 }

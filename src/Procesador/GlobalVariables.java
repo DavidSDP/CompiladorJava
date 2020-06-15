@@ -3,13 +3,13 @@ package Procesador;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
 import Checkers.Tipo;
 import Checkers.TipoObject;
 import Errores.ErrorSemantico;
-import SimbolosNoTerminales.SimboloArgs;
 import SimbolosNoTerminales.SimboloArray;
 
 public class GlobalVariables {
@@ -61,9 +61,9 @@ public class GlobalVariables {
     }
     
     public static void declaraBuiltInFunctions() throws ErrorSemantico, IOException {
-        declaraBuiltInFunction("writeString", "WRITESTR", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
-        declaraBuiltInFunction("writeInt", "WRITEINT", Tipo.getTipo(Tipo.Void), new String[] {"input", "int"});
-        declaraBuiltInFunction("writeStringLine", "WRTSTRLN", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
+        declaraBuiltInFunction("write", "WRITESTR", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
+        declaraBuiltInFunction("write", "WRITEINT", Tipo.getTipo(Tipo.Void), new String[] {"input", "int"});
+        declaraBuiltInFunction("writeln", "WRTSTRLN", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
         declaraBuiltInFunction("read", "READ", Tipo.getTipo(Tipo.String));
     }
     
@@ -71,12 +71,12 @@ public class GlobalVariables {
         DeclaracionFuncion declaracion = asignaFuncionID(idFuncion, tipoRetorno);
         declaracion.setEtiqueta(etiqueta);
         entraBloqueFuncion(declaracion);
-        asignaEntornoFuncionID(idFuncion);
         if(args != null) {
             for(String[] arg: args) {
             	asignaFuncionArg(arg[0], arg[1]);
             }
         }
+        declaracion.finalizar();
         saleBloqueFuncion(true);
     }
 
@@ -109,12 +109,6 @@ public class GlobalVariables {
         return top.putFuncion(tipo, idFuncion, etiqueta);
     }
 
-    // Llamar una vez dentro del entorno de la funciÃ³n
-    public static void asignaEntornoFuncionID(String idFuncion) throws ErrorSemantico {
-        EntornoFuncion top = (EntornoFuncion) entornoActual();
-        ((EntornoClase) top.getEntornoPadre()).putFuncionEntorno(idFuncion, top);
-    }
-
     public static void asignaFuncionArg(String nombre, String tipoString) throws ErrorSemantico {
         TipoObject tipo = Tipo.getTipo(tipoString);
         EntornoFuncion top = (EntornoFuncion) entornoActual();
@@ -128,14 +122,6 @@ public class GlobalVariables {
         // por tanto o permitimos que pongan el tamano en la declaracion o directamente utilizamos el heap para manejar todo esto
         // P.D: Usar el heap probablemente nos hará subir por encima del 9 y aumentar el aprobado
         top.putFuncionArrayArg(id, tipo, simboloArrayDef.getNumero());
-    }
-
-
-    public static void asignaFuncionArgs(String idFuncion, SimboloArgs args) throws ErrorSemantico {
-        EntornoFuncion top = (EntornoFuncion) entornoActual();
-        for (SimboloArgs a = args; a != null; a = a.getNextArg()) {
-            top.putFuncionArgs(idFuncion, a.getId());
-        }
     }
 
     public static DeclaracionClase asignaClaseID(String id) throws ErrorSemantico {
@@ -167,9 +153,9 @@ public class GlobalVariables {
             throw new ErrorSemantico("El valor del identificador " + id + " no puede ser modificado al tener el atributo FINAL");
     }
 
-    public static DeclaracionFuncion compruebaFuncionID(String id) throws ErrorSemantico {
+    public static DeclaracionFuncion compruebaFuncionID(String id, ArrayList<TipoObject> tipoParams) throws ErrorSemantico {
         Entorno top = entornoActual();
-        DeclaracionFuncion i = top.fullGetFuncion(id);
+        DeclaracionFuncion i = top.fullGetFuncion(id, tipoParams);
         if (i == null)
             throw new ErrorSemantico("El id " + id + " no es un sÃ­mbolo de funciÃ³n declarado en el entorno");
 
@@ -192,10 +178,10 @@ public class GlobalVariables {
         }
     }
 
-    public static void entraBloqueFuncion(Declaracion identificadorFuncion) {
-        EntornoFuncion e = new EntornoFuncion((EntornoClase) entornoActual(), identificadorFuncion);
+    public static void entraBloqueFuncion(DeclaracionFuncion declaracionFuncion) {
+        EntornoClase entornoClase = (EntornoClase) entornoActual();
+        EntornoFuncion e = new EntornoFuncion(entornoClase, declaracionFuncion);
         pilaEntornos.push(e);
-        DeclaracionFuncion declaracionFuncion = (DeclaracionFuncion)identificadorFuncion;
         declaracionFuncion.setEntornoDependiente(e);
     }
 
@@ -236,7 +222,7 @@ public class GlobalVariables {
 
     public static DeclaracionFuncion getMainFunction() throws ErrorSemantico {
         EntornoClase entorno = (EntornoClase)entornoActual();
-        DeclaracionFuncion declaracionMain = entorno.getFuncion("main");
+        DeclaracionFuncion declaracionMain = entorno.getFuncion("main", new ArrayList<Declaracion>());
 
         if(declaracionMain == null) throw new ErrorSemantico("Falta la funcion de entrada: main");
         return declaracionMain;

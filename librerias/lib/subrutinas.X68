@@ -36,34 +36,32 @@ RESTORE_BP
 READ
 ; ============================================================
 ; INPUT		- NADA
-; MODIFICA  - NADA
-; OUTPUT	- A1.L: Direccion del Descriptor del String leido.
+; MODIFICA  - -8(BP) con la @ del String descriptor
+; OUTPUT	- NADA
 ; ============================================================
-            MOVEM.L D0-D1/A1-A2, -(A7)
-            
-            MOVE.B  #2, D0      ; Lectura de input (Task 2, TRAP 15)
-            TRAP    #15         ; D1.W -> length
-            MOVE.L  A1, A2      ; A2.L -> @ String
+            MOVEM.L D0-D1/A0-A2, -(A7)
             
             MOVE.L  #8, D0
             JSR     DMMALLOC
-            MOVE.L  A0, A1
-            MOVE.W  D1, (A1)
-            MOVE.W  #0, 2(A1)
+            MOVE.L  A0, A2      ; A2.L -> @ String Descriptor
+            
+            MOVE.W  #0, 2(A2)   ; Save #0 references
+            
+            JSR     DMMALLOCNORMAL  ; A0.L -> @ String content
+            MOVE.L  A0, A1      ; A1.L -> @ String content
+            
+            MOVE.B  #2, D0      ; Lectura de input (Task 2, TRAP 15)
+            TRAP    #15         ; D1.W -> length (Limite 80)
+            
             ADD.W   #1, D1
-            MOVE.L  D1, D0
-            JSR     DMMALLOC
-            MOVE.L  A0, 4(A1)   ; A1 -> @ String Descriptor
-            SUB.W   #1, D1
-.READCNT
-            MOVE.B  (A2)+, (A0)+
-            DBRA.W  D1, .READCNT
-            MOVE.B  #0, (A0)+
-            MOVE.L  A1, A0
+            MOVE.W  D1, (A2)    ; Save String size
+            MOVE.L  A1, 4(A2)   ; Save String content Address (@)
+            
             MOVE.L  BP, A1
             SUB.L   #8, A1
-            MOVE.L  A0, (A1)
-            MOVEM.L (A7)+, D0-D1/A1-A2
+            MOVE.L  A2, (A1)    ; Retorno de String descriptor @
+            
+            MOVEM.L (A7)+, D0-D1/A0-A2
             RTS
             
 ; ============================================================

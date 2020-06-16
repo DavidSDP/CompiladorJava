@@ -9,6 +9,7 @@ import java.util.List;
 
 import Errores.ErrorHandler;
 import Errores.ErrorProcesador;
+import PostProceso.GeneracionFicheroMaquina;
 import Procesador.GlobalVariables;
 import analisisLexico.Scanner;
 import analisisSintactico.parser;
@@ -57,7 +58,7 @@ public class Main {
             if (!GlobalVariables.hayErrores) {
                 // Sin optimizaciones
                 FicheroIntermedio.escribirInstrucciones(ProgramaIntermedio.getInstance());
-                FicheroMaquina.escribirInstrucciones(ProgramaIntermedio.getInstance());
+                GeneracionFicheroMaquina.escribirVersionNoOptimizada(ProgramaIntermedio.getInstance());
                 
                 Integer nivelOptimizacion = clparser.getNivelOptimizacion();
                 
@@ -76,7 +77,7 @@ public class Main {
                     ProgramaIntermedio.getInstance().optimizar();
                     // Optimizado
                     FicheroIntermedioOptimizado.escribirInstrucciones(ProgramaIntermedio.getInstance());
-                    FicheroMaquinaOptimizado.escribirInstrucciones(ProgramaIntermedio.getInstance());
+                    GeneracionFicheroMaquina.escribirVersionOptimizada(ProgramaIntermedio.getInstance());
                 }
                 
             }
@@ -112,8 +113,6 @@ public class Main {
         FicheroEntornos.abreFichero();
         FicheroIntermedio.abreFichero();
         FicheroIntermedioOptimizado.abreFichero();
-        FicheroMaquina.abreFichero();
-        FicheroMaquinaOptimizado.abreFichero();
         System.out.println("Ejecución Procesador de Lenguaje...");
     }
 
@@ -140,8 +139,6 @@ public class Main {
             FicheroEntornos.cierraFichero();
             FicheroIntermedio.cierraFichero();
             FicheroIntermedioOptimizado.cierraFichero();
-            FicheroMaquina.cierraFichero();
-            FicheroMaquinaOptimizado.cierraFichero();
         } catch (ErrorProcesador e) {
             System.out.println(e.getMensaje());
         }

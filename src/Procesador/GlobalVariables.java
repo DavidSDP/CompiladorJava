@@ -24,8 +24,8 @@ public class GlobalVariables {
     public static final Path FICHERO_ENTORNOS = outputDir.resolve("Entornos.txt");
     public static final Path FICHERO_INTERMEDIO = outputDir.resolve("codigo_intermedio.txt");
     public static final Path FICHERO_INTERMEDIO_OPT = outputDir.resolve("codigo_intermedio_opt.txt");
-    public static final Path FICHERO_MAQUINA = outputDir.resolve("codigo_maquina.txt");
-    public static final Path FICHERO_MAQUINA_OPT = outputDir.resolve("codigo_maquina_opt.txt");
+    public static final Path FICHERO_MAQUINA = outputDir.resolve("codigo_maquina.X68");
+    public static final Path FICHERO_MAQUINA_OPT = outputDir.resolve("codigo_maquina_opt.X68");
 
     public static Boolean DEBUG_MODE = true;
     public static Boolean hayErrores = false;
@@ -72,6 +72,7 @@ public class GlobalVariables {
         entraBloqueFuncion(declaracion);
         if(args != null) {
             for(String[] arg: args) {
+                assert arg.length == 2;
             	asignaFuncionArg(arg[0], arg[1]);
             }
         }

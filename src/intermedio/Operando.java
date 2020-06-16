@@ -113,11 +113,9 @@ public class Operando {
         int length, size;
 
         if (this.valor instanceof DeclaracionConstante) {
+            // Esto solo aplica a los strings.
             DeclaracionConstante desc = (DeclaracionConstante) this.valor;
             length = ((String)desc.getValor()).length();
-            // TODO 1 hard-coded para evitar una avalancha de cambios antes de comprobar que
-            //  funciona.
-//            size = 2 * length;
             size = length + 1;
         } else {
             DeclaracionArray desc = (DeclaracionArray)this.valor;
@@ -143,7 +141,7 @@ public class Operando {
         bI.add(new Instruccion(OpCode.JSR, new OperandoEspecial("DMMALLOC")));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A0, AddressRegister.A1));
         // Save the ContentSize
-        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(size), Contenido.__(AddressRegister.A1)));
+        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(length), Contenido.__(AddressRegister.A1)));
         // Initialize the RefCount
         bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__(0), Indireccion.__(2, AddressRegister.A1)));
         // Request memory for the content itself.

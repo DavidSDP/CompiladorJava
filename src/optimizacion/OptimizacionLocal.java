@@ -57,7 +57,6 @@ public class OptimizacionLocal implements Optimizador{
 			grafoFuncion = secuenciaInstrucciones.getGrafoFlujoFuncion(rangoInstrucciones);
 			instruccionInicial = rangoInstrucciones.getFin() + 1;
 
-
             funciones.add(rangoInstrucciones);
             grafosFunciones.put(rangoInstrucciones, grafoFuncion);
             rangoInstrucciones = secuenciaInstrucciones.getSiguienteFuncion(instruccionInicial);

@@ -79,10 +79,9 @@ public class Main {
                     FicheroIntermedioOptimizado.escribirInstrucciones(ProgramaIntermedio.getInstance());
                     GeneracionFicheroMaquina.escribirVersionOptimizada(ProgramaIntermedio.getInstance());
                 }
-                
             }
         } catch (FileNotFoundException e) {
-            ErrorHandler.reportaError("El fichero de entrada '" + args[0] + "' no existe");
+            ErrorHandler.reportaError("El fichero de entrada '" + clparser.getFilepath() + "' no existe");
             errorGrave = true;
         } catch (IOException e) {
             ErrorHandler.reportaError("Se ha producido un error al procesar el fichero de entrada");

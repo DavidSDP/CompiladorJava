@@ -1,0 +1,64 @@
+class EjemploExtraccionInvariantes {
+
+	int totalASumar = 500;
+
+	/*
+	* ¡Atencion! El codigo que se va a ver es horrible, pero no se nos
+	* ha ocurrido un ejemplo mejor para mostrar que el compilador tiene 
+	* implementada las siguiente optimizaciones:
+	*  1. Inversión de saltos
+	*  2. Normalización de operandos
+	*  3. Borrado de bloques innaccesibles
+	*  4. Extracción de invariantes
+	*/
+	function int sumaN(int valor, int N) {
+		int indice = 0;
+		int nuevoValor = valor;
+
+		// Comprobamos que N es multiplo de 10
+		// Resto = Dividendo - ( divisor * cociente  )
+		int divisor = 10;
+		int cociente = N / divisor;
+		int resto = N - ( cociente * divisor);
+		if (resto != 0) {
+			write("El numero no es divisible entre :");
+			write(N);
+			writeln("");
+			return 0;
+		}
+
+		while (indice < cociente) {
+			
+			// Esta seccion de acumuladores ( que esta mal programada adrede )
+			// debería estar fuera del bucle, ya que no depende de las iteraciones, y por tanto, es
+			// invariante.
+			int suma1 = 1;
+			int suma2 = suma1 + 1;
+			int suma3 = suma2 + 1;
+			int suma4 = suma3 + 1;
+			int suma5 = suma4 + 1;
+			int suma6 = suma5 + 1;
+			int suma7 = suma6 + 1;
+			int suma8 = suma7 + 1;
+			int suma9 = suma8 + 1;
+			int suma10 = suma9 + 1;
+
+			nuevoValor = nuevoValor + suma10;
+			indice = indice + 1;			
+		}
+		return nuevoValor;
+	}
+
+	function void main() {
+		int valorOriginal = 10;
+		int nuevoValor = sumaN(valorOriginal, totalASumar);
+
+		if (nuevoValor != 0) {
+			if( (valorOriginal + 500) != nuevoValor) {
+				writeln("Algo ha ido mal");
+			} else {
+				writeln("El resultado es correcto");
+			}
+		}
+	}
+}

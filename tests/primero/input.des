@@ -1,0 +1,22 @@
+/*
+* Ejemplo compilacion codigo fuente basico con una llamada a función
+*/
+class ClasePrincipal {
+	function int multiplica(int multiplicando, int multiplicador) {
+		int resultado = multiplicando;
+	  int contador = multiplicador - 1;
+    while (contador > 0) {
+      contador = contador - 1;
+      resultado = resultado + multiplicando;
+    }   
+
+    return resultado;
+	}
+
+	function void main() {
+		int resultado = multiplica(10, 2);
+		writeln("El resultado es: ");
+		// TODO Falta implementar el write para este bicho
+		write(resultado);
+	}
+}

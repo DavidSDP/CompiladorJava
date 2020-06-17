@@ -24,7 +24,7 @@ class EjemploExtraccionInvariantes {
 			write("El numero no es divisible entre :");
 			write(N);
 			writeln("");
-			return 0;
+			return -1;
 		}
 
 		while (indice < cociente) {
@@ -51,9 +51,18 @@ class EjemploExtraccionInvariantes {
 
 	function void main() {
 		int valorOriginal = 10;
+		write("Se van a sumar los valores: ");
+		write(valorOriginal);
+		write(" y ");
+		write(totalASumar);
+		writeln("");
 		int nuevoValor = sumaN(valorOriginal, totalASumar);
 
-		if (nuevoValor != 0) {
+		if (nuevoValor != -1) {
+			write("El resultado es: ");
+			write(nuevoValor);
+			writeln("");
+			// Comprobacio para la optimizacion
 			if( (valorOriginal + 500) != nuevoValor) {
 				writeln("Algo ha ido mal");
 			} else {

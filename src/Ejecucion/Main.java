@@ -90,8 +90,14 @@ public class Main {
             ErrorHandler.reportaError(e);
             errorGrave = true;
         } catch (Exception e) {
-            e.printStackTrace();
-            ErrorHandler.reportaError(e.toString());
+            // Existen cierto mensajes que no se deben mostrar, ya que pueden ser derivados de
+            // la recuperación de errores.
+            // Por tanto, si estamos debuggeando el compilador, sacamos htodo lo que nos
+            // tenga que decir el compilador, de otra forma, los ignoramos.
+            if (clparser.isDebugging()) {
+                e.printStackTrace();
+                ErrorHandler.reportaError(e.toString());
+            }
             errorGrave = true;
         }
 

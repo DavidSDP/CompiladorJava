@@ -6,7 +6,10 @@ public class CommandlineParser {
     private String[] args;
     private ArrayList<String> tokens;
     private ArrayList<String> positionalParams;
+
+    // Command line options
     private Integer nivelOptimizacion;
+    private Boolean debugMode;
     private String filepath;
 
     public CommandlineParser(String args[]) {
@@ -16,6 +19,7 @@ public class CommandlineParser {
         this.args = args;
         this.tokens = new ArrayList<>();
         this.positionalParams = new ArrayList<>();
+        setDefaultValues();
     }
 
     public int getNivelOptimizacion() {
@@ -24,6 +28,10 @@ public class CommandlineParser {
 
     public String getFilepath() {
         return filepath;
+    }
+
+    public boolean isDebugging() {
+        return this.debugMode;
     }
 
     public void parse() throws Exception {
@@ -39,17 +47,14 @@ public class CommandlineParser {
         for (String token: tokens) {
             if (token.startsWith("-O")) {
                 nivelOptimizacion = Integer.parseInt(token.substring(2));
+            } else if(token.startsWith("-D")) {
+                debugMode = true;
             }
-        }
-
-        // por defecto el nivel de optimización es sin optimización
-        if (nivelOptimizacion == null) {
-            nivelOptimizacion = 0;
         }
 
         // De momento los parametros obligatorios solo incluyen el fichero de entrada
         if (positionalParams.size() > 2) {
-            throw new Exception("Demasiados parametros posicionales. Solo se admiten el fichero de entrada y el nivel de optimizaci�n");
+            throw new Exception("Demasiados parametros posicionales. Solo se admiten el fichero de entrada y el nivel de optimizaci�n");
         } else {
             filepath = positionalParams.get(0);
         }
@@ -62,5 +67,10 @@ public class CommandlineParser {
         sb.append("Nivel de optimización: ").append(nivelOptimizacion);
 
         return sb.toString();
+    }
+
+    private void setDefaultValues() {
+        nivelOptimizacion = 0;
+        debugMode = false;
     }
 }

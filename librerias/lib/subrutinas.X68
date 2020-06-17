@@ -150,6 +150,10 @@ DECREASEREF
                 SUBQ.W  #1, D0
                 CMP     #0, D0
                 BNE     .UPDATE_REF
+                MOVE.L  A0, A1
+                MOVE.L  4(A0), A0       ; Free the content
+                JSR     DMMFREE
+                MOVE.L  A1, A0          ; Free the descriptor
                 JSR     DMMFREE
                 MOVE.L  #0, A0
                 BRA     .END

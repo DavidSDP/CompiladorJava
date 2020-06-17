@@ -4,6 +4,8 @@ import Checkers.Tipo;
 import Checkers.TipoObject;
 import Errores.ErrorSemantico;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,11 @@ public class DeclaracionFuncion extends Declaracion {
 
     public int getTamanoMemoriaNecesaria() {
         return entornoDependiente.getTamanoTotalVariables();
+    }
+
+    // Recupera las variables que tienen asignada memoria dinámica ( strings y arrays )
+    public List<Declaracion> getVariablesDinamicas() {
+        return entornoDependiente.getVariablesConMemoriaDinamica();
     }
 
     public boolean declaradaAlMismoNivel(DeclaracionFuncion otra) {

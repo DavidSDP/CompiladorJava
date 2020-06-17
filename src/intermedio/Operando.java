@@ -180,6 +180,16 @@ public class Operando {
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A6), AX));
         return bI;
     }
+
+    public BloqueInstrucciones clearDescriptorVariable() {
+        BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), AddressRegister.A6));
+        bI.add(this.putActivationBlockAddressInRegister());
+        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), Contenido.__(AddressRegister.A6)));
+        return bI;
+    }
+
     /**
      * This is used just for the array initialization.
      * String initialization takes place in the assignment of a literal. This cool feature

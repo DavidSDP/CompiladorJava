@@ -17,12 +17,13 @@ public class Preambulo extends InstruccionTresDirecciones {
     public String toMachineCode() {
         DeclaracionFuncion declaracionFuncion = (DeclaracionFuncion) primero.getValor();
         int memoria = declaracionFuncion.getTamanoMemoriaNecesaria();
-
         BloqueInstrucciones bI = new BloqueInstrucciones();
         bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.STACK_TOP, AddressRegister.A5));
         bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(memoria), AddressRegister.A5));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A5, Variables.STACK_TOP));
+
+        limpiarVariablesDinamicas(bI, declaracionFuncion);
 
         return bI.toString();
     }
@@ -39,5 +40,12 @@ public class Preambulo extends InstruccionTresDirecciones {
     @Override
     public boolean esDefinicion() {
         return false;
+    }
+
+    public void limpiarVariablesDinamicas(BloqueInstrucciones bI, DeclaracionFuncion funcion) {
+        for (Declaracion decl: funcion.getVariablesDinamicas()) {
+            Operando operando = new Operando(decl, funcion.getEntorno().getProfundidad());
+            bI.add(operando.clearDescriptorVariable());
+        }
     }
 }

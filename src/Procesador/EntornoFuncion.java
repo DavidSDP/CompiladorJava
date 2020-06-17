@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import Checkers.Tipo;
 import Checkers.TipoObject;
 import Ejecucion.FicheroEntornos;
 import Errores.ErrorSemantico;
@@ -62,6 +63,18 @@ public class EntornoFuncion extends Entorno {
 
 	public List<Declaracion> getDeclaracionArgumentos() {
 		return this.ids.stream().filter( x -> x.isParam()).collect(Collectors.toList());
+	}
+
+	public List<Declaracion> getVariablesConMemoriaDinamica() {
+		List<Declaracion> variables = new ArrayList<>();
+
+		for (Declaracion decl: ids) {
+			if (decl instanceof DeclaracionArray || Tipo.String.equals(decl.getTipo().getTipo())) {
+				variables.add(decl);
+			}
+		}
+
+		return variables;
 	}
 
 	public void setListaArgumentos(List<String> listaArgumentos) {

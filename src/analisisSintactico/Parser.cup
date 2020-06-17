@@ -182,7 +182,7 @@ inicializacion ::= IGUAL Operacion:o PUNTOCOMA
 			:}
 			;
 
-declaracion ::= TVAR:t VID:i arrayAsig:a inicializacion:init 
+declaracion ::= TVAR:t VID:i arrayAsig:a inicializacion:ini
 			{:  
 				Boolean esArray = (a != null);
 				Declaracion declResultado = null;
@@ -190,16 +190,16 @@ declaracion ::= TVAR:t VID:i arrayAsig:a inicializacion:init
 					if(esArray) {
 						// Declaracion de un array
 						declResultado = GlobalVariables.asignaArray(i,t,a);
-						if(init.getSimboloOperacion()!=null) {
+						if(ini.getSimboloOperacion()!=null) {
 							TypeCheck.lanzaErrorArrayNoInicializable();
 						}						
 						I3DUtils.crea(OperacionTresDirecciones.DECLARAR_INDIRECCION, declResultado);
 					} else {
 						// Declaracion simple
 						declResultado = GlobalVariables.asignaID(i,t);
-						if(init.getSimboloOperacion()!=null) {
-							TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getSimboloOperacion().getTipoSubyacente());
-							I3DUtils.crea(OperacionTresDirecciones.COPIA, init.getDeclaracionResultado(), declResultado);						
+						if(ini.getSimboloOperacion()!=null) {
+							TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), ini.getSimboloOperacion().getTipoSubyacente());
+							I3DUtils.crea(OperacionTresDirecciones.COPIA, ini.getDeclaracionResultado(), declResultado);
 						}
 					}
 						
@@ -208,26 +208,26 @@ declaracion ::= TVAR:t VID:i arrayAsig:a inicializacion:init
 				}
 				// Ojo! Aqui no es necesario propagar la declaracion ya no hay nadie que pueda usarlo en reducciones
 				// posteriores. Así que declResultado muere aqui.
-				RESULT = new SimboloDeclaracion(i,Tipo.getTipoSafe(t),esArray,init);
+				RESULT = new SimboloDeclaracion(i,Tipo.getTipoSafe(t),esArray,ini);
 			:}
 															
-			| TFINAL TVAR:t VID:i inicializacion:init	
+			| TFINAL TVAR:t VID:i inicializacion:ini
 			{: 
 				Declaracion decl = null;
 				try{
-          decl = GlobalVariables.asignaIDConstante(i,t, init.getDeclaracionResultado());
+          decl = GlobalVariables.asignaIDConstante(i,t, ini.getDeclaracionResultado());
 
-					if(init.getSimboloOperacion()!=null)
-						TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getSimboloOperacion().getTipoSubyacente());
+					if(ini.getSimboloOperacion()!=null)
+						TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), ini.getSimboloOperacion().getTipoSubyacente());
 					else
 						TypeCheck.lanzaErrorConstanteNoInicializada(i, t);
 
-        	I3DUtils.crea(OperacionTresDirecciones.COPIA, init.getDeclaracionResultado(), decl);
+        	I3DUtils.crea(OperacionTresDirecciones.COPIA, ini.getDeclaracionResultado(), decl);
 				}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 				}
 
-				RESULT = new SimboloDeclaracion(i, Tipo.getTipoSafe(t), false, init);
+				RESULT = new SimboloDeclaracion(i, Tipo.getTipoSafe(t), false, ini);
 			:}
 			;
 															
@@ -427,7 +427,7 @@ bucle ::= cond_bucle:cb LLAVEIZQ contenido:o  LLAVEDER
 				RESULT = new SimboloBucle(cb, o);
 		:};
 
-cond_bucle ::= TWHILE PARENIZQ M1:start Operacion:o PARENDER 
+cond_bucle ::= TWHILE PARENIZQ M1:strt Operacion:o PARENDER
 		{:
 				try{
 						TypeCheck.checkBoolean(o, true);
@@ -438,7 +438,7 @@ cond_bucle ::= TWHILE PARENIZQ M1:start Operacion:o PARENDER
 				Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Boolean), "false");
 				// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
 				I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, etFin);
-				RESULT = new SimboloCondicionBucle(o, start.getEtiqueta(), etFin);
+				RESULT = new SimboloCondicionBucle(o, strt.getEtiqueta(), etFin);
 		:};
 
 M1 ::= 
@@ -630,7 +630,7 @@ factor ::= VID:i arrayAsig:a
 				// TODO Aqui se ha quitado el parametro. Probablemente se debería
 				// pasar para pintar todo como toca en el arbol.
     :}
-    | VNUMERO:n                     
+    | VNUMERO:n
     {:
 			 	DeclaracionConstante decl =  GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer), Integer.parseInt(n));
 				Declaracion varDecl = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Integer));

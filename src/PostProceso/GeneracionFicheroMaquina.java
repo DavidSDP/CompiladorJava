@@ -46,7 +46,7 @@ public class GeneracionFicheroMaquina {
         try {
             File file = new File(GlobalVariables.FICHERO_MAQUINA_OPT.toString());
             FileWriter fileWriter = new FileWriter(file);
-            escribirCodigo(programa, fileWriter);
+            escribirCodigo(programa.optimizado(), fileWriter);
             fileWriter.close();
         } catch (IOException e) {
             throw new ErrorProcesador("Se ha producido un error en la E/S del fichero final optimizado");
@@ -54,7 +54,7 @@ public class GeneracionFicheroMaquina {
 
     }
 
-    private static void escribirCodigo(ProgramaIntermedio programa, FileWriter fileWriter) throws IOException {
+    private static void escribirCodigo(Iterable<InstruccionTresDirecciones> instrucciones, FileWriter fileWriter) throws IOException {
         /*
         3 fases:
             1- Escritura de la plantilla antes del código generado
@@ -73,10 +73,9 @@ public class GeneracionFicheroMaquina {
         // Post condicion: Markup leido del fichero y no introducido en el fichero nuevo
 
         // Fase 2: Escritura del código generado
-        for (InstruccionTresDirecciones instr : programa) {
+        for (InstruccionTresDirecciones instr : instrucciones) {
             bufferedWriter.write(instr.toMachineCode());
         }
-
 
         // Fase 3: Escritura del resto de la plantilla
         line = readerPlantilla.readLine();

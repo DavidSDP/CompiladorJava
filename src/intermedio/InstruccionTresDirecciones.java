@@ -3,7 +3,6 @@ package intermedio;
 import Procesador.Declaracion;
 import Procesador.DeclaracionConstante;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 interface MachineCodeSerializable {
@@ -35,13 +34,22 @@ public abstract class InstruccionTresDirecciones implements MachineCodeSerializa
         this.segundo = null;
         this.tercero = null;
     }
-    
+
+
     @Override
     public String toString() {
-        // Probablemente esto lo podamos utilizar para hacer un debug rapido
-        // con printazos. Pero probablemente tampoco lo usaría para 
-        // hacer el fichero de instrucciones máquina :thinking:
-        return operacion + " - " + primero + " - " + segundo + " - " + tercero;
+        StringBuilder sb = new StringBuilder();
+        sb.append(operacion)
+                .append(" - ")
+                .append(primero);
+        if (segundo != null) {
+            sb.append(" - ").append(segundo);
+        }
+
+        if (tercero != null) {
+            sb.append(" - ").append(tercero);
+        }
+        return sb.toString();
     }
 
     @Override

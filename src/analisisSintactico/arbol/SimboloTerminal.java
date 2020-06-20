@@ -13,6 +13,11 @@ public class SimboloTerminal extends Nodo{
 		this.id = id;
 		this.setTipo(tipo);
 	}
+
+	public SimboloTerminal(Object valor, Tipo tipo) {
+		this.id = valor.toString();
+		this.setTipo(tipo);
+	}
 	
 	@Override
 	public List<INodo> getChildren() {

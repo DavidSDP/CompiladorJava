@@ -34,4 +34,9 @@ public class Etiqueta extends InstruccionTresDirecciones {
     public ArrayList<Declaracion> getArgumentos() {
         return new ArrayList<>();
     }
+
+    public String getEtiqueta() {
+        OperandoEtiqueta et = (OperandoEtiqueta)primero;
+        return et.toString();
+    }
 }

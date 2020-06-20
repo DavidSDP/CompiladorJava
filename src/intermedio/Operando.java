@@ -42,7 +42,8 @@ public class Operando {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         // Forma un string del estilo [PrC: 10, XXXXXXX]
-        sb.append("[PrC: ").append(this.profundidad).append(", ").append(valor.toString()).append("]");
+//        sb.append("[PrC: ").append(this.profundidad).append(", ").append(valor.toString()).append("]");
+        sb.append(valor.toString());
         return sb.toString();
     }
 

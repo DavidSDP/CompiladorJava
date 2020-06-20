@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.Stack;
 
 import Checkers.Tipo;
@@ -29,6 +30,7 @@ public class GlobalVariables {
 
     public static Boolean DEBUG_MODE = true;
     public static Boolean hayErrores = false;
+    public static Integer contadorNV = 0;
 
     private static Integer SecuenciaIdEtiqueta = 0;
     private static Integer SecuenciaIdLiteral = 0;
@@ -36,9 +38,9 @@ public class GlobalVariables {
     private static Integer _idnodoIncremental = 0;
     private static Integer CONTADOR = 1;
     private static Stack<Entorno> pilaEntornos = new Stack<>();
-    
-    public static Integer contadorNV = 0;
-    
+    private static HashMap<String, DeclaracionFuncion> mapFunciones = new HashMap<>();
+
+
     // Memory Management related constants
     public static final int MEMORY_DATA_BLOCK_SIZE_BYTES = 256;
 
@@ -68,7 +70,9 @@ public class GlobalVariables {
     
     private static void declaraBuiltInFunction(String idFuncion, String etiqueta, TipoObject tipoRetorno, String[]... args) throws ErrorSemantico, IOException {
         DeclaracionFuncion declaracion = asignaFuncionID(idFuncion, tipoRetorno);
+        mapFunciones.remove(declaracion.getEtiqueta());
         declaracion.setEtiqueta(etiqueta);
+        mapFunciones.put(etiqueta, declaracion);
         entraBloqueFuncion(declaracion);
         if(args != null) {
             for(String[] arg: args) {
@@ -106,7 +110,9 @@ public class GlobalVariables {
     public static DeclaracionFuncion asignaFuncionID(String idFuncion, TipoObject tipo) throws ErrorSemantico {
         EntornoClase top = (EntornoClase) entornoActual();
         String etiqueta = GlobalVariables.generarEtiqueta();
-        return top.putFuncion(tipo, idFuncion, etiqueta);
+        DeclaracionFuncion funcion = top.putFuncion(tipo, idFuncion, etiqueta);
+        mapFunciones.put(etiqueta, funcion);
+        return funcion;
     }
 
     public static void asignaFuncionArg(String nombre, String tipoString) throws ErrorSemantico {
@@ -230,5 +236,9 @@ public class GlobalVariables {
 
     public static boolean isComplexParam(Declaracion decl) {
         return decl instanceof DeclaracionArray || Tipo.String.equals(decl.getTipo().getTipo());
+    }
+
+    public static DeclaracionFuncion getDeclaracionFuncion(String etiqueta) {
+        return mapFunciones.getOrDefault(etiqueta, null);
     }
 }

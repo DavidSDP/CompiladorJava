@@ -5,32 +5,19 @@
 
 package analisisSintactico;
 
-import java_cup.runtime.Symbol;
-import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
-import java.util.ArrayList;
-import intermedio.Param;
-import Checkers.Tipo;
-import Checkers.TipoOperador;
-import Checkers.TypeCheck;
-import Checkers.OverflowCheck;
-import Checkers.TipoObject;
+import Checkers.*;
 import Errores.ErrorHandler;
 import Errores.ErrorSemantico;
 import Errores.ErrorSintactico;
-import Procesador.GlobalVariables;
-import Procesador.EntornoClase;
-import Procesador.EntornoFuncion;
-import Procesador.Declaracion;
-import Procesador.DeclaracionFuncion;
-import Procesador.DeclaracionConstante;
-import Procesador.DeclaracionClase;
-import Procesador.DeclaracionArray;
-import Procesador.Identificador;
+import Procesador.*;
 import SimbolosNoTerminales.*;
 import intermedio.I3DUtils;
 import intermedio.OperacionTresDirecciones;
-import intermedio.InstruccionTresDirecciones;
-import java_cup.runtime.XMLElement;
+import intermedio.Param;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import java_cup.runtime.Symbol;
+
+import java.util.ArrayList;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */
@@ -559,9 +546,9 @@ class CUP$parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloArray a = (SimboloArray)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		int initleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int initright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		SimboloInicializacion init = (SimboloInicializacion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		int inileft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int iniright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		SimboloInicializacion ini = (SimboloInicializacion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		  
 				Boolean esArray = (a != null);
 				Declaracion declResultado = null;
@@ -569,16 +556,16 @@ class CUP$parser$actions {
 					if(esArray) {
 						// Declaracion de un array
 						declResultado = GlobalVariables.asignaArray(i,t,a);
-						if(init.getSimboloOperacion()!=null) {
+						if(ini.getSimboloOperacion()!=null) {
 							TypeCheck.lanzaErrorArrayNoInicializable();
 						}						
 						I3DUtils.crea(OperacionTresDirecciones.DECLARAR_INDIRECCION, declResultado);
 					} else {
 						// Declaracion simple
 						declResultado = GlobalVariables.asignaID(i,t);
-						if(init.getSimboloOperacion()!=null) {
-							TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getSimboloOperacion().getTipoSubyacente());
-							I3DUtils.crea(OperacionTresDirecciones.COPIA, init.getDeclaracionResultado(), declResultado);						
+						if(ini.getSimboloOperacion()!=null) {
+							TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), ini.getSimboloOperacion().getTipoSubyacente());
+							I3DUtils.crea(OperacionTresDirecciones.COPIA, ini.getDeclaracionResultado(), declResultado);
 						}
 					}
 						
@@ -587,7 +574,7 @@ class CUP$parser$actions {
 				}
 				// Ojo! Aqui no es necesario propagar la declaracion ya no hay nadie que pueda usarlo en reducciones
 				// posteriores. Así que declResultado muere aqui.
-				RESULT = new SimboloDeclaracion(i,Tipo.getTipoSafe(t),esArray,init);
+				RESULT = new SimboloDeclaracion(i,Tipo.getTipoSafe(t),esArray,ini);
 			
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracion",32, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -603,25 +590,25 @@ class CUP$parser$actions {
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		int initleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int initright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		SimboloInicializacion init = (SimboloInicializacion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		int inileft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int iniright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		SimboloInicializacion ini = (SimboloInicializacion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 
 				Declaracion decl = null;
 				try{
-          decl = GlobalVariables.asignaIDConstante(i,t, init.getDeclaracionResultado());
+          decl = GlobalVariables.asignaIDConstante(i,t, ini.getDeclaracionResultado());
 
-					if(init.getSimboloOperacion()!=null)
-						TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), init.getSimboloOperacion().getTipoSubyacente());
+					if(ini.getSimboloOperacion()!=null)
+						TypeCheck.typesMatchAsignacion(i,Tipo.getTipo(t), ini.getSimboloOperacion().getTipoSubyacente());
 					else
 						TypeCheck.lanzaErrorConstanteNoInicializada(i, t);
 
-        	I3DUtils.crea(OperacionTresDirecciones.COPIA, init.getDeclaracionResultado(), decl);
+        	I3DUtils.crea(OperacionTresDirecciones.COPIA, ini.getDeclaracionResultado(), decl);
 				}catch(ErrorSemantico e){
 					ErrorHandler.reportaError(e);
 				}
 
-				RESULT = new SimboloDeclaracion(i, Tipo.getTipoSafe(t), false, init);
+				RESULT = new SimboloDeclaracion(i, Tipo.getTipoSafe(t), false, ini);
 			
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracion",32, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1060,9 +1047,9 @@ class CUP$parser$actions {
           case 35: // cond_bucle ::= TWHILE PARENIZQ M1 Operacion PARENDER 
             {
               SimboloCondicionBucle RESULT =null;
-		int startleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
-		int startright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		SimboloEtiqueta start = (SimboloEtiqueta)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int strtleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int strtright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		SimboloEtiqueta strt = (SimboloEtiqueta)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int oleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		SimboloOperacion o = (SimboloOperacion)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
@@ -1076,7 +1063,7 @@ class CUP$parser$actions {
 				Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Boolean), "false");
 				// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
 				I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, etFin);
-				RESULT = new SimboloCondicionBucle(o, start.getEtiqueta(), etFin);
+				RESULT = new SimboloCondicionBucle(o, strt.getEtiqueta(), etFin);
 		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("cond_bucle",25, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }

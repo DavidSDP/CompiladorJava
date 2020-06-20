@@ -9,8 +9,11 @@ import CodigoMaquina.Instruccion;
 import Errores.ErrorProcesador;
 import Procesador.AlmacenVariables;
 import Procesador.Declaracion;
+import Procesador.GlobalVariables;
 import intermedio.BloqueBasico;
+import intermedio.Etiqueta;
 import intermedio.InstruccionTresDirecciones;
+import intermedio.OperandoEtiqueta;
 import optimizacion.local.Grafo;
 
 class Invariante {
@@ -31,7 +34,7 @@ class Invariante {
 	}
 }
 
-public class OptimizacionLocal implements Optimizador{
+public class OptimizacionLocal implements Optimizador {
 	
 	/**
      * Las optimizaciones locales solo se aplican sobre las funciones. AsÃ­ que, para cada una de las funciones
@@ -62,21 +65,28 @@ public class OptimizacionLocal implements Optimizador{
             rangoInstrucciones = secuenciaInstrucciones.getSiguienteFuncion(instruccionInicial);
         }
 
+        String nombreFuncion;
         String filename;
         HashMap<RangoInstruccionesFuncion, IdentificacionBucles> identificacionBucles = new HashMap<>();
         for(RangoInstruccionesFuncion rangoInstruccionesFuncion: funciones) {
         	grafoFuncion = grafosFunciones.get(rangoInstruccionesFuncion);
+        	nombreFuncion = getNombreFuncion(secuenciaInstrucciones, rangoInstruccionesFuncion);
         	// No se si el handling de esto se debería llevar a cabo aquí
-			filename = String.format("grafo-%d-%d-original.dot", rangoInstruccionesFuncion.getInicio(), rangoInstruccionesFuncion.getFin());
+			filename = String.format("grafo-%s-original.dot", nombreFuncion);
 			exportarGrafo(filename, grafoFuncion);
 			IdentificacionBucles idBucles = new IdentificacionBucles(grafoFuncion, secuenciaInstrucciones);
 
-			filename = String.format("grafo-%d-%d-optimizado.dot", rangoInstruccionesFuncion.getInicio(), rangoInstruccionesFuncion.getFin());
+			filename = String.format("grafo-%s-optimizado.dot", nombreFuncion);
 			exportarGrafo(filename, grafoFuncion);
 
         	identificacionBucles.put(rangoInstruccionesFuncion, idBucles);
         }
         return new RetornoOptimizacion(secuenciaInstrucciones.getInstrucciones(), true);
+	}
+
+	private static String getNombreFuncion(SecuenciaInstrucciones instrs, RangoInstruccionesFuncion rango) {
+		Etiqueta etiqueta = (Etiqueta)instrs.get(rango.getInicio());
+		return GlobalVariables.getDeclaracionFuncion(etiqueta.getEtiqueta()).getId().getNombre();
 	}
 
 	private static void exportarGrafo(String filename, Grafo grafo) {

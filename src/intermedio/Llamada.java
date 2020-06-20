@@ -82,6 +82,19 @@ public class Llamada extends InstruccionTresDirecciones {
         return this.tercero != null;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(operacion)
+                .append(" - ")
+                .append(primero);
+
+        if (tercero != null) {
+            sb.append(" - ").append(tercero);
+        }
+        return sb.toString();
+    }
+
     private void saveReturnedValueToVariable(BloqueInstrucciones bI, DeclaracionFuncion callee, Operando tercero) {
         if (callee.isReturnIsComplexType()) {
             bI.add(tercero.saveStringDescriptorConstante(AddressRegister.A0));

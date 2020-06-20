@@ -61,8 +61,7 @@ public class DeclaracionFuncion extends Declaracion {
     }
 
     public boolean hasRetorno() {
-        // TODO Check if void messes with this
-        return tipo != null;
+        return tipo != null && !Tipo.Void.equals(tipo.getTipo());
     }
 
     public boolean isReturnIsComplexType() {

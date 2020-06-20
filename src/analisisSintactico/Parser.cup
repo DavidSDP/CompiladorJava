@@ -470,11 +470,7 @@ clausula_cond   ::= TIF PARENIZQ Operacion:o PARENDER
 						ErrorHandler.reportaError(e);
 					} 
   	      String et = GlobalVariables.generarEtiqueta();
-					// TODO Forma hacky de hacer que el valor constante False esté en el codigo.
-					// Además el valor false y true deberían estar codificados en algun lado para reusarlo
-					// en el codigo
 					Declaracion falseTemp = GlobalVariables.crearVariableTemporal(Tipo.getTipoSafe(Tipo.Boolean), "false");
-					// TODO No se como tenemos que generar el falso aquí. Tal vez como una constante global ??
 					I3DUtils.crea(OperacionTresDirecciones.EQ, o.getDeclaracionResultado(), falseTemp, et);
 					RESULT = new SimboloClausulaCondicion(o, et);
 			:};

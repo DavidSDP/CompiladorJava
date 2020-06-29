@@ -112,13 +112,21 @@ WRITEINT
             MOVE.L  BP, A6
             MOVE.W  -6(A6), D0
             AND.L   #$0000FFFF, D0
-            MOVE.L  D0, D1
-            MOVE.B  #10, D2
-            MOVE.W  #15, D0
-            TRAP    #15         ; Escritura por pantalla (Task 15, TRAP 15)
+            MOVE.L  #$00008000, D1
+            CMP.L   D0, D1
+            BLT     .NEGATIVO
+            
+.CONTINUA   
+            MOVE.L  D0, D1      ; Valor
+            MOVE.B  #5, D2      ; Columnas ancho
+            MOVE.W  #20, D0
+            TRAP    #15         ; Escritura por pantalla numero con signo (Task 20, TRAP 15)
             
             MOVEM.L (A7)+, D1-D2/A6
             RTS
+            
+.NEGATIVO   OR.L    #$FFFF0000, D0
+            BRA     .CONTINUA
             
 ; ============================================================
 STREQUALS

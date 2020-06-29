@@ -77,13 +77,19 @@ class ClasePrincipal {
 		write("a");
 		write(0);
 		if(probando == getNombre("esto funsiona")){
+			writeln("");
 			writeln("Aparentemente has escrito 'esto funsiona', por lo tanto esto funciona.");
 			writeln("");
-			write(10);
-			write(20);
-			write(30);
 			write(-4);
-			write(0);
+			writeln("");
+			write(1);
+			writeln("");
+			write(2);
+			writeln("");
+			write(30000);
+			writeln("");
+			write(-30000);
+			writeln("");
 		}
 		int resultado = multiplica(2, 10);
 		resultado = resultado + a;

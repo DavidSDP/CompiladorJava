@@ -40,8 +40,6 @@ public class EQ extends InstruccionTresDirecciones {
         	bI.add(segundo.loadStringDescriptorVariable(AddressRegister.A1));
         	bI.add(Instruccion.nuevaInstruccion("\t\t\tJSR\tSTREQUALS"));
         	bI.add(tercero.save(DataRegister.D0));
-        } else if(Tipo.Array.equals(primero.getValor().getTipo().getTipo())){
-
         } else {
 	        // Estoy casi convencido de que la comprobacion de igualdad se puede hacer como LT y familiares
         	bI.add(primero.load(DataRegister.D0));

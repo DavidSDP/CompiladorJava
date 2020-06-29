@@ -9,6 +9,7 @@ import CodigoMaquina.Instruccion;
 import Errores.ErrorProcesador;
 import Procesador.AlmacenVariables;
 import Procesador.Declaracion;
+import Procesador.DeclaracionFuncion;
 import Procesador.GlobalVariables;
 import intermedio.BloqueBasico;
 import intermedio.Etiqueta;
@@ -318,9 +319,9 @@ public class OptimizacionLocal implements Optimizador {
 		 */
 		private int examinaInvariancia(InstruccionTresDirecciones i3d, Declaracion variable, HashMap<InstruccionTresDirecciones, Integer> modos, List<BloqueBasico> bloquesBucle) {
 			boolean argIzquierdaInvariante = (modos.get(i3d) == 1 || modos.get(i3d) == -1);
-			boolean argDerechaInvariante = (modos.get(i3d) == 1 || modos.get(i3d) == -2);
+			boolean izqEsFuncion = i3d.getPrimero().getValor() instanceof DeclaracionFuncion;
 
-			if (!argIzquierdaInvariante) {
+			if (!argIzquierdaInvariante && !izqEsFuncion) {
 				argIzquierdaInvariante = i3d.primeroEsConstante();
 				if (!argIzquierdaInvariante) {
 					boolean extraer = true;
@@ -341,11 +342,13 @@ public class OptimizacionLocal implements Optimizador {
 				}
 			}
 
+			boolean argDerechaInvariante = (modos.get(i3d) == 1 || modos.get(i3d) == -2);
 			argDerechaInvariante = argDerechaInvariante || i3d.getArgumentos().size() < 2;
+			boolean derEsFuncion = argDerechaInvariante || i3d.getSegundo().getValor() instanceof DeclaracionFuncion;
 
 			// Cuidado! En las instrucciones de copia segundo es el destino, no uno de los parámetros, así
 			// que esto depende de la instrucción. Ojito 2! para las funciones esto tampoco funciona ( menudo chiste )
-			if (!argDerechaInvariante) {
+			if (!argDerechaInvariante && !derEsFuncion) {
 				argDerechaInvariante = i3d.segundoEsConstante();
 				if (!argDerechaInvariante) {
 					boolean extraer = true;

@@ -46,6 +46,11 @@ class ClasePrincipal {
 	}
 	
 	function void main() {
+		// Prueba de escritura por pantalla
+		writeln("Sys: ");
+		writeln("Escriba una frase y presione INTRO...");
+		String probando = read();
+		writeln(probando);
 		// Prueba de asignacion de valores a elementos almacenados en memoria dinamica
 		int vectorNumeros[3];
 		vectorNumeros[0] = 5;
@@ -63,6 +68,17 @@ class ClasePrincipal {
 
 		// Pruebas generales
 		boolean esIgual = (str == "uep");
+		if(esIgual){
+			writeln("SI PUEDES LEER ESTO SIGNIFICA QUE STREQUALS FUNCIONA");
+		}
+		write("h");
+		write("o");
+		write("l");
+		write("a");
+		write(0);
+		if(probando == getNombre("esto funsiona")){
+			writeln("Aparentemente has escrito 'esto funsiona', por lo tanto esto funciona.");
+		}
 		int resultado = multiplica(2, 10);
 		resultado = resultado + a;
 	}

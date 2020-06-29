@@ -1,0 +1,23 @@
+/*
+* En este ejemplo podemos ver como se declara un string.
+* Los strings utilizan memoria dinamica.
+*/
+class ClasePrincipal {
+	function void main() {
+		/* En este punto, la constante genera una reserva e inicializacion de memoria.
+		* El bloque de memoria se reclama al heap y despues se rellena y se asigna a la variable
+		* preguntaCordial
+		*/
+		String preguntaCordial = "¿Como te llamas? (la respuesta correcta es pere)";
+	
+		String input;
+		boolean notEsPere = true;
+		while(notEsPere) {
+			write(preguntaCordial);
+			input = read();
+			// Ojo! No era mi intención, pero esta instruccion ya es un ejemplo de extraccion de
+    	// invariantes
+			notEsPere = input != "pere";
+		}
+	}
+}

@@ -1,0 +1,14 @@
+class ClasePrincipal [] {
+	
+	String ?;
+
+	function int suma (int a, int b){
+		return a==b;
+	}
+	
+	function void main(){
+		int a = c;
+	}
+	
+	
+}

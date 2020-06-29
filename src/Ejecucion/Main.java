@@ -9,6 +9,7 @@ import java.util.List;
 
 import Errores.ErrorHandler;
 import Errores.ErrorProcesador;
+import PostProceso.GeneracionFicheroMaquina;
 import Procesador.GlobalVariables;
 import analisisLexico.Scanner;
 import analisisSintactico.parser;
@@ -57,7 +58,7 @@ public class Main {
             if (!GlobalVariables.hayErrores) {
                 // Sin optimizaciones
                 FicheroIntermedio.escribirInstrucciones(ProgramaIntermedio.getInstance());
-                FicheroMaquina.escribirInstrucciones(ProgramaIntermedio.getInstance());
+                GeneracionFicheroMaquina.escribirVersionNoOptimizada(ProgramaIntermedio.getInstance());
                 
                 Integer nivelOptimizacion = clparser.getNivelOptimizacion();
                 
@@ -76,12 +77,11 @@ public class Main {
                     ProgramaIntermedio.getInstance().optimizar();
                     // Optimizado
                     FicheroIntermedioOptimizado.escribirInstrucciones(ProgramaIntermedio.getInstance());
-                    FicheroMaquinaOptimizado.escribirInstrucciones(ProgramaIntermedio.getInstance());
+                    GeneracionFicheroMaquina.escribirVersionOptimizada(ProgramaIntermedio.getInstance());
                 }
-                
             }
         } catch (FileNotFoundException e) {
-            ErrorHandler.reportaError("El fichero de entrada '" + args[0] + "' no existe");
+            ErrorHandler.reportaError("El fichero de entrada '" + clparser.getFilepath() + "' no existe");
             errorGrave = true;
         } catch (IOException e) {
             ErrorHandler.reportaError("Se ha producido un error al procesar el fichero de entrada");
@@ -90,8 +90,14 @@ public class Main {
             ErrorHandler.reportaError(e);
             errorGrave = true;
         } catch (Exception e) {
-            e.printStackTrace();
-            ErrorHandler.reportaError(e.toString());
+            // Existen cierto mensajes que no se deben mostrar, ya que pueden ser derivados de
+            // la recuperación de errores.
+            // Por tanto, si estamos debuggeando el compilador, sacamos htodo lo que nos
+            // tenga que decir el compilador, de otra forma, los ignoramos.
+            if (clparser.isDebugging()) {
+                e.printStackTrace();
+                ErrorHandler.reportaError(e.toString());
+            }
             errorGrave = true;
         }
 
@@ -112,8 +118,6 @@ public class Main {
         FicheroEntornos.abreFichero();
         FicheroIntermedio.abreFichero();
         FicheroIntermedioOptimizado.abreFichero();
-        FicheroMaquina.abreFichero();
-        FicheroMaquinaOptimizado.abreFichero();
         System.out.println("Ejecución Procesador de Lenguaje...");
     }
 
@@ -140,8 +144,6 @@ public class Main {
             FicheroEntornos.cierraFichero();
             FicheroIntermedio.cierraFichero();
             FicheroIntermedioOptimizado.cierraFichero();
-            FicheroMaquina.cierraFichero();
-            FicheroMaquinaOptimizado.cierraFichero();
         } catch (ErrorProcesador e) {
             System.out.println(e.getMensaje());
         }

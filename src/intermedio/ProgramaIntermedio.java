@@ -62,7 +62,7 @@ public class ProgramaIntermedio implements Iterable<InstruccionTresDirecciones>{
     	
     }
 
-    public List<InstruccionTresDirecciones> optimizado() {
+    public Iterable<InstruccionTresDirecciones> optimizado() {
         return this.instruccionesOptimizadas;
     }
 

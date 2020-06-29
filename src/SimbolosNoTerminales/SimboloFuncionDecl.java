@@ -5,6 +5,7 @@ import java.util.List;
 
 import Checkers.Tipo;
 import Checkers.TipoObject;
+import Errores.ErrorSemantico;
 import Procesador.Declaracion;
 import Procesador.DeclaracionFuncion;
 import Procesador.TipoSubyacente;
@@ -43,6 +44,10 @@ public class SimboloFuncionDecl extends Nodo implements TipoSubyacente{
 			hijos.add(c);
 		hijos.add(new SimboloTerminal(sym.terminalNames[sym.LLAVEDER], Tipo.Token));
 		return hijos;
+	}
+
+	public void finalizar() throws ErrorSemantico {
+		this.decl.finalizar();
 	}
 	
 	@Override

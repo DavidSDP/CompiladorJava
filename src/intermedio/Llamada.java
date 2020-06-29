@@ -37,35 +37,11 @@ public class Llamada extends InstruccionTresDirecciones {
 
         if (segundo != null) {
             DeclaracionFuncion caller = (DeclaracionFuncion) segundo.getValor();
-            // Determinar el access link que se tiene que almacenar en el nuevo bloque de activación
-            // Ojo! Por facilidad de cálculos al acceder a las variables se almacenará el BP en el access link
-            // de esa forma siempre trataremos htodo de la misma manera. Esto hace que a la hora de escalar
-            // los bloques de activación tengamos que restar 1 palabra a la posición para usar el siguiente access link
-            boolean mismoNivel = callee.declaradaAlMismoNivel(caller);
-            if (mismoNivel) {
-                // BP hace referencia al bloque de activacion antiguo y el nuevo, que esta en construccion,
-                // esta referenciado por el STACK_TOP
-                // El access link es el access link que tiene el caller
-                bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, AddressRegister.A5));
-                bI.add(new Instruccion(OpCode.SUBQ, Size.L, Literal.__(4), AddressRegister.A5));
-                bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A5), Contenido.__(AddressRegister.A6)));
-                bI.add(new Instruccion(OpCode.ADDQ, Size.L, Literal.__(2), AddressRegister.A6));
-                bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, Variables.STACK_TOP));
-
-            } else {
-                // Ahora mismo no tenemos llamadas recursivas ni clases anidadas
-                // asi que este caso no se puede dar.
-                // Dadas 2 funciones A, B ambas estarán siempre declaradas al mismo nivel.
-                assert false;
-            }
-
+            updateStackForNormalCall(bI, caller, callee);
         } else {
             // Si no hay caller estamos gestionando el main y se tiene que hacer de forma diferente:
             // Saltamos el BP actual
-            bI.add(new Instruccion(OpCode.ADDQ, Size.L, Literal.__(2), AddressRegister.A6));
-            bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, Contenido.__(AddressRegister.A6)));
-            bI.add(new Instruccion(OpCode.ADDQ, Size.L, Literal.__(2), AddressRegister.A6));
-            bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, Variables.STACK_TOP));
+            updateStackForMainCall(bI);
         }
 
         // Actualizamos el estado del programa y llamamos a la función
@@ -74,22 +50,11 @@ public class Llamada extends InstruccionTresDirecciones {
 
         // Puede que la función tenga retorno y que el que llama no lo esté gestionando
         if (tercero != null) {
-            bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, AddressRegister.A6));
-            bI.add(new Instruccion(OpCode.SUB, Size.L, Literal.__(4 + callee.getTamanoRetorno()), AddressRegister.A6));
-            if (callee.isReturnIsComplexType()) {
-                bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A6), AddressRegister.A0));
-            } else {
-                bI.add(new Instruccion(OpCode.MOVE, Size.W, Contenido.__(AddressRegister.A6), DataRegister.D5));
-            }
-
+            moveReturnedValueToRegisters(bI, callee);
             // Ojo! no se puede alternar el orden de la restauración del BP y el guardado del retorno!!
             bI.add(Instruccion.nuevaInstruccion("\tbsr restore_bp")); // Actualiza BP y AL
+            saveReturnedValueToVariable(bI, callee, tercero);
 
-            if (callee.isReturnIsComplexType()) {
-                bI.add(tercero.saveStringDescriptorConstante(AddressRegister.A0));
-            } else {
-                bI.add(tercero.save(DataRegister.D5));
-            }
         } else {
             bI.add(Instruccion.nuevaInstruccion("\tbsr restore_bp"));
         }
@@ -115,5 +80,67 @@ public class Llamada extends InstruccionTresDirecciones {
         // Una llamada a función solo actua como definicion si se le asigna el valor
         // a una variable.
         return this.tercero != null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(operacion)
+                .append(" - ")
+                .append(primero);
+
+        if (tercero != null) {
+            sb.append(" - ").append(tercero);
+        }
+        return sb.toString();
+    }
+
+    private void saveReturnedValueToVariable(BloqueInstrucciones bI, DeclaracionFuncion callee, Operando tercero) {
+        if (callee.isReturnIsComplexType()) {
+            bI.add(tercero.saveStringDescriptorConstante(AddressRegister.A0));
+        } else {
+            bI.add(tercero.save(DataRegister.D5));
+        }
+    }
+
+    private void moveReturnedValueToRegisters(BloqueInstrucciones bI, DeclaracionFuncion callee) {
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.SUB, Size.L, Literal.__(4 + callee.getTamanoRetorno()), AddressRegister.A6));
+        if (callee.isReturnIsComplexType()) {
+            bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A6), AddressRegister.A0));
+        } else {
+            bI.add(new Instruccion(OpCode.MOVE, Size.W, Contenido.__(AddressRegister.A6), DataRegister.D5));
+        }
+    }
+
+    private void updateStackForNormalCall(BloqueInstrucciones bI, DeclaracionFuncion caller, DeclaracionFuncion callee) {
+        // Determinar el access link que se tiene que almacenar en el nuevo bloque de activación
+        // Ojo! Por facilidad de cálculos al acceder a las variables se almacenará el BP en el access link
+        // de esa forma siempre trataremos htodo de la misma manera. Esto hace que a la hora de escalar
+        // los bloques de activación tengamos que restar 1 palabra a la posición para usar el siguiente access link
+        boolean mismoNivel = callee.declaradaAlMismoNivel(caller);
+        if (mismoNivel) {
+            // BP hace referencia al bloque de activacion antiguo y el nuevo, que esta en construccion,
+            // esta referenciado por el STACK_TOP
+            // El access link es el access link que tiene el caller
+            bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, AddressRegister.A5));
+            bI.add(new Instruccion(OpCode.SUBQ, Size.L, Literal.__(4), AddressRegister.A5));
+            bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A5), Contenido.__(AddressRegister.A6)));
+            bI.add(new Instruccion(OpCode.ADDQ, Size.L, Literal.__(2), AddressRegister.A6));
+            bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, Variables.STACK_TOP));
+
+        } else {
+            // Ahora mismo no tenemos llamadas recursivas ni clases anidadas
+            // asi que este caso no se puede dar.
+            // Dadas 2 funciones A, B ambas estarán siempre declaradas al mismo nivel.
+            assert false;
+        }
+    }
+
+    private void updateStackForMainCall(BloqueInstrucciones bI) {
+        bI.add(new Instruccion(OpCode.ADDQ, Size.L, Literal.__(2), AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.BP, Contenido.__(AddressRegister.A6)));
+        bI.add(new Instruccion(OpCode.ADDQ, Size.L, Literal.__(2), AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, Variables.STACK_TOP));
     }
 }

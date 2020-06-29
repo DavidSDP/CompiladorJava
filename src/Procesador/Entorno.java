@@ -159,11 +159,11 @@ public class Entorno {
     }
 
     // Devuelve el ID  de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
-    public DeclaracionFuncion fullGetFuncion(String s) {
+    public DeclaracionFuncion fullGetFuncion(String s, List<TipoObject> tipoParams) {
         for (Entorno e = this; e != null; e = e.getEntornoPadre()) {
             if (e instanceof EntornoClase) {
-                if (((EntornoClase) e).containsFuncion(s)) {
-                    return ((EntornoClase) e).getFuncion(s);
+                if (((EntornoClase) e).containsFuncion(s, tipoParams)) {
+                    return ((EntornoClase) e).getFuncion(s, tipoParams);
                 }
             }
         }
@@ -171,26 +171,16 @@ public class Entorno {
     }
 
     // Devuelve el Entorno de Función declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
-    public EntornoFuncion fullGetFuncionEntorno(String s) {
-        for (Entorno e = this; e != null; e = e.getEntornoPadre()) {
-            if (e instanceof EntornoClase) {
-                if (((EntornoClase) e).containsFuncion(s)) {
-                    return ((EntornoClase) e).getFuncionEntorno(s);
-                }
-            }
-        }
-        return null;
-    }
-
-    // Devuelve el ID de Clase declarado más cercano (hacia arriba por entornos), null si no ha sido declarado
-    public Declaracion fullGetClase(String s) {
-        for (Entorno e = this; e != null; e = e.getEntornoPadre()) {
-            if (((EntornoClase) e).containsClase(s)) {
-                return ((EntornoClase) e).getClase(s);
-            }
-        }
-        return null;
-    }
+//    public EntornoFuncion fullGetFuncionEntorno(String s, List<TipoObject> tipoParams) {
+//        for (Entorno e = this; e != null; e = e.getEntornoPadre()) {
+//            if (e instanceof EntornoClase) {
+//                if (((EntornoClase) e).containsFuncion(s, tipoParams)) {
+//                    return ((EntornoClase) e).getFuncionEntorno(s, tipoParams);
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     /* Dibujando el Entorno */
 

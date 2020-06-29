@@ -48,6 +48,12 @@ public class Retorno extends InstruccionTresDirecciones {
         DeclaracionFuncion decl = (DeclaracionFuncion) primero.getValor();
         int memoriaReservada = decl.getTamanoMemoriaNecesaria();
         if (memoriaReservada > 0) {
+            // Antes de poder liberar la memoria tenemos que liberar todos las variables locales que han reservado memoria
+            // dinámica.
+            for (Declaracion declDinamica: decl.getVariablesDinamicas()) {
+                actualizarConteoReferencia(bI, declDinamica);
+            }
+
             // Si hemos reservado memoria para variables locales, se tiene que liberar.
             bI.add(new Instruccion(OpCode.MOVE, Size.L, Variables.STACK_TOP, AddressRegister.A6));
             bI.add(new Instruccion(OpCode.SUB, Size.L, Literal.__(memoriaReservada), AddressRegister.A6));
@@ -65,5 +71,21 @@ public class Retorno extends InstruccionTresDirecciones {
     @Override
     public boolean esDefinicion() {
         return false;
+    }
+
+    public void actualizarConteoReferencia(BloqueInstrucciones bI, Declaracion decl) {
+        /*
+         * 1- Obtenemos el número de referencias que apuntan al string.
+         * 2- Decrementamos el número de referencias
+         */
+        DeclaracionFuncion funcion = (DeclaracionFuncion)this.primero.getValor();
+        // Utilizamos operando para utilizar el mismo mecanismo de calculo de profundidad
+        Operando operando = new Operando(decl, funcion.getEntorno().getProfundidad());
+        bI.add(operando.loadStringDescriptorVariable(AddressRegister.A0));
+        bI.add(new Instruccion(OpCode.CMP, Size.L, Literal.__(0), AddressRegister.A0));
+        String localLabel = Instruccion.getLocalLabel();
+        bI.add(new Instruccion(OpCode.BEQ, new OperandoEspecial(localLabel)));
+        bI.add(Instruccion.nuevaInstruccion("\tjsr DECREASEREF"));
+        bI.add(Instruccion.nuevaInstruccion(localLabel + ":"));
     }
 }

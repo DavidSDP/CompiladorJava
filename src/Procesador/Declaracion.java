@@ -85,9 +85,9 @@ public class Declaracion {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if (profundidadDeclaracion > -1) {
-            sb.append("PrD: ").append(profundidadDeclaracion).append(" ");
-        }
+//        if (profundidadDeclaracion > -1) {
+//            sb.append("PrD: ").append(profundidadDeclaracion).append(" ");
+//        }
         sb.append(tipo.toString()).append(" ").append(identificador.toString());
         return sb.toString();
     }

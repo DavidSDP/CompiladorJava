@@ -42,7 +42,8 @@ public class Operando {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         // Forma un string del estilo [PrC: 10, XXXXXXX]
-        sb.append("[PrC: ").append(this.profundidad).append(", ").append(valor.toString()).append("]");
+//        sb.append("[PrC: ").append(this.profundidad).append(", ").append(valor.toString()).append("]");
+        sb.append(valor.toString());
         return sb.toString();
     }
 
@@ -104,7 +105,6 @@ public class Operando {
         bI.add(new Instruccion(OpCode.MOVE, Size.L, AddressRegister.A6, AX));
         return bI;
     }
-
     /**
      * Creating a descriptor modifies the next registers:
      *  - Data:    D0
@@ -114,11 +114,10 @@ public class Operando {
         int length, size;
 
         if (this.valor instanceof DeclaracionConstante) {
+            // Esto solo aplica a los strings.
             DeclaracionConstante desc = (DeclaracionConstante) this.valor;
             length = ((String)desc.getValor()).length();
-            // TODO 2 hard-coded para evitar una avalancha de cambios antes de comprobar que
-            //  funciona.
-            size = 2 * length;
+            size = length + 1;
         } else {
             DeclaracionArray desc = (DeclaracionArray)this.valor;
             length = desc.getLongitudArray();
@@ -164,8 +163,11 @@ public class Operando {
         bI.add(createDescriptor(AX));
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Indireccion.__(4, AX), AddressRegister.A0));
         for (int idx = 0; idx < size; idx++) {
-	        bI.add(new Instruccion(OpCode.MOVE, Size.W, Literal.__((int)text.charAt(idx)), PostIncremento.__(AddressRegister.A0)));
+	        bI.add(new Instruccion(OpCode.MOVE, Size.B, Literal.__((int)text.charAt(idx)), PostIncremento.__(AddressRegister.A0)));
         }
+        // TESTEANDO STRINGS TERMINADOS EN 0 ->
+        bI.add(new Instruccion(OpCode.MOVE, Size.B, Literal.__(0), PostIncremento.__(AddressRegister.A0)));
+        // <-
         bI.add(new Instruccion(OpCode.MOVEM, Size.L, PostIncremento.__(StackPointer.A7), Restore.__(AddressRegister.A0)));
         
         return bI;
@@ -179,6 +181,16 @@ public class Operando {
         bI.add(new Instruccion(OpCode.MOVE, Size.L, Contenido.__(AddressRegister.A6), AX));
         return bI;
     }
+
+    public BloqueInstrucciones clearDescriptorVariable() {
+        BloqueInstrucciones bI = new BloqueInstrucciones();
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), AddressRegister.A6));
+        bI.add(this.putActivationBlockAddressInRegister());
+        bI.add(new Instruccion(OpCode.ADD, Size.L, Literal.__(this.getValor().getDesplazamiento()), AddressRegister.A6));
+        bI.add(new Instruccion(OpCode.MOVE, Size.L, Literal.__(0), Contenido.__(AddressRegister.A6)));
+        return bI;
+    }
+
     /**
      * This is used just for the array initialization.
      * String initialization takes place in the assignment of a literal. This cool feature

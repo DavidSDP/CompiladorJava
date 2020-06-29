@@ -21,11 +21,6 @@ public class SimboloFuncionInvk extends Nodo implements TipoSubyacente {
     private DeclaracionFuncion declFuncion;
     private Declaracion declaracionRetorno;
 
-    public SimboloFuncionInvk(String i, SimboloParams p) {
-        this.idFuncion = i;
-        this.params = p;
-    }
-
 	public SimboloFuncionInvk(DeclaracionFuncion decl, Declaracion declRetorno, String i, SimboloParams p) {
     	this.declFuncion = decl;
     	this.declaracionRetorno = declRetorno;
@@ -51,8 +46,7 @@ public class SimboloFuncionInvk extends Nodo implements TipoSubyacente {
 
     @Override
     public TipoObject getTipoSubyacente() {
-        DeclaracionFuncion identificadorFuncion = GlobalVariables.entornoActual().fullGetFuncion(idFuncion);
-        return identificadorFuncion.getTipo();
+        return declFuncion.getTipo();
     }
 
     /**

@@ -1,11 +1,65 @@
 
  -> ENTORNO FUNCIÓN 7, de nivel 2 <- 
 
-		ID FUNCION: multiplica , TIPO: Integer
+		ID FUNCION: sumaN , TIPO: Integer
  VARIABLES: 
 
 
-VARIABLE ID: t7 , TIPO: Integer
+VARIABLE ID: t16 , TIPO: Integer
+
+
+VARIABLE ID: t15 , TIPO: Integer
+
+
+VARIABLE ID: t14 , TIPO: Integer
+
+
+VARIABLE ID: t13 , TIPO: Integer
+
+
+VARIABLE ID: t12 , TIPO: Integer
+
+
+VARIABLE ID: t11 , TIPO: Boolean
+
+
+VARIABLE ID: t10 , TIPO: Integer
+
+
+VARIABLE ID: N , TIPO: Integer
+
+
+VARIABLE ID: cociente , TIPO: Integer
+
+
+VARIABLE ID: suma10 , TIPO: Integer
+
+
+VARIABLE ID: t33 , TIPO: Integer
+
+
+VARIABLE ID: t32 , TIPO: Integer
+
+
+VARIABLE ID: t31 , TIPO: Integer
+
+
+VARIABLE ID: t30 , TIPO: Integer
+
+
+VARIABLE ID: divisor , TIPO: Integer
+
+
+VARIABLE ID: nuevoValor , TIPO: Integer
+
+
+VARIABLE ID: t9 , TIPO: String
+
+
+VARIABLE ID: t8 , TIPO: String
+
+
+VARIABLE ID: t7 , TIPO: Boolean
 
 
 VARIABLE ID: t6 , TIPO: Integer
@@ -14,36 +68,99 @@ VARIABLE ID: t6 , TIPO: Integer
 VARIABLE ID: t5 , TIPO: Integer
 
 
-VARIABLE ID: resultado , TIPO: Integer
+VARIABLE ID: t4 , TIPO: Integer
 
 
-VARIABLE ID: t4 , TIPO: Boolean
+VARIABLE ID: valor , TIPO: Integer
 
 
 VARIABLE ID: t3 , TIPO: Integer
 
 
+VARIABLE ID: indice , TIPO: Integer
+
+
 VARIABLE ID: t2 , TIPO: Integer
-
-
-VARIABLE ID: multiplicador , TIPO: Integer
 
 
 VARIABLE ID: t1 , TIPO: Integer
 
 
-VARIABLE ID: multiplicando , TIPO: Integer
+VARIABLE ID: t29 , TIPO: Integer
 
 
-VARIABLE ID: contador , TIPO: Integer
+VARIABLE ID: t28 , TIPO: Integer
+
+
+VARIABLE ID: t27 , TIPO: Integer
+
+
+VARIABLE ID: suma9 , TIPO: Integer
+
+
+VARIABLE ID: t26 , TIPO: Integer
+
+
+VARIABLE ID: suma8 , TIPO: Integer
+
+
+VARIABLE ID: t25 , TIPO: Integer
+
+
+VARIABLE ID: suma7 , TIPO: Integer
+
+
+VARIABLE ID: t24 , TIPO: Integer
+
+
+VARIABLE ID: t23 , TIPO: Integer
+
+
+VARIABLE ID: suma6 , TIPO: Integer
+
+
+VARIABLE ID: suma5 , TIPO: Integer
+
+
+VARIABLE ID: t22 , TIPO: Integer
+
+
+VARIABLE ID: suma4 , TIPO: Integer
+
+
+VARIABLE ID: t21 , TIPO: Integer
+
+
+VARIABLE ID: suma3 , TIPO: Integer
+
+
+VARIABLE ID: t20 , TIPO: Integer
+
+
+VARIABLE ID: suma2 , TIPO: Integer
+
+
+VARIABLE ID: suma1 , TIPO: Integer
+
+
+VARIABLE ID: resto , TIPO: Integer
+
+
+VARIABLE ID: t19 , TIPO: Integer
+
+
+VARIABLE ID: t18 , TIPO: Integer
+
+
+VARIABLE ID: t17 , TIPO: Integer
 
 
      -> argumentos: 
 
 
-             -> id: multiplicando , tipo: Integer
+             -> id: valor , tipo: Integer
 
-             -> id: multiplicador , tipo: Integer
+             -> id: N , tipo: Integer
 
 
 _______________________________________
@@ -56,34 +173,52 @@ _______________________________________
  VARIABLES: 
 
 
-VARIABLE ID: t11 , TIPO: Integer
+VARIABLE ID: t40 , TIPO: Boolean
 
 
-VARIABLE ID: t10 , TIPO: Boolean
+VARIABLE ID: t38 , TIPO: Integer
 
 
-VARIABLE ID: t9 , TIPO: String
+VARIABLE ID: t37 , TIPO: String
 
 
-VARIABLE ID: t8 , TIPO: String
+VARIABLE ID: t36 , TIPO: String
 
 
-VARIABLE ID: resultado , TIPO: Integer
+VARIABLE ID: t35 , TIPO: String
 
 
-VARIABLE ID: str , TIPO: String
+VARIABLE ID: t34 , TIPO: Integer
 
 
-VARIABLE ID: t14 , TIPO: Integer
+VARIABLE ID: valorOriginal , TIPO: Integer
 
 
-VARIABLE ID: esIgual , TIPO: Boolean
+VARIABLE ID: t47 , TIPO: String
 
 
-VARIABLE ID: t13 , TIPO: Integer
+VARIABLE ID: t46 , TIPO: String
 
 
-VARIABLE ID: t12 , TIPO: Integer
+VARIABLE ID: t45 , TIPO: Boolean
+
+
+VARIABLE ID: nuevoValor , TIPO: Integer
+
+
+VARIABLE ID: t44 , TIPO: Integer
+
+
+VARIABLE ID: t43 , TIPO: Integer
+
+
+VARIABLE ID: t42 , TIPO: String
+
+
+VARIABLE ID: t41 , TIPO: String
+
+
+VARIABLE ID: t39 , TIPO: Integer
 
 
      -> argumentos: 
@@ -96,11 +231,11 @@ _______________________________________
 
 
 
- -> ENTORNO CLASE 6, de nivel 1 <- 
+ -> ENTORNO CLASE 2, de nivel 1 <- 
 
  VARIABLES: 
 
-VARIABLE ID: a , TIPO: Integer
+VARIABLE ID: totalASumar , TIPO: Integer
 
 VARIABLE ID: t0 , TIPO: Integer
 
@@ -117,12 +252,32 @@ ID: main , TIPO: Void
 
               -> sin argumentos <-
 
-ID: multiplica , TIPO: Integer
+ID: write , TIPO: Void
      -> argumentos: 
 
-             -> id: multiplicando , tipo: Integer
+             -> id: input , tipo: String
 
-             -> id: multiplicador , tipo: Integer
+ID: write , TIPO: Void
+     -> argumentos: 
+
+             -> id: input , tipo: Integer
+
+ID: sumaN , TIPO: Integer
+     -> argumentos: 
+
+             -> id: valor , tipo: Integer
+
+             -> id: N , tipo: Integer
+
+ID: read , TIPO: String
+     -> argumentos: 
+
+              -> sin argumentos <-
+
+ID: writeln , TIPO: Void
+     -> argumentos: 
+
+             -> id: input , tipo: String
 
 
 
@@ -138,30 +293,13 @@ _______________________________________
 
  CLASES: 
 
-ID: ClasePrincipal , TIPO: Class
+ID: EjemploExtraccionInvariantes , TIPO: Class
 
 
  FUNCIONES: 
 
-ID: integerToString , TIPO: String
-     -> argumentos: 
 
-             -> id: numero , tipo: Integer
-
-ID: stringToInteger , TIPO: Integer
-     -> argumentos: 
-
-             -> id: string , tipo: String
-
-ID: write , TIPO: Void
-     -> argumentos: 
-
-             -> id: input , tipo: String
-
-ID: read , TIPO: String
-     -> argumentos: 
-
-              -> sin argumentos <-
+ - no hay funciones declaradas - 
 
 
 

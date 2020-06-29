@@ -3,14 +3,14 @@ package Procesador;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.Stack;
 
 import Checkers.Tipo;
 import Checkers.TipoObject;
 import Errores.ErrorSemantico;
-import SimbolosNoTerminales.SimboloArgDecl;
-import SimbolosNoTerminales.SimboloArgs;
 import SimbolosNoTerminales.SimboloArray;
 
 public class GlobalVariables {
@@ -25,11 +25,12 @@ public class GlobalVariables {
     public static final Path FICHERO_ENTORNOS = outputDir.resolve("Entornos.txt");
     public static final Path FICHERO_INTERMEDIO = outputDir.resolve("codigo_intermedio.txt");
     public static final Path FICHERO_INTERMEDIO_OPT = outputDir.resolve("codigo_intermedio_opt.txt");
-    public static final Path FICHERO_MAQUINA = outputDir.resolve("codigo_maquina.txt");
-    public static final Path FICHERO_MAQUINA_OPT = outputDir.resolve("codigo_maquina_opt.txt");
+    public static final Path FICHERO_MAQUINA = outputDir.resolve("codigo_maquina.X68");
+    public static final Path FICHERO_MAQUINA_OPT = outputDir.resolve("codigo_maquina_opt.X68");
 
     public static Boolean DEBUG_MODE = true;
     public static Boolean hayErrores = false;
+    public static Integer contadorNV = 0;
 
     private static Integer SecuenciaIdEtiqueta = 0;
     private static Integer SecuenciaIdLiteral = 0;
@@ -37,9 +38,9 @@ public class GlobalVariables {
     private static Integer _idnodoIncremental = 0;
     private static Integer CONTADOR = 1;
     private static Stack<Entorno> pilaEntornos = new Stack<>();
-    
-    public static Integer contadorNV = 0;
-    
+    private static HashMap<String, DeclaracionFuncion> mapFunciones = new HashMap<>();
+
+
     // Memory Management related constants
     public static final int MEMORY_DATA_BLOCK_SIZE_BYTES = 256;
 
@@ -60,25 +61,26 @@ public class GlobalVariables {
             return null;
         }
     }
-
-    public static void declaraBuiltInFunctions(EntornoClase raiz) throws ErrorSemantico, IOException {
-        asignaBuiltInFuncionID("read", Tipo.getTipo(Tipo.String), null);
-        asignaBuiltInFuncionID("write", Tipo.getTipo(Tipo.Void), new SimboloArgs(new SimboloArgDecl("input", Tipo.getTipo(Tipo.String), null), null, true));
-        asignaBuiltInFuncionID("integerToString", Tipo.getTipo(Tipo.String), new SimboloArgs(new SimboloArgDecl("numero", Tipo.getTipo(Tipo.Integer), null), null, true));
-        asignaBuiltInFuncionID("stringToInteger", Tipo.getTipo(Tipo.Integer), new SimboloArgs(new SimboloArgDecl("string", Tipo.getTipo(Tipo.String), null), null, true));
+    public static void declaraBuiltInFunctions() throws ErrorSemantico, IOException {
+        declaraBuiltInFunction("write", "WRITESTR", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
+        declaraBuiltInFunction("write", "WRITEINT", Tipo.getTipo(Tipo.Void), new String[] {"input", "int"});
+        declaraBuiltInFunction("writeln", "WRTSTRLN", Tipo.getTipo(Tipo.Void), new String[] {"input", "String"});
+        declaraBuiltInFunction("read", "READ", Tipo.getTipo(Tipo.String));
     }
-
-    private static void asignaBuiltInFuncionID(String idFuncion, TipoObject tipoRetorno, SimboloArgs args) throws ErrorSemantico, IOException {
+    
+    private static void declaraBuiltInFunction(String idFuncion, String etiqueta, TipoObject tipoRetorno, String[]... args) throws ErrorSemantico, IOException {
         DeclaracionFuncion declaracion = asignaFuncionID(idFuncion, tipoRetorno);
+        mapFunciones.remove(declaracion.getEtiqueta());
+        declaracion.setEtiqueta(etiqueta);
+        mapFunciones.put(etiqueta, declaracion);
         entraBloqueFuncion(declaracion);
-
-        asignaEntornoFuncionID(idFuncion);
-        if (args != null) {
-            for (SimboloArgs a = args; a != null; a = a.getNextArg()) {
-                GlobalVariables.asignaID(a.getId(), a.getTipo());
+        if(args != null) {
+            for(String[] arg: args) {
+                assert arg.length == 2;
+            	asignaFuncionArg(arg[0], arg[1]);
             }
-            asignaFuncionArgs(idFuncion, args);
         }
+        declaracion.finalizar();
         saleBloqueFuncion(true);
     }
 
@@ -108,13 +110,9 @@ public class GlobalVariables {
     public static DeclaracionFuncion asignaFuncionID(String idFuncion, TipoObject tipo) throws ErrorSemantico {
         EntornoClase top = (EntornoClase) entornoActual();
         String etiqueta = GlobalVariables.generarEtiqueta();
-        return top.putFuncion(tipo, idFuncion, etiqueta);
-    }
-
-    // Llamar una vez dentro del entorno de la funciÃ³n
-    public static void asignaEntornoFuncionID(String idFuncion) throws ErrorSemantico {
-        EntornoFuncion top = (EntornoFuncion) entornoActual();
-        ((EntornoClase) top.getEntornoPadre()).putFuncionEntorno(idFuncion, top);
+        DeclaracionFuncion funcion = top.putFuncion(tipo, idFuncion, etiqueta);
+        mapFunciones.put(etiqueta, funcion);
+        return funcion;
     }
 
     public static void asignaFuncionArg(String nombre, String tipoString) throws ErrorSemantico {
@@ -130,14 +128,6 @@ public class GlobalVariables {
         // por tanto o permitimos que pongan el tamano en la declaracion o directamente utilizamos el heap para manejar todo esto
         // P.D: Usar el heap probablemente nos hará subir por encima del 9 y aumentar el aprobado
         top.putFuncionArrayArg(id, tipo, simboloArrayDef.getNumero());
-    }
-
-
-    public static void asignaFuncionArgs(String idFuncion, SimboloArgs args) throws ErrorSemantico {
-        EntornoFuncion top = (EntornoFuncion) entornoActual();
-        for (SimboloArgs a = args; a != null; a = a.getNextArg()) {
-            top.putFuncionArgs(idFuncion, a.getId());
-        }
     }
 
     public static DeclaracionClase asignaClaseID(String id) throws ErrorSemantico {
@@ -169,9 +159,9 @@ public class GlobalVariables {
             throw new ErrorSemantico("El valor del identificador " + id + " no puede ser modificado al tener el atributo FINAL");
     }
 
-    public static DeclaracionFuncion compruebaFuncionID(String id) throws ErrorSemantico {
+    public static DeclaracionFuncion compruebaFuncionID(String id, ArrayList<TipoObject> tipoParams) throws ErrorSemantico {
         Entorno top = entornoActual();
-        DeclaracionFuncion i = top.fullGetFuncion(id);
+        DeclaracionFuncion i = top.fullGetFuncion(id, tipoParams);
         if (i == null)
             throw new ErrorSemantico("El id " + id + " no es un sÃ­mbolo de funciÃ³n declarado en el entorno");
 
@@ -194,10 +184,10 @@ public class GlobalVariables {
         }
     }
 
-    public static void entraBloqueFuncion(Declaracion identificadorFuncion) {
-        EntornoFuncion e = new EntornoFuncion((EntornoClase) entornoActual(), identificadorFuncion);
+    public static void entraBloqueFuncion(DeclaracionFuncion declaracionFuncion) {
+        EntornoClase entornoClase = (EntornoClase) entornoActual();
+        EntornoFuncion e = new EntornoFuncion(entornoClase, declaracionFuncion);
         pilaEntornos.push(e);
-        DeclaracionFuncion declaracionFuncion = (DeclaracionFuncion)identificadorFuncion;
         declaracionFuncion.setEntornoDependiente(e);
     }
 
@@ -238,7 +228,7 @@ public class GlobalVariables {
 
     public static DeclaracionFuncion getMainFunction() throws ErrorSemantico {
         EntornoClase entorno = (EntornoClase)entornoActual();
-        DeclaracionFuncion declaracionMain = entorno.getFuncion("main");
+        DeclaracionFuncion declaracionMain = entorno.getFuncion("main", new ArrayList<Declaracion>());
 
         if(declaracionMain == null) throw new ErrorSemantico("Falta la funcion de entrada: main");
         return declaracionMain;
@@ -246,5 +236,9 @@ public class GlobalVariables {
 
     public static boolean isComplexParam(Declaracion decl) {
         return decl instanceof DeclaracionArray || Tipo.String.equals(decl.getTipo().getTipo());
+    }
+
+    public static DeclaracionFuncion getDeclaracionFuncion(String etiqueta) {
+        return mapFunciones.getOrDefault(etiqueta, null);
     }
 }

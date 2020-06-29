@@ -1,134 +1,717 @@
 digraph G {
 
-62 -> 61
-61 -> 71
-71 [color=lightgrey,style=filled,label="Class (Identificador)"]
-61 -> 72
-72 [color=lightgrey,style=filled,label="ClasePrincipal (Identificador)"]
-61 -> 73
-73 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
-61 -> 60
-60 -> 18
-18 -> 9
-9 -> 8
-8 -> 7
-8 [label="SimboloElemento"]
-9 [label="SimboloCuerpo"]
-18 -> 17
-17 -> 16
-17 [label="SimboloElemento"]
-18 [label="SimboloCuerpo"]
-60 -> 59
-59 -> 19
-19 -> 87
-87 [color=lightgrey,style=filled,label="Void (Identificador)"]
-19 -> 88
-88 [color=lightgrey,style=filled,label="main (Identificador)"]
-19 -> 89
-89 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
-19 -> 21
-21 -> 97
-97 [color=lightgrey,style=filled,label="String (Identificador)"]
-21 -> 98
-98 [color=lightgrey,style=filled,label="args (Identificador)"]
-21 [label="SimboloArgs"]
-19 -> 90
-90 [color=lightblue,style=filled,label="PARENDER (Token)"]
-19 -> 91
-91 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
-19 -> 58
-58 -> 25
-25 -> 24
-24 -> 23
-24 -> 101
-101 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
-24 [label="SimboloExpresion"]
-25 [label="SimboloContenido"]
-58 -> 57
-57 -> 112
-112 [color=lightblue,style=filled,label="TIF (Token)"]
-57 -> 113
-113 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
-57 -> 38
-38 -> 37
-37 -> 36
-36 -> 30
+498 -> 8
+8 -> 507
+507 [color=lightgrey,style=filled,label="Class (Identificador)"]
+8 -> 508
+508 [color=lightgrey,style=filled,label="EjemploExtraccionInvariantes (Identificador)"]
+8 -> 509
+509 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+8 -> 6
+8 -> 497
+497 -> 328
+328 -> 9
+9 -> 523
+523 [color=lightgrey,style=filled,label="Integer (Identificador)"]
+9 -> 524
+524 [color=lightgrey,style=filled,label="sumaN (Identificador)"]
+9 -> 525
+525 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+9 -> 13
+13 -> 533
+533 [color=lightgrey,style=filled,label="Integer (Identificador)"]
+13 -> 534
+534 [color=lightgrey,style=filled,label="valor (Identificador)"]
+13 -> 12
+12 -> 541
+541 [color=lightblue,style=filled,label="COMA (Token)"]
+12 -> 542
+542 [color=lightgrey,style=filled,label="Integer (Identificador)"]
+12 -> 543
+543 [color=lightgrey,style=filled,label="N (Identificador)"]
+12 [label="SimboloArgs"]
+13 [label="SimboloArgs"]
+9 -> 526
+526 [color=lightblue,style=filled,label="PARENDER (Token)"]
+9 -> 527
+527 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+9 -> 327
+327 -> 321
+321 -> 133
+133 -> 83
+83 -> 56
+56 -> 40
+40 -> 31
+31 -> 22
+22 -> 21
+21 -> 20
+21 -> 552
+552 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+21 [label="SimboloExpresion"]
+22 [label="SimboloContenido"]
+31 -> 30
 30 -> 29
-29 -> 28
-28 -> 27
-27 -> 26
-27 [label="SimboloOperacion"]
-28 [label="SimboloOperacion"]
-29 [label="SimboloOperacion"]
-30 [label="SimboloOperacion"]
-36 -> 119
-119 [color=lightblue,style=filled,label="> (Token)"]
-36 -> 35
-35 -> 34
-34 -> 33
-33 -> 32
-32 -> 31
-32 [label="SimboloOperacion"]
-33 [label="SimboloOperacion"]
-34 [label="SimboloOperacion"]
-35 [label="SimboloOperacion"]
-36 [label="SimboloOperacion"]
-37 [label="SimboloOperacion"]
-38 [label="SimboloOperacion"]
-57 -> 114
-114 [color=lightblue,style=filled,label="PARENDER (Token)"]
-57 -> 115
-115 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
-57 -> 55
-55 -> 47
-47 -> 46
-46 -> 45
-45 -> 124
-124 [color=lightgrey,style=filled,label="a (Identificador)"]
-45 -> 44
-44 -> 43
-43 -> 42
-42 -> 41
-41 -> 40
-41 [label="SimboloOperacion"]
-42 [label="SimboloOperacion"]
-43 [label="SimboloOperacion"]
-44 [label="SimboloOperacion"]
-45 -> 125
-125 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
-45 [label="SimboloAsignacion"]
-46 [label="SimboloExpresion"]
-47 [label="SimboloContenido"]
+30 -> 555
+555 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+30 [label="SimboloExpresion"]
+31 [label="SimboloContenido"]
+40 -> 39
+39 -> 38
+39 -> 558
+558 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+39 [label="SimboloExpresion"]
+40 [label="SimboloContenido"]
+56 -> 55
 55 -> 54
-54 -> 53
-53 -> 130
-130 [color=lightgrey,style=filled,label="nombre (Identificador)"]
-53 -> 52
-52 -> 51
-51 -> 50
-50 -> 49
-49 -> 48
-49 [label="SimboloOperacion"]
-50 [label="SimboloOperacion"]
-51 [label="SimboloOperacion"]
-52 [label="SimboloOperacion"]
-53 -> 131
-131 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
-53 [label="SimboloAsignacion"]
-54 [label="SimboloExpresion"]
-55 [label="SimboloContenido"]
-57 -> 116
-116 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
-57 [label="SimboloCondicional"]
-58 [label="SimboloContenido"]
-19 -> 92
-92 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
-19 [label="SimboloFuncionDecl"]
-59 [label="SimboloElemento"]
-60 [label="SimboloCuerpo"]
-61 -> 74
-74 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
-61 [label="SimboloClase"]
-62 [color=black,style=filled,label="SimboloPrograma"]
+55 -> 561
+561 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+55 [label="SimboloExpresion"]
+56 [label="SimboloContenido"]
+83 -> 82
+82 -> 81
+82 -> 564
+564 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+82 [label="SimboloExpresion"]
+83 [label="SimboloContenido"]
+133 -> 132
+132 -> 575
+575 [color=lightblue,style=filled,label="TIF (Token)"]
+132 -> 576
+576 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+132 -> 96
+96 -> 95
+95 -> 94
+94 -> 88
+88 -> 87
+87 -> 86
+86 -> 85
+85 -> 84
+85 [label="SimboloOperacion"]
+86 [label="SimboloOperacion"]
+87 [label="SimboloOperacion"]
+88 [label="SimboloOperacion"]
+94 -> 582
+582 [color=lightblue,style=filled,label="!= (Token)"]
+94 -> 93
+93 -> 92
+92 -> 91
+91 -> 90
+90 -> 89
+90 [label="SimboloOperacion"]
+91 [label="SimboloOperacion"]
+92 [label="SimboloOperacion"]
+93 [label="SimboloOperacion"]
+94 [label="SimboloOperacion"]
+95 [label="SimboloOperacion"]
+96 [label="SimboloOperacion"]
+132 -> 577
+577 [color=lightblue,style=filled,label="PARENDER (Token)"]
+132 -> 578
+578 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+132 -> 130
+130 -> 124
+124 -> 115
+115 -> 106
+106 -> 105
+105 -> 104
+104 -> 595
+595 [color=lightgrey,style=filled,label="write (Identificador)"]
+104 -> 596
+596 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+104 -> 103
+103 -> 102
+102 -> 101
+101 -> 100
+100 -> 99
+99 -> 98
+99 [label="SimboloOperacion"]
+100 [label="SimboloOperacion"]
+101 [label="SimboloOperacion"]
+102 [label="SimboloOperacion"]
+103 [label="SimboloParams"]
+104 -> 597
+597 [color=lightblue,style=filled,label="PARENDER (Token)"]
+104 [label="SimboloFuncionInvk"]
+105 [label="SimboloExpresion"]
+106 [label="SimboloContenido"]
+115 -> 114
+114 -> 113
+113 -> 604
+604 [color=lightgrey,style=filled,label="write (Identificador)"]
+113 -> 605
+605 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+113 -> 112
+112 -> 111
+111 -> 110
+110 -> 109
+109 -> 108
+108 -> 107
+108 [label="SimboloOperacion"]
+109 [label="SimboloOperacion"]
+110 [label="SimboloOperacion"]
+111 [label="SimboloOperacion"]
+112 [label="SimboloParams"]
+113 -> 606
+606 [color=lightblue,style=filled,label="PARENDER (Token)"]
+113 [label="SimboloFuncionInvk"]
+114 [label="SimboloExpresion"]
+115 [label="SimboloContenido"]
+124 -> 123
+123 -> 122
+122 -> 613
+613 [color=lightgrey,style=filled,label="writeln (Identificador)"]
+122 -> 614
+614 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+122 -> 121
+121 -> 120
+120 -> 119
+119 -> 118
+118 -> 117
+117 -> 116
+117 [label="SimboloOperacion"]
+118 [label="SimboloOperacion"]
+119 [label="SimboloOperacion"]
+120 [label="SimboloOperacion"]
+121 [label="SimboloParams"]
+122 -> 615
+615 [color=lightblue,style=filled,label="PARENDER (Token)"]
+122 [label="SimboloFuncionInvk"]
+123 [label="SimboloExpresion"]
+124 [label="SimboloContenido"]
+130 -> 587
+587 [color=lightblue,style=filled,label="TRETURN (Token)"]
+130 -> 129
+129 -> 128
+128 -> 127
+127 -> 126
+126 -> 125
+126 [label="SimboloOperacion"]
+127 [label="SimboloOperacion"]
+128 [label="SimboloOperacion"]
+129 [label="SimboloOperacion"]
+130 -> 588
+588 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+130 [label="SimboloContenido"]
+132 -> 579
+579 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+132 [label="SimboloCondicional"]
+133 [label="SimboloContenido"]
+321 -> 320
+320 -> 626
+626 [color=lightblue,style=filled,label="TWHILE (Token)"]
+320 -> 627
+627 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+320 -> 147
+320 -> 628
+628 [color=lightblue,style=filled,label="PARENDER (Token)"]
+320 -> 629
+629 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+320 -> 319
+319 -> 305
+305 -> 291
+291 -> 276
+276 -> 261
+261 -> 246
+246 -> 231
+231 -> 216
+216 -> 201
+201 -> 186
+186 -> 171
+171 -> 156
+156 -> 155
+155 -> 154
+155 -> 633
+633 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+155 [label="SimboloExpresion"]
+156 [label="SimboloContenido"]
+171 -> 170
+170 -> 169
+170 -> 636
+636 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+170 [label="SimboloExpresion"]
+171 [label="SimboloContenido"]
+186 -> 185
+185 -> 184
+185 -> 639
+639 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+185 [label="SimboloExpresion"]
+186 [label="SimboloContenido"]
+201 -> 200
+200 -> 199
+200 -> 642
+642 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+200 [label="SimboloExpresion"]
+201 [label="SimboloContenido"]
+216 -> 215
+215 -> 214
+215 -> 645
+645 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+215 [label="SimboloExpresion"]
+216 [label="SimboloContenido"]
+231 -> 230
+230 -> 229
+230 -> 648
+648 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+230 [label="SimboloExpresion"]
+231 [label="SimboloContenido"]
+246 -> 245
+245 -> 244
+245 -> 651
+651 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+245 [label="SimboloExpresion"]
+246 [label="SimboloContenido"]
+261 -> 260
+260 -> 259
+260 -> 654
+654 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+260 [label="SimboloExpresion"]
+261 [label="SimboloContenido"]
+276 -> 275
+275 -> 274
+275 -> 657
+657 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+275 [label="SimboloExpresion"]
+276 [label="SimboloContenido"]
+291 -> 290
+290 -> 289
+290 -> 660
+660 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+290 [label="SimboloExpresion"]
+291 [label="SimboloContenido"]
+305 -> 304
+304 -> 303
+303 -> 665
+665 [color=lightgrey,style=filled,label="nuevoValor (Identificador)"]
+303 -> 302
+302 -> 296
+296 -> 295
+295 -> 294
+294 -> 293
+293 -> 292
+293 [label="SimboloOperacion"]
+294 [label="SimboloOperacion"]
+295 [label="SimboloOperacion"]
+296 [label="SimboloOperacion"]
+302 -> 669
+669 [color=lightblue,style=filled,label="+ (Token)"]
+302 -> 301
+301 -> 300
+300 -> 299
+299 -> 298
+298 -> 297
+298 [label="SimboloOperacion"]
+299 [label="SimboloOperacion"]
+300 [label="SimboloOperacion"]
+301 [label="SimboloOperacion"]
+302 [label="SimboloOperacion"]
+303 -> 666
+666 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+303 [label="SimboloAsignacion"]
+304 [label="SimboloExpresion"]
+305 [label="SimboloContenido"]
+319 -> 318
+318 -> 317
+317 -> 674
+674 [color=lightgrey,style=filled,label="indice (Identificador)"]
+317 -> 316
+316 -> 310
+310 -> 309
+309 -> 308
+308 -> 307
+307 -> 306
+307 [label="SimboloOperacion"]
+308 [label="SimboloOperacion"]
+309 [label="SimboloOperacion"]
+310 [label="SimboloOperacion"]
+316 -> 678
+678 [color=lightblue,style=filled,label="+ (Token)"]
+316 -> 315
+315 -> 314
+314 -> 313
+313 -> 312
+312 -> 311
+312 [label="SimboloOperacion"]
+313 [label="SimboloOperacion"]
+314 [label="SimboloOperacion"]
+315 [label="SimboloOperacion"]
+316 [label="SimboloOperacion"]
+317 -> 675
+675 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+317 [label="SimboloAsignacion"]
+318 [label="SimboloExpresion"]
+319 [label="SimboloContenido"]
+320 -> 630
+630 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+320 [label="SimboloBucle"]
+321 [label="SimboloContenido"]
+327 -> 548
+548 [color=lightblue,style=filled,label="TRETURN (Token)"]
+327 -> 326
+326 -> 325
+325 -> 324
+324 -> 323
+323 -> 322
+323 [label="SimboloOperacion"]
+324 [label="SimboloOperacion"]
+325 [label="SimboloOperacion"]
+326 [label="SimboloOperacion"]
+327 -> 549
+549 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+327 [label="SimboloContenido"]
+9 -> 528
+528 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+9 [label="SimboloFuncionDecl"]
+328 [label="SimboloCuerpo"]
+497 -> 329
+329 -> 691
+691 [color=lightgrey,style=filled,label="Void (Identificador)"]
+329 -> 692
+692 [color=lightgrey,style=filled,label="main (Identificador)"]
+329 -> 693
+693 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+329 -> 694
+694 [color=lightblue,style=filled,label="PARENDER (Token)"]
+329 -> 695
+695 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+329 -> 496
+496 -> 405
+405 -> 383
+383 -> 374
+374 -> 365
+365 -> 356
+356 -> 347
+347 -> 338
+338 -> 337
+337 -> 336
+337 -> 699
+699 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+337 [label="SimboloExpresion"]
+338 [label="SimboloContenido"]
+347 -> 346
+346 -> 345
+345 -> 706
+706 [color=lightgrey,style=filled,label="write (Identificador)"]
+345 -> 707
+707 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+345 -> 344
+344 -> 343
+343 -> 342
+342 -> 341
+341 -> 340
+340 -> 339
+340 [label="SimboloOperacion"]
+341 [label="SimboloOperacion"]
+342 [label="SimboloOperacion"]
+343 [label="SimboloOperacion"]
+344 [label="SimboloParams"]
+345 -> 708
+708 [color=lightblue,style=filled,label="PARENDER (Token)"]
+345 [label="SimboloFuncionInvk"]
+346 [label="SimboloExpresion"]
+347 [label="SimboloContenido"]
+356 -> 355
+355 -> 354
+354 -> 715
+715 [color=lightgrey,style=filled,label="write (Identificador)"]
+354 -> 716
+716 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+354 -> 353
+353 -> 352
+352 -> 351
+351 -> 350
+350 -> 349
+349 -> 348
+349 [label="SimboloOperacion"]
+350 [label="SimboloOperacion"]
+351 [label="SimboloOperacion"]
+352 [label="SimboloOperacion"]
+353 [label="SimboloParams"]
+354 -> 717
+717 [color=lightblue,style=filled,label="PARENDER (Token)"]
+354 [label="SimboloFuncionInvk"]
+355 [label="SimboloExpresion"]
+356 [label="SimboloContenido"]
+365 -> 364
+364 -> 363
+363 -> 724
+724 [color=lightgrey,style=filled,label="write (Identificador)"]
+363 -> 725
+725 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+363 -> 362
+362 -> 361
+361 -> 360
+360 -> 359
+359 -> 358
+358 -> 357
+358 [label="SimboloOperacion"]
+359 [label="SimboloOperacion"]
+360 [label="SimboloOperacion"]
+361 [label="SimboloOperacion"]
+362 [label="SimboloParams"]
+363 -> 726
+726 [color=lightblue,style=filled,label="PARENDER (Token)"]
+363 [label="SimboloFuncionInvk"]
+364 [label="SimboloExpresion"]
+365 [label="SimboloContenido"]
+374 -> 373
+373 -> 372
+372 -> 733
+733 [color=lightgrey,style=filled,label="write (Identificador)"]
+372 -> 734
+734 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+372 -> 371
+371 -> 370
+370 -> 369
+369 -> 368
+368 -> 367
+367 -> 366
+367 [label="SimboloOperacion"]
+368 [label="SimboloOperacion"]
+369 [label="SimboloOperacion"]
+370 [label="SimboloOperacion"]
+371 [label="SimboloParams"]
+372 -> 735
+735 [color=lightblue,style=filled,label="PARENDER (Token)"]
+372 [label="SimboloFuncionInvk"]
+373 [label="SimboloExpresion"]
+374 [label="SimboloContenido"]
+383 -> 382
+382 -> 381
+381 -> 742
+742 [color=lightgrey,style=filled,label="writeln (Identificador)"]
+381 -> 743
+743 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+381 -> 380
+380 -> 379
+379 -> 378
+378 -> 377
+377 -> 376
+376 -> 375
+376 [label="SimboloOperacion"]
+377 [label="SimboloOperacion"]
+378 [label="SimboloOperacion"]
+379 [label="SimboloOperacion"]
+380 [label="SimboloParams"]
+381 -> 744
+744 [color=lightblue,style=filled,label="PARENDER (Token)"]
+381 [label="SimboloFuncionInvk"]
+382 [label="SimboloExpresion"]
+383 [label="SimboloContenido"]
+405 -> 404
+404 -> 403
+404 -> 747
+747 [color=lightblue,style=filled,label="PUNTOCOMA (Token)"]
+404 [label="SimboloExpresion"]
+405 [label="SimboloContenido"]
+496 -> 495
+495 -> 758
+758 [color=lightblue,style=filled,label="TIF (Token)"]
+495 -> 759
+759 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+495 -> 418
+418 -> 417
+417 -> 416
+416 -> 410
+410 -> 409
+409 -> 408
+408 -> 407
+407 -> 406
+407 [label="SimboloOperacion"]
+408 [label="SimboloOperacion"]
+409 [label="SimboloOperacion"]
+410 [label="SimboloOperacion"]
+416 -> 765
+765 [color=lightblue,style=filled,label="!= (Token)"]
+416 -> 415
+415 -> 414
+414 -> 413
+413 -> 412
+412 -> 411
+412 [label="SimboloOperacion"]
+413 [label="SimboloOperacion"]
+414 [label="SimboloOperacion"]
+415 [label="SimboloOperacion"]
+416 [label="SimboloOperacion"]
+417 [label="SimboloOperacion"]
+418 [label="SimboloOperacion"]
+495 -> 760
+760 [color=lightblue,style=filled,label="PARENDER (Token)"]
+495 -> 761
+761 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+495 -> 493
+493 -> 446
+446 -> 437
+437 -> 428
+428 -> 427
+427 -> 426
+426 -> 772
+772 [color=lightgrey,style=filled,label="write (Identificador)"]
+426 -> 773
+773 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+426 -> 425
+425 -> 424
+424 -> 423
+423 -> 422
+422 -> 421
+421 -> 420
+421 [label="SimboloOperacion"]
+422 [label="SimboloOperacion"]
+423 [label="SimboloOperacion"]
+424 [label="SimboloOperacion"]
+425 [label="SimboloParams"]
+426 -> 774
+774 [color=lightblue,style=filled,label="PARENDER (Token)"]
+426 [label="SimboloFuncionInvk"]
+427 [label="SimboloExpresion"]
+428 [label="SimboloContenido"]
+437 -> 436
+436 -> 435
+435 -> 781
+781 [color=lightgrey,style=filled,label="write (Identificador)"]
+435 -> 782
+782 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+435 -> 434
+434 -> 433
+433 -> 432
+432 -> 431
+431 -> 430
+430 -> 429
+430 [label="SimboloOperacion"]
+431 [label="SimboloOperacion"]
+432 [label="SimboloOperacion"]
+433 [label="SimboloOperacion"]
+434 [label="SimboloParams"]
+435 -> 783
+783 [color=lightblue,style=filled,label="PARENDER (Token)"]
+435 [label="SimboloFuncionInvk"]
+436 [label="SimboloExpresion"]
+437 [label="SimboloContenido"]
+446 -> 445
+445 -> 444
+444 -> 790
+790 [color=lightgrey,style=filled,label="writeln (Identificador)"]
+444 -> 791
+791 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+444 -> 443
+443 -> 442
+442 -> 441
+441 -> 440
+440 -> 439
+439 -> 438
+439 [label="SimboloOperacion"]
+440 [label="SimboloOperacion"]
+441 [label="SimboloOperacion"]
+442 [label="SimboloOperacion"]
+443 [label="SimboloParams"]
+444 -> 792
+792 [color=lightblue,style=filled,label="PARENDER (Token)"]
+444 [label="SimboloFuncionInvk"]
+445 [label="SimboloExpresion"]
+446 [label="SimboloContenido"]
+493 -> 492
+492 -> 803
+803 [color=lightblue,style=filled,label="TIF (Token)"]
+492 -> 804
+804 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+492 -> 470
+470 -> 469
+469 -> 468
+468 -> 462
+462 -> 461
+461 -> 460
+460 -> 459
+459 -> 458
+459 [label="SimboloOperacion"]
+460 [label="SimboloOperacion"]
+461 [label="SimboloOperacion"]
+462 [label="SimboloOperacion"]
+468 -> 810
+810 [color=lightblue,style=filled,label="!= (Token)"]
+468 -> 467
+467 -> 466
+466 -> 465
+465 -> 464
+464 -> 463
+464 [label="SimboloOperacion"]
+465 [label="SimboloOperacion"]
+466 [label="SimboloOperacion"]
+467 [label="SimboloOperacion"]
+468 [label="SimboloOperacion"]
+469 [label="SimboloOperacion"]
+470 [label="SimboloOperacion"]
+492 -> 805
+805 [color=lightblue,style=filled,label="PARENDER (Token)"]
+492 -> 806
+806 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+492 -> 480
+480 -> 479
+479 -> 478
+478 -> 817
+817 [color=lightgrey,style=filled,label="writeln (Identificador)"]
+478 -> 818
+818 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+478 -> 477
+477 -> 476
+476 -> 475
+475 -> 474
+474 -> 473
+473 -> 472
+473 [label="SimboloOperacion"]
+474 [label="SimboloOperacion"]
+475 [label="SimboloOperacion"]
+476 [label="SimboloOperacion"]
+477 [label="SimboloParams"]
+478 -> 819
+819 [color=lightblue,style=filled,label="PARENDER (Token)"]
+478 [label="SimboloFuncionInvk"]
+479 [label="SimboloExpresion"]
+480 [label="SimboloContenido"]
+492 -> 807
+807 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+492 -> 491
+491 -> 826
+826 [color=lightblue,style=filled,label="TELSE (Token)"]
+491 -> 827
+827 [color=lightblue,style=filled,label="LLAVEIZQ (Token)"]
+491 -> 490
+490 -> 489
+489 -> 488
+488 -> 835
+835 [color=lightgrey,style=filled,label="writeln (Identificador)"]
+488 -> 836
+836 [color=lightblue,style=filled,label="PARENIZQ (Token)"]
+488 -> 487
+487 -> 486
+486 -> 485
+485 -> 484
+484 -> 483
+483 -> 482
+483 [label="SimboloOperacion"]
+484 [label="SimboloOperacion"]
+485 [label="SimboloOperacion"]
+486 [label="SimboloOperacion"]
+487 [label="SimboloParams"]
+488 -> 837
+837 [color=lightblue,style=filled,label="PARENDER (Token)"]
+488 [label="SimboloFuncionInvk"]
+489 [label="SimboloExpresion"]
+490 [label="SimboloContenido"]
+491 -> 828
+828 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+491 [label="SimboloCondElse"]
+492 [label="SimboloCondicional"]
+493 [label="SimboloContenido"]
+495 -> 762
+762 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+495 [label="SimboloCondicional"]
+496 [label="SimboloContenido"]
+329 -> 696
+696 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+329 [label="SimboloFuncionDecl"]
+497 [label="SimboloCuerpo"]
+8 -> 510
+510 [color=lightblue,style=filled,label="LLAVEDER (Token)"]
+8 [label="SimboloClase"]
+498 [color=black,style=filled,label="SimboloPrograma"]
 
 }

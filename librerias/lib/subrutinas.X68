@@ -33,6 +33,88 @@ RESTORE_BP
 			RTS
 
 ; ============================================================
+READ
+; ============================================================
+; INPUT		- NADA
+; MODIFICA  - -8(BP) con la @ del String descriptor
+; OUTPUT	- NADA
+; ============================================================
+            MOVEM.L D0-D1/A0-A2, -(A7)
+            
+            MOVE.L  #8, D0
+            JSR     DMMALLOC
+            MOVE.L  A0, A2      ; A2.L -> @ String Descriptor
+            
+            MOVE.W  #0, 2(A2)   ; Save #0 references
+            
+            JSR     DMMALLOCNORMAL  ; A0.L -> @ String content
+            MOVE.L  A0, A1      ; A1.L -> @ String content
+            
+            MOVE.B  #2, D0      ; Lectura de input (Task 2, TRAP 15)
+            TRAP    #15         ; D1.W -> length (Limite 80)
+            
+            ADD.W   #1, D1
+            MOVE.W  D1, (A2)    ; Save String size
+            MOVE.L  A1, 4(A2)   ; Save String content Address (@)
+            
+            MOVE.L  BP, A1
+            SUB.L   #8, A1
+            MOVE.L  A2, (A1)    ; Retorno de String descriptor @
+            
+            MOVEM.L (A7)+, D0-D1/A0-A2
+            RTS
+            
+; ============================================================
+WRTSTRLN
+; ============================================================
+; INPUT		- A0.L -> Puntero a descriptor de String
+; MODIFICA  - NADA
+; OUTPUT	- NADA
+; ============================================================
+            MOVEM.L D0-D1/A1, -(A7)
+        	MOVE.W	(A0), D1    ; Tamanyo String
+            
+            MOVE.B  #0, D0
+            MOVE.L  4(A0), A1
+            TRAP    #15         ; Escritura por pantalla (Task 0, TRAP 15)
+            
+            MOVEM.L (A7)+, D0-D1/A1
+            RTS
+; ============================================================
+WRITESTR
+; ============================================================
+; INPUT		- A0.L -> Puntero a descriptor de String
+; MODIFICA  - NADA
+; OUTPUT	- NADA
+; ============================================================
+            MOVEM.L D0-D1/A1, -(A7)
+        	MOVE.W	(A0), D1    ; Tamanyo String
+            
+            MOVE.B  #14, D0
+            MOVE.L  4(A0), A1
+            TRAP    #15         ; Escritura por pantalla (Task 14, TRAP 15)
+            
+            MOVEM.L (A7)+, D0-D1/A1
+            RTS
+; ============================================================
+WRITEINT
+; ============================================================
+; INPUT		- D0.W -> Valor entero
+; MODIFICA  - NADA
+; OUTPUT	- NADA
+; ============================================================
+            MOVEM.L D1-D2, -(A7)
+            
+            AND.L   #$0000FFFF, D0
+            MOVE.L  D0, D1
+            MOVE.B  #10, D2
+            MOVE.W  #15, D0
+            TRAP    #15         ; Escritura por pantalla (Task 15, TRAP 15)
+            
+            MOVEM.L (A7)+, D1-D2
+            RTS
+            
+; ============================================================
 STREQUALS
 ; ============================================================
 ; INPUT		- A0.L -> Puntero a descriptor 1
@@ -46,7 +128,7 @@ STREQUALS
 			MOVE.L	4(A0),A0
 			MOVE.L	4(A1),A1
 .LOOPSTR
-        	CMP.W	(A0)+, (A1)+
+        	CMP.B	(A0)+, (A1)+
         	BNE 	.STRNOTEQ
         	DBRA.W 	D0, .LOOPSTR
         	BRA		.STREQUAL
@@ -68,6 +150,10 @@ DECREASEREF
                 SUBQ.W  #1, D0
                 CMP     #0, D0
                 BNE     .UPDATE_REF
+                MOVE.L  A0, A1
+                MOVE.L  4(A0), A0       ; Free the content
+                JSR     DMMFREE
+                MOVE.L  A1, A0          ; Free the descriptor
                 JSR     DMMFREE
                 MOVE.L  #0, A0
                 BRA     .END

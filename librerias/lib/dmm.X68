@@ -111,8 +111,7 @@ DMMALLOCSMALL
 DMMALLOCNORMAL
 ; SEARCHES THE NEXT MEMORY SLOT WITH THE SPECIFIED ID AND OUTPUTS A POINTER
 ; TO THE CORRESPONDING DATA (SLOT ADDRESS+2)
-; INPUT    - D0.W : ID TO SEARCH
-;            A0   : POINTER WITHIN THE CURRENT SLOT
+; INPUT    - NONE
 ; OUTPUT   - A0   : POINTER TO THE DATA OR 0 IF NOT FOUND
 ; MODIFIES - NONE (ASIDE OF OUTPUT)
 ; -----------------------------------------------------------------------------
@@ -120,38 +119,38 @@ DMMALLOCNORMAL
             MOVE.L  FREE_LIST_TAIL, A0
             CMP #0, A0
             BEQ .END
-						MOVEQ.L	#0, D1
-						MOVE.W	6(A0), D1
-						CMP #DMMBSIZE, D1
-						BGT .CLEAR  ; The block size is too small. There's no block available
-						; Remove the block from the tail of the free list
-						MOVE.L (A0), FREE_LIST_TAIL	
-						
-						MOVE.L FREE_LIST, A2
-						CMP A0, A2
-						BNE .CHECK_PREVIOUS
-						MOVE.L #0, FREE_LIST
+            MOVEQ.L	#0, D1
+            MOVE.W	6(A0), D1
+            CMP #DMMBSIZE, D1
+            BGT .CLEAR  ; The block size is too small. There's no block available
+                        ; Remove the block from the tail of the free list
+            MOVE.L (A0), FREE_LIST_TAIL	
+
+            MOVE.L FREE_LIST, A2
+            CMP A0, A2
+            BNE .CHECK_PREVIOUS
+            MOVE.L #0, FREE_LIST
 
 .CHECK_PREVIOUS:
-						MOVE.L	(A0), A1
+            MOVE.L      (A0), A1
             CMP #0, A1
             BEQ .UPDATE_BLOCK
-						MOVEQ.L	#0, D2
-						MOVE.W	6(A1), D2
-						ADD.L		#METAINFOSIZE, D2
-						MOVE.L	#0, 4(A1, D2)
+            MOVEQ.L     #0, D2
+            MOVE.W      6(A1), D2
+            ADD.L       #METAINFOSIZE, D2
+            MOVE.L      #0, 4(A1, D2)
 
 .UPDATE_BLOCK:
             MOVE.L  #0, 0(A0)      ; Remove previous pointer
             MOVE.W  #0, 4(A0)      ; Set Free state to 0
 
-						ADD.L		#METAINFOSIZE, D1
-            MOVE.W  #0, 2(A0, D1)  ; Set Free state to 0
-            MOVE.L  #0, 4(A0, D1)  ; Remove pinter to next block
-            ADD.L   #METAINFOSIZE, A0
-						BRA .END
-.CLEAR			MOVE.L	#0, A0
-.END        MOVEM.L	(A7)+, D1-D2/A1-A2
+            ADD.L       #METAINFOSIZE, D1
+            MOVE.W      #0, 2(A0, D1)  ; Set Free state to 0
+            MOVE.L      #0, 4(A0, D1)  ; Remove pinter to next block
+            ADD.L       #METAINFOSIZE, A0
+            BRA .END
+.CLEAR      MOVE.L      #0, A0
+.END        MOVEM.L     (A7)+, D1-D2/A1-A2
             RTS
 
 ; -----------------------------------------------------------------------------

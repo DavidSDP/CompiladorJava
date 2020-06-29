@@ -90,7 +90,7 @@ VBOOLEANO	=	"true"|"false"
 
 VSTRING		=	[\"][A-Za-z0-9_ ]*[\"]
 COMILLAS    =   [\"]
-VNUMERO		=	0|[1-9][0-9]*
+VNUMERO		=	0|[-]?[1-9][0-9]*
 
 VID			=	[A-Za-z][A-Za-z0-9_]*
 

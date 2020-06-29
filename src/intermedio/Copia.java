@@ -66,6 +66,8 @@ public class Copia extends InstruccionTresDirecciones {
     	BloqueInstrucciones bI = new BloqueInstrucciones();
     	bI.add(Instruccion.nuevaInstruccion(super.toMachineCode()));
         if(primero.getValor() instanceof DeclaracionConstante) {
+            // Ahora mismo, por aqui solo pasan los strings. Ya que son los unicos
+            // que se inicializan con un valor proveniente de un literal.
         	bI.add(primero.loadStringDescriptorConstante(AddressRegister.A1));
         	bI.add(handleReferences(AddressRegister.A1, segundo));
         	bI.add(segundo.saveStringDescriptorConstante(AddressRegister.A1));

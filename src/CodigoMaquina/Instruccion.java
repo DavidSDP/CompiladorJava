@@ -1,6 +1,8 @@
 package CodigoMaquina;
 
 public class Instruccion {
+
+	private static int SEQ_LOCAL_LABEL = 0;
 	
 	private OpCode opCode;
 	private Size size;
@@ -105,6 +107,13 @@ public class Instruccion {
 
 	public void setIntruccionPersonalizada(String intruccionPersonalizada) {
 		this.intruccionPersonalizada = intruccionPersonalizada;
+	}
+
+	/**
+	 * Used to automate jumps
+	 */
+	public static String getLocalLabel() {
+		return "l" + SEQ_LOCAL_LABEL++;
 	}
 	
 }

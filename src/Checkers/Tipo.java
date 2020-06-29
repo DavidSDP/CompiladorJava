@@ -31,7 +31,7 @@ public enum Tipo {
 	        case Integer:
 	            return new TipoObject(Tipo.Integer, 2);
 	        case Char:
-	            return new TipoObject(Tipo.Char, 2);
+	            return new TipoObject(Tipo.Char, 1);
             case String:
             case Array:
                 // Tanto string como array ocupan dos palabras.

@@ -53,7 +53,7 @@ READ
             MOVE.B  #2, D0      ; Lectura de input (Task 2, TRAP 15)
             TRAP    #15         ; D1.W -> length (Limite 80)
             
-            ADD.W   #1, D1
+            ;ADD.W   #1, D1
             MOVE.W  D1, (A2)    ; Save String size
             MOVE.L  A1, 4(A2)   ; Save String content Address (@)
             
@@ -71,14 +71,16 @@ WRTSTRLN
 ; MODIFICA  - NADA
 ; OUTPUT	- NADA
 ; ============================================================
-            MOVEM.L D0-D1/A1, -(A7)
+            MOVEM.L D0-D1/A1-A6, -(A7)
+            MOVE.L      BP, A6
+            MOVE.L      -8(A6), A0
         	MOVE.W	(A0), D1    ; Tamanyo String
             
             MOVE.B  #0, D0
             MOVE.L  4(A0), A1
             TRAP    #15         ; Escritura por pantalla (Task 0, TRAP 15)
             
-            MOVEM.L (A7)+, D0-D1/A1
+            MOVEM.L (A7)+, D0-D1/A1-A6
             RTS
 ; ============================================================
 WRITESTR
@@ -87,14 +89,16 @@ WRITESTR
 ; MODIFICA  - NADA
 ; OUTPUT	- NADA
 ; ============================================================
-            MOVEM.L D0-D1/A1, -(A7)
+            MOVEM.L D0-D1/A1-A6, -(A7)
+            MOVE.L      BP, A6
+            MOVE.L      -8(A6), A0
         	MOVE.W	(A0), D1    ; Tamanyo String
             
             MOVE.B  #14, D0
             MOVE.L  4(A0), A1
             TRAP    #15         ; Escritura por pantalla (Task 14, TRAP 15)
             
-            MOVEM.L (A7)+, D0-D1/A1
+            MOVEM.L (A7)+, D0-D1/A1-A6
             RTS
 ; ============================================================
 WRITEINT

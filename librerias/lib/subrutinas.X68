@@ -109,13 +109,14 @@ WRITEINT
 ; ============================================================
             MOVEM.L D1-D2/A6, -(A7)
             
+            MOVEQ.L #0, D0
             MOVE.L  BP, A6
             MOVE.W  -6(A6), D0
-            AND.L   #$0000FFFF, D0
             MOVE.L  D0, D1
-            MOVE.B  #10, D2
-            MOVE.W  #15, D0
-            TRAP    #15         ; Escritura por pantalla (Task 15, TRAP 15)
+            EXT.L   D1
+            
+            MOVE.W  #3, D0
+            TRAP    #15         ; Escritura por pantalla numero con signo (Task 20, TRAP 15)
             
             MOVEM.L (A7)+, D1-D2/A6
             RTS

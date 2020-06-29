@@ -16,23 +16,7 @@ import intermedio.InstruccionTresDirecciones;
 import intermedio.OperandoEtiqueta;
 import optimizacion.local.Grafo;
 
-class Invariante {
-	private InstruccionTresDirecciones instruccion;
-	private BloqueBasico bloque;
 
-	public Invariante(InstruccionTresDirecciones instruccion, BloqueBasico bloque) {
-		this.instruccion = instruccion;
-		this.bloque = bloque;
-	}
-
-	public InstruccionTresDirecciones getInstruccion() {
-		return this.instruccion;
-	}
-
-	public BloqueBasico getBloque() {
-		return this.bloque;
-	}
-}
 
 public class OptimizacionLocal implements Optimizador {
 	
@@ -71,7 +55,7 @@ public class OptimizacionLocal implements Optimizador {
         for(RangoInstruccionesFuncion rangoInstruccionesFuncion: funciones) {
         	grafoFuncion = grafosFunciones.get(rangoInstruccionesFuncion);
         	nombreFuncion = getNombreFuncion(secuenciaInstrucciones, rangoInstruccionesFuncion);
-        	// No se si el handling de esto se debería llevar a cabo aquí
+
 			filename = String.format("grafo-%s-original.dot", nombreFuncion);
 			exportarGrafo(filename, grafoFuncion);
 			IdentificacionBucles idBucles = new IdentificacionBucles(grafoFuncion, secuenciaInstrucciones);
@@ -116,14 +100,12 @@ public class OptimizacionLocal implements Optimizador {
 		private Integer nh;		// Última posición ocupada en tabla de Headers
 		private Integer naxd;	// Número de arcos x->d tales que d dom x
 
-		// TODO Temporal, hasta que saquemos el codigo de esta clase
 		private SecuenciaInstrucciones secuenciaInstrucciones;
 		private DefinicionesAccesibles definicionesAccesibles;
 		private List<InstruccionTresDirecciones> instruccionesBucle;
 		
 		public IdentificacionBucles(Grafo grafoFuncion, SecuenciaInstrucciones instrucciones) {
 			this.grafoBloquesBasicos = grafoFuncion;
-			// TODO Temporary code
 			this.secuenciaInstrucciones = instrucciones;
 			ejecutar();
 		}
@@ -162,12 +144,10 @@ public class OptimizacionLocal implements Optimizador {
 					secuenciaInstrucciones,
 					grafoBloquesBasicos
 			);
-			// TODO Esto definitivamente no va aquí, pero de momento me va bien para poder
-			//  mantener htodo el código recogido en una sola parte.
+
 			BloqueBasico encabezado;
 			for(Map.Entry<Integer, List<BloqueBasico>> e : this.tablaBLC.entrySet()) {
 				e.getValue().sort(Comparator.comparingInt(BloqueBasico::getId));
-				// TODO Inversión de bucle.
 				this.instruccionesBucle = this.secuenciaInstrucciones.getInstrucciones(e.getValue());
 				List<Invariante> invariantes = identificacionDeInvariantes(e.getValue());
 
@@ -188,7 +168,6 @@ public class OptimizacionLocal implements Optimizador {
 
 					for(BloqueBasico predecesor: grafoBloquesBasicos.getPredecesores(encabezado)) {
 						if(!domina(encabezado, predecesor)) {
-							// TODO ¿Deberíamos poner esta arista como una arista adyacente?
 							grafoBloquesBasicos.addArista(predecesor, preencabezado);
 							grafoBloquesBasicos.removeArista(predecesor, encabezado);
 						}
@@ -216,7 +195,6 @@ public class OptimizacionLocal implements Optimizador {
 			Invariante invariante;
 			HashMap<BloqueBasico, Integer> posiciones = new HashMap<>();
 
-			// Esto podría dar problemas ??
 			preencabezado = new BloqueBasico(encabezado.getInicio(), encabezado.getInicio() + numInvariantes - 1);
 
 			// Para evitar demasiadas complicaciones vamos a aplicar el offset a todos los bloques afectados por desplazamientos
@@ -265,13 +243,9 @@ public class OptimizacionLocal implements Optimizador {
 			// que ya deberían haberse inicializado )
 			almacenVariables.resetAsignaciones();
 
-			// TODO Esta tabla de modos debería estar en algún otro lado que no fuera aquí.
-			//  Por no hablar de que es bastante explicito.
-			//  Alomejor una estructura alrededor de esto no nos haría daño
 			HashMap<InstruccionTresDirecciones, Integer> modos = new HashMap<>();
 
 			for (BloqueBasico bloqueBasico : bloques) {
-				// TODO Transformar esta mierda en un iterador
 				for(int idx = bloqueBasico.getInicio(); idx <= bloqueBasico.getFin(); idx++) {
 					InstruccionTresDirecciones i3d = secuenciaInstrucciones.get(idx);
 					Declaracion destino = i3d.getDestino();
@@ -287,10 +261,8 @@ public class OptimizacionLocal implements Optimizador {
 			do {
 				hayCambios = false;
 				for (BloqueBasico bloqueBasico : bloques) {
-					// TODO Transformar esta mierda en un iterador
 					for(int idx = bloqueBasico.getInicio(); idx <= bloqueBasico.getFin(); idx++) {
 						InstruccionTresDirecciones i3d = secuenciaInstrucciones.get(idx);
-						// TODO Probablemente aqui recibamos que no son
 						Declaracion destino = i3d.getDestino();
 						if (destino != null && almacenVariables.getAsignaciones(destino) == 1 && modos.get(i3d) <= 0) {
 							int nuevoModo = examinaInvariancia(i3d, destino, modos, bloques);
@@ -326,8 +298,7 @@ public class OptimizacionLocal implements Optimizador {
 						1- Existen definiciones para este uso y cada una de las definiciones solo aplica a este uso ( no me cuadra)
 						2- No existen definiciones para este uso y entonces estamos ante dos posibles entidades:
 							2.1- Una constante
-							2.2- Un parámetro de una función ( Ojo! no se ha comprobado que pasaría si pusieramos una asignación a
-								 un parámetro de función ).
+							2.2- Un parámetro de una función
 					 */
 				if (extract) {
 					invariantesTrasladables.add(invariante);
@@ -343,12 +314,9 @@ public class OptimizacionLocal implements Optimizador {
 		 * 		-1 -> El argumento izquierdo es invariante
 		 * 		-2 -> El argumento derecho es invariante
 		 *
-		 * 	Ojo! Según esta definción el código estaría mal, pero vamos a ver si realmente está mal o no.
 		 *
 		 */
 		private int examinaInvariancia(InstruccionTresDirecciones i3d, Declaracion variable, HashMap<InstruccionTresDirecciones, Integer> modos, List<BloqueBasico> bloquesBucle) {
-			// Como reza el comentario de arriba, -2 significa que el argumento izquierda no es invariante. Esto tiene pinta
-			// de estar mal.
 			boolean argIzquierdaInvariante = (modos.get(i3d) == 1 || modos.get(i3d) == -1);
 			boolean argDerechaInvariante = (modos.get(i3d) == 1 || modos.get(i3d) == -2);
 
@@ -356,7 +324,6 @@ public class OptimizacionLocal implements Optimizador {
 				argIzquierdaInvariante = i3d.primeroEsConstante();
 				if (!argIzquierdaInvariante) {
 					boolean extraer = true;
-					// TODO No se debería conocer la estructura del operando aquí fuera
 					for (InstruccionTresDirecciones definicion : definicionesAccesibles.getDefiniciones(i3d, i3d.getPrimero().getValor())) {
 						extraer = extraer && !instruccionesBucle.contains(definicion);
 					}
@@ -382,7 +349,6 @@ public class OptimizacionLocal implements Optimizador {
 				argDerechaInvariante = i3d.segundoEsConstante();
 				if (!argDerechaInvariante) {
 					boolean extraer = true;
-					// TODO No se debería conocer la estructura del operando aquí fuera
 					for (InstruccionTresDirecciones definicion : definicionesAccesibles.getDefiniciones(i3d, i3d.getSegundo().getValor())) {
 						extraer = extraer && !instruccionesBucle.contains(definicion);
 					}

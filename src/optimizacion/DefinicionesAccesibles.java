@@ -67,51 +67,6 @@ public class DefinicionesAccesibles {
     }
 
     /**
-     * Ultima parte del algoritmo.
-     * Aqui se rellenan las definiciones accesibles
-     * y además también se rellenan las cadenas:
-     *  - uso-definicion
-     *  - definicion-uso
-     */
-    private void rellenarDA() {
-        for (InstruccionTresDirecciones definicion : Definiciones.getInstance().getDefiniciones()) {
-            definicionUso.put(definicion, new HashSet<>());
-        }
-
-        HashSet<InstruccionTresDirecciones> definiciones;
-        HashMap<Declaracion, Set<InstruccionTresDirecciones>> variables;
-        Set<InstruccionTresDirecciones> definicionUsoVariable;
-        BloqueBasico bloque;
-        InstruccionTresDirecciones instruccion;
-        int cantidadBloques = bloques.size();
-        for (int idx = 2; idx < cantidadBloques; idx++) {
-            bloque = bloques.get(idx);
-            definicionesAccesibles = new HashSet<>(in.get(bloque));
-            for (int instruccionIdx = bloque.getInicio(); instruccionIdx <= bloque.getFin(); instruccionIdx++) {
-                instruccion = instrucciones.get(instruccionIdx);
-                ArrayList<Declaracion> argumentos = instruccion.getArgumentos();
-                for (Declaracion argumento : argumentos) {
-                    definiciones = new HashSet<>();
-                    for (InstruccionTresDirecciones definicion : definicionesAccesibles) {
-                        if (definicion.getDestino().equals(argumento)) {
-                            definicionUsoVariable = definicionUso.get(definicion);
-                            definicionUsoVariable.add(instruccion);
-                            definiciones.add(definicion);
-                        }
-                    }
-                    variables = usoDefinicion.getOrDefault(instruccion, new HashMap<>());
-                    variables.put(argumento, definiciones);
-                    usoDefinicion.put(instruccion, variables);
-                }
-                if (instruccion.esDefinicion()) {
-                    definicionesAccesibles.removeAll(getDefiniciones(definicionesAccesibles, instruccion.getDestino()));
-                    definicionesAccesibles.add(instruccion);
-                }
-            }
-        }
-    }
-
-    /**
      * Fase 1 del algoritmo
      */
     private void rellenarGK() {
@@ -127,7 +82,6 @@ public class DefinicionesAccesibles {
             tempK = new HashSet<>();
             k.put(actual, tempK);
 
-            // TODO Utilizar un jodido iterador in here
             for (int instruccionIndex = actual.getInicio(); instruccionIndex <= actual.getFin(); instruccionIndex++) {
                 InstruccionTresDirecciones i3d = instrucciones.get(instruccionIndex);
                 if(i3d.esDefinicion()) {
@@ -196,6 +150,51 @@ public class DefinicionesAccesibles {
                 tempIn.addAll(out.get(predecesor));
             }
             in.put(bloque, tempIn);
+        }
+    }
+
+    /**
+     * Ultima parte del algoritmo.
+     * Aqui se rellenan las definiciones accesibles
+     * y además también se rellenan las cadenas:
+     *  - uso-definicion
+     *  - definicion-uso
+     */
+    private void rellenarDA() {
+        for (InstruccionTresDirecciones definicion : Definiciones.getInstance().getDefiniciones()) {
+            definicionUso.put(definicion, new HashSet<>());
+        }
+
+        HashSet<InstruccionTresDirecciones> definiciones;
+        HashMap<Declaracion, Set<InstruccionTresDirecciones>> variables;
+        Set<InstruccionTresDirecciones> definicionUsoVariable;
+        BloqueBasico bloque;
+        InstruccionTresDirecciones instruccion;
+        int cantidadBloques = bloques.size();
+        for (int idx = 2; idx < cantidadBloques; idx++) {
+            bloque = bloques.get(idx);
+            definicionesAccesibles = new HashSet<>(in.get(bloque));
+            for (int instruccionIdx = bloque.getInicio(); instruccionIdx <= bloque.getFin(); instruccionIdx++) {
+                instruccion = instrucciones.get(instruccionIdx);
+                ArrayList<Declaracion> argumentos = instruccion.getArgumentos();
+                for (Declaracion argumento : argumentos) {
+                    definiciones = new HashSet<>();
+                    for (InstruccionTresDirecciones definicion : definicionesAccesibles) {
+                        if (definicion.getDestino().equals(argumento)) {
+                            definicionUsoVariable = definicionUso.get(definicion);
+                            definicionUsoVariable.add(instruccion);
+                            definiciones.add(definicion);
+                        }
+                    }
+                    variables = usoDefinicion.getOrDefault(instruccion, new HashMap<>());
+                    variables.put(argumento, definiciones);
+                    usoDefinicion.put(instruccion, variables);
+                }
+                if (instruccion.esDefinicion()) {
+                    definicionesAccesibles.removeAll(getDefiniciones(definicionesAccesibles, instruccion.getDestino()));
+                    definicionesAccesibles.add(instruccion);
+                }
+            }
         }
     }
 

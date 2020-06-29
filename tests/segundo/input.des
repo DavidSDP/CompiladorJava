@@ -8,8 +8,8 @@ class ClasePrincipal {
 		* El bloque de memoria se reclama al heap y despues se rellena y se asigna a la variable
 		* preguntaCordial
 		*/
-		String preguntaCordial = "¿Como te llamas? (la respuesta correcta es pere)";
-	
+		String preguntaCordial = "Acierta el nombre o no podras pasar (solucion: pere)";
+
 		String input;
 		boolean notEsPere = true;
 		while(notEsPere) {

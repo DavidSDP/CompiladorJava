@@ -86,6 +86,7 @@ class ClasePrincipal {
 			writeln("");
 			write(2);
 			writeln("");
+<<<<<<< HEAD
 			write(32767);
 			writeln("");
 			write(-32767);

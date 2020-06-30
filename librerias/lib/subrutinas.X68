@@ -107,18 +107,19 @@ WRITEINT
 ; MODIFICA  - NADA
 ; OUTPUT	- NADA
 ; ============================================================
-            MOVEM.L D1-D2/A6, -(A7)
+            MOVEM.L D0-D1/A6, -(A7)
             
             MOVEQ.L #0, D0
             MOVE.L  BP, A6
             MOVE.W  -6(A6), D0
+            
             MOVE.L  D0, D1
             EXT.L   D1
             
             MOVE.W  #3, D0
-            TRAP    #15         ; Escritura por pantalla numero con signo (Task 20, TRAP 15)
+            TRAP    #15         ; Escritura por pantalla numero con signo (Task 3, TRAP 15)
             
-            MOVEM.L (A7)+, D1-D2/A6
+            MOVEM.L (A7)+, D0-D1/A6
             RTS
             
 ; ============================================================
